@@ -1,0 +1,39 @@
+{
+  "name": "yahoo-oauth2-test",
+  "version": "1.0.0",
+  "description": "NodeJS sample application for Yahoo OAuth 2.0 + yfsapi-without-auth",
+  "engines": {
+    "node": "5.10.1"
+  },
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "async": "^2.3.0",
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "express-session": "^1.14.1",
+    "jade": "^1.11.0",
+    "mongoose": "^4.13.7",
+    "nba": "^4.5.0",
+    "npm": "^6.4.1",
+    "request": "^2.75.0",
+    "stats-lite": "^2.2.0",
+    "string-similarity": "^2.0.0",
+    "stripe": "^6.23.1",
+    "table-scraper": "^0.1.0",
+    "yahoo-fantasy": "^3.1.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/withsmilo/yfsapi-oauth2-sample-app.git"
+  },
+  "keywords": [
+    "node",
+    "heroku",
+    "yahooFantasy",
+    "yfsapi"
+  ],
+  "license": "MIT"
+}

@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  if user
+    .bs-docs-header
+
+  .container
+    if playerRankings
+      h3 BBM Rankings
+        div.long-text #{playerRankings}
+    else
+      .lead No player data

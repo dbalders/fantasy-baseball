@@ -1,0 +1,49 @@
+extends layout
+
+block content
+  if user
+    .bs-docs-header
+
+  .container
+    if user
+      div.targets
+        if pickupTargets
+          div
+            h3 <a href="https://basketballmonster.com/playerrankings.aspx">Pickup Targets Season</a>
+            table.table.table-hover
+              thead
+                tr
+                  th="Name"
+                  th="Rank"
+              tbody
+              for player in pickupTargets
+                tr
+                  td=player.name
+                  td=player.rank
+        if pickupTargetsTwoWeeks
+          div
+            h3 <a href="https://basketballmonster.com/playerrankings.aspx?start=#{twoWeeksDate}&end=#{todayDate}">Pickup Targets Last 2 Weeks</a>
+            table.table.table-hover
+              thead
+                tr
+                  th="Name"
+                  th="Rank"
+              tbody
+              for player in pickupTargetsTwoWeeks
+                tr
+                  td=player.name
+                  td=player.rank
+      if playerRankings
+        h3 BBM Season Rankings
+        div.long-text #{playerRankings}
+      if playerRankingsTwoWeeks
+        h3 BBM Last 2 Weeks Rankings
+        div.long-text #{playerRankingsTwoWeeks}
+      if teamData
+        h3 yahoo teamData
+        div.long-text #{teamData}
+      if playerData
+        h3 yahoo playerData
+        div.long-text #{playerData}
+    else
+      .lead Please sign-in to view user.games information.

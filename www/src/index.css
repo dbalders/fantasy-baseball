@@ -1,0 +1,845 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+        "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+        sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+        monospace;
+}
+
+.site-container {
+    min-height: 100vh;
+}
+
+/****************************Homepage CSS Classes***********************/
+
+.sign-in {
+    margin: auto;
+    border: 0;
+    background-color: #380585;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.sign-in a {
+    text-decoration: none;
+    color: white;
+    /* text-transform: uppercase; */
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    padding: 25px 50px;
+    font-size: 1.25rem;
+    font-weight: 400;
+}
+
+.landing-container {
+    margin: auto;
+    width: 100%;
+}
+
+.site-loading {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 5;
+}
+
+.site-loading-text {
+    margin: auto;
+    align-self: center;
+    justify-content: center;
+    color: white;
+    font-size: 3rem;
+}
+
+.landing-top-background {
+    width: 100%;
+    background-image: url("/images/basketballcourt.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center 70%;
+}
+
+.landing-top-container {
+    margin: auto;
+    width: 80%;
+    padding-bottom: 100px;
+    color: white;
+}
+
+.landing-site {
+    font-size: 2rem;
+    font-family: Verdana, Geneva, sans-serif;
+    /* color: white; */
+    text-align: center;
+    margin: 50px auto 50px 0px;
+}
+
+.landing-site-title {
+    margin: auto auto 25px;
+    font-size: 2.25rem;
+    font-weight: 500;
+    letter-spacing: .5px;
+    text-align: center;
+}
+
+.landing-site-desc {
+    margin: auto;
+    font-size: 1.25rem;
+    width: 35%;
+    text-align: center;
+    line-height: 2rem;
+    font-weight: 500;
+}
+
+.landing-laptop-img {
+    width: 50%;
+    margin: 50px auto auto;
+}
+
+.landing-laptop-img img {
+    width: 100%;
+}
+
+.landing-actions-container {
+    flex: 2;
+    -webkit-flex: 2;
+    padding: 75px 0 100px;
+}
+
+.landing-background-image {
+    height: 100%;
+    position: absolute;
+    width: 100%;
+    z-index: -1;
+    left: 0;
+    top: 0;
+    opacity: 0.5;
+}
+.landing-background-color {
+    min-height: 100vh;
+    position: absolute;
+    width: 100%;
+    z-index: -2;
+    left: 0;
+    top: 0;
+}
+.landing-actions {
+    width: 30%;
+    border: 1px solid black;
+    max-width: 700px;
+    padding: 25px 0 50px;
+}
+
+.landing-actions-left {
+    margin: auto 0 auto auto;
+    border-right: 0;
+}
+
+.landing-actions-right {
+    margin: auto auto auto 0;
+}
+
+.landing-img {
+    width: 100%;
+    min-height: 150px;
+}
+
+.landing-img img {
+    width: 80%;
+    margin: auto;
+    display: block;
+}
+
+#landing-espn-img {
+    margin-top: 20px;
+}
+
+.landing-text {
+    margin: 75px auto 15px;
+    font-size: 2rem;
+    font-family: Verdana, Geneva, sans-serif;
+    text-align: center;
+    height: 60px;
+}
+
+.landing-text-small {
+    font-size: 1rem;
+    text-align: center;
+    font-family: Verdana, Geneva, sans-serif;
+    cursor: pointer;
+}
+
+.landing-buttons {
+    margin: auto auto;
+    height: 73px;
+}
+
+.espn-id-input {
+    font-size: 1.5rem;
+    padding: 20px;
+}
+
+.team-select {
+    width: 350px;
+    margin: auto;
+    color: black;
+    font-size: 1.25rem;
+    padding: 5px;
+}
+
+.espn-dropdown-items__menu {
+    font-size: 1rem;
+}
+
+.landing-features-container {
+    width: 70%;
+    margin: 75px auto;
+}
+.landing-features {
+    width: 40%;
+    margin: auto;
+    text-align: center;
+}
+
+.landing-features-title {
+    font-size: 1.75rem;
+}
+
+.landing-features-desc {
+    margin: 20px auto auto;
+    width: 70%;
+    line-height: 1.25rem;
+}
+
+.landing-features-img {
+    width: 100%;
+}
+
+.landing-features-img img {
+    width: 100%;
+}
+
+.espn-error {
+    text-align: center;
+    margin-top: 20px;
+    color: red;
+}
+
+@media screen and (max-width: 2000px) {
+    .landing-top-background {
+        background-image: url("/images/basketballcourt_medium.jpg");
+    }
+}
+
+@media screen and (max-width: 1350px) {
+    .landing-text {
+        font-size: 1.5rem;
+    }
+}
+
+@media screen and (max-width: 1100px) {
+    .landing-site {
+        margin-left: auto;
+    }
+
+    .landing-text {
+        font-size: 1.25rem;
+    }
+}
+
+@media screen and (max-width: 950px) {
+    .sign-in a {
+        padding: 25px 25px;
+    }
+
+    .espn-id-input {
+        width: 200px;
+    }
+
+    .landing-top-background {
+        background-image: url("/images/basketballcourt_small.jpg");
+    }
+}
+
+@media screen and (max-width: 825px) {
+    .landing-actions-container, .landing-features-container {
+        flex-direction: column;
+        -webkit-flex-direction: column;
+        margin: 25px auto;
+    }
+
+    .landing-features-container.flex-reverse {
+        flex-direction: column;
+    }
+
+    .landing-actions-left, .landing-actions-right {
+        margin: auto;
+        border: 1px solid;
+        width: 60%;
+        margin-bottom: 25px;
+    }
+
+    .landing-features {
+        width: 60%;
+        margin-bottom: 25px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .landing-actions-left, .landing-actions-right {
+        margin: auto;
+        border: 1px solid;
+        width: 80%;
+        margin-bottom: 25px;
+    }
+
+    .landing-features {
+        width: 80%;
+        margin-bottom: 25px;
+    }
+
+    .landing-features-desc {
+        width: 80%;
+    }
+
+    .landing-site-desc {
+        width: 60%;
+    }
+
+    .landing-top-container {
+        width: 90%;
+    }
+
+    .landing-site-title {
+        font-size: 1.75rem;
+    }
+}
+
+/****************************Logged in CSS Classes***********************/
+
+.navbar {
+    height: 75px;
+    background-color: white;
+    width: 100%;
+}
+
+.nav-title {
+    font-size: 1.75rem;
+    font-weight: 400;
+    margin: auto auto auto 25px;
+    font-family: Verdana, Geneva, sans-serif;
+    letter-spacing: .25px;
+}
+
+.nav-title a {
+    text-decoration: none;
+    color: black;
+    letter-spacing: .5px;
+}
+
+.nav-sign-in {
+    margin: auto 15px auto auto;
+    border: 0;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.nav-refresh {
+    margin: auto 15px auto auto;
+    border: 0;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.nav-refresh a {
+    text-decoration: none;
+    color: white;
+    display: inline-block;
+    padding: 15px;
+    font-family: Verdana, Geneva, sans-serif;
+    font-size: 1.15rem;
+    font-weight: 400;
+    background-color: #AC8169;
+    cursor: pointer;
+}
+
+/* .sign-in a:hover {
+    font-weight: 700 !important;
+    letter-spacing: 2px;
+    background: none;
+    transition: all 0.3s ease 0s;
+} */
+
+.sign-out {
+    margin: auto 15px auto 0;
+    border: 0;
+    background-color: #AC8169;
+    font-family: Verdana, Geneva, sans-serif;
+    font-size: 1.15rem;
+    text-decoration: none;
+    font-weight: 400;
+}
+
+.sign-out a {
+    text-decoration: none;
+    background-color: #AC8169;
+    color: white;
+    display: inline-block;
+    height: 100%;
+    padding: 15px;
+    letter-spacing: .25px;
+}
+
+.table-container {
+    background: white;
+    width: 100%;
+    margin: 25px 0 50px;
+    min-height: 100vh;
+}
+
+.table-info-container {
+    width: 95%;
+    margin: auto;
+}
+
+.table-info-header {
+    display: inline-block;
+    padding: 15px;
+    margin-right: 5px;
+    font-family: Verdana, Geneva, sans-serif;
+    font-weight: 400;
+    background-color: white;
+    border: 1px solid;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 25px;
+}
+
+.table-info-tables {
+    border: 1px solid;
+    padding: 0 2.5%;
+}
+
+.table-group {
+    margin: auto;
+}
+
+.team-table,
+.team-avg-table {
+    margin: 25px auto;
+}
+
+.team-avg-table {
+    width: 70%;
+}
+
+.team-table-header {
+    margin: 25px auto 0;
+    text-align: center;
+}
+
+.trade-table-header {
+    margin: 25px auto 10px;
+    font-weight: 500;
+}
+
+.team-avg-header {
+    margin: auto;
+    text-align: center;
+}
+
+.ReactTable {
+    min-height: 56px;
+}
+
+.ReactTable .rt-noData {
+    top: 75%;
+    padding: 0;
+}
+
+.ReactTable .rt-tr {
+    cursor: pointer;
+}
+
+.hide-button {
+    border: 1px solid #494949;
+    padding: 10px;
+    text-align: center;
+    border-radius: 3px;
+    /* background: #f4f4f4; */
+    cursor: pointer;
+    margin-left: 0;
+}
+
+.compare-header {
+    margin: 0 auto 15px;
+}
+
+.compare-table-group {
+    border: 1px solid;
+    border-radius: 5px;
+    padding: 10px 25px;
+}
+
+.change-stats-btn {
+    margin: auto;
+    background-color: #74b9ff;
+    padding: 25px 35px;
+    color: white;
+    font-size: 1.25rem;
+    border-radius: 5px;
+    cursor: pointer;
+
+}
+
+.expandedRow {
+    min-height: 35px;
+}
+
+.selected.rt-tr {
+    font-style: italic;
+    font-weight: 600;
+}
+
+.locked {
+    height: 15px;
+}
+
+@media screen and (max-width: 900px) {
+    .team-avg-table {
+        width: 90%;
+    }
+
+    .nav-refresh a, .sign-out a {
+        font-size: 1rem;
+    }
+}
+
+@media screen and (max-width: 800px) {
+    .nav-title {
+        font-size: 1.25rem;
+    }
+    .nav-refresh a, .sign-out a {
+        padding: 10px 10px;
+        font-size: .8rem;
+    }
+}
+
+@media screen and (max-width: 650px) {
+    .table-info-headers {
+        flex-direction: column;
+        -webkit-flex-direction: column;
+        margin: 25px auto auto;
+        text-align: center;
+    }
+
+    .nav-title {
+        margin: 25px auto;
+        font-size: 2rem;
+    }
+
+    .navbar, .nav-sign-in {
+        flex-direction: column;
+        -webkit-flex-direction: column;
+    }
+
+    .navbar {
+        height: auto;
+    }
+
+    .nav-sign-in {
+        margin: auto;
+        width: 300px;
+    }
+
+    .nav-refresh, .sign-out {
+        margin: 5px auto;
+        text-align: center;
+        width: 100%;
+    }
+
+    .nav-refresh a, .sign-out a {
+        margin: auto;
+        width: 100%;
+        font-size: 1.5rem;
+        padding: 20px 0;
+    }
+
+    .table-container {
+        margin-top: 0;
+    }
+
+}
+
+/****************************Select CSS Classes***********************/
+
+.react-select__control {
+    border-color: black !important;
+    box-shadow: none !important;
+    cursor: pointer;
+}
+
+.react-select__indicator-separator {
+    background-color: black !important;
+}
+
+.react-select__dropdown-indicator {
+    color: black !important;
+}
+
+/****************************Modal CSS Classes***********************/
+
+.espn-modal-container {
+    color: black;
+    font-size: 1.4rem;
+    height: 100%;
+}
+
+.espn-modal-container div {
+    margin: auto;
+}
+
+.espn-modal-container a {
+    margin-bottom: 25px;
+}
+
+.espn-modal-league {
+    font-weight: 500;
+    font-style: italic;
+}
+
+.modal-container {
+    height: 90%;
+}
+
+.modal-info-container {
+    margin: auto;
+    text-align: center;
+    width: 80%;
+    height: 100%;
+    margin-bottom: 25px;
+}
+
+.modal-info-header {
+    margin: 25px 0;
+    font-size: 2rem;
+    font-weight: 400;
+}
+
+.modal-info-desc {
+    font-weight: 400;
+    letter-spacing: .5px;
+    margin: auto;
+}
+
+.modal-info-text {
+    margin-bottom: 25px;
+}
+
+@media screen and (max-width: 800px) {
+    .espn-modal-container {
+        font-size: 1rem;
+    }
+
+    .modal-container {
+        height: 100%;
+    }
+
+    .modal-info-container {
+        margin: auto;
+        text-align: center;
+        width: 90%;
+        height: 100%;
+        margin-bottom: 5px;
+    }
+
+    .modal-info-header {
+        margin: 15px 0;
+        font-size: 1.25rem;
+    }
+
+    .modal-info-desc {
+        letter-spacing: auto;
+    }
+
+    .StripeCheckout {
+        margin-bottom: 10px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .espn-modal-container {
+        font-size: .75rem;
+    }
+
+    .modal-info-container {
+        margin: auto;
+        text-align: center;
+        width: 95%;
+        height: 100%;
+        margin-bottom: 5px;
+    }
+
+    .modal-info-header {
+        margin: 5px 0;
+        font-size: 1rem;
+    }
+
+    .modal-info-desc {
+        letter-spacing: auto;
+    }
+}
+
+
+/****************************Stripe CSS Classes***********************/
+
+.StripeCheckout {
+    background: none !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+    margin-right: 15px;
+    outline: none;
+}
+
+.StripeCheckout span {
+    background-image: none !important;
+    background-color: #27ABE2 !important;
+    text-decoration: none !important;
+    color: white !important;
+    display: inline-block !important;
+    padding: 15px !important;
+    font-family: Verdana, Geneva, sans-serif !important;
+    font-size: 1.15rem !important;
+    font-weight: 400 !important;
+    /* background-color: #AC8169; */
+    cursor: pointer !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+    line-height: inherit !important;
+    height: auto !important;
+}
+
+.Header-purchaseDescription {
+    white-space: normal !important;
+}
+
+/****************************Footer CSS Classes***********************/
+
+.footer {
+    width: 100%;
+    padding: 15px 0;
+    background: #AC8269;
+    color: white;
+}
+
+.footer-info {
+    margin: auto 25px auto auto;
+    text-align: right;
+    align-items: center;
+    -webkit-align-items: center;
+}
+
+.footer-info a {
+    text-decoration: none;
+    color: white;
+}
+
+.footer-twitter img {
+    width: 35px;
+    height: 35px;
+    padding-left: 5px;
+}
+
+#footer-created-by {
+    padding-right: 4px;
+}
+
+/****************************Universal CSS Classes***********************/
+
+.flex-wrapper {
+    display: flex;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    justify-content: center;
+    -webkit-justify-content: center;
+    flex-wrap: wrap;
+    -webkit-flex-wrap: wrap;
+}
+
+.flex-content {
+    flex: 3;
+    -webkit-flex: 3;
+    -ms-flex: 3 0 auto;
+}
+
+.flex {
+    display: flex;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+}
+
+.flex-vertical {
+    display: flex;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    flex-direction: column;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+}
+
+.flex-one {
+    flex: 1 0 auto;
+    -webkit-flex: 1 0 auto;
+    -ms-flex: 1 0 auto;
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+    -webkit-flex-wrap: wrap;
+}
+
+.flex-center {
+    align-items: center;
+    -webkit-align-items: center;
+    -ms-align-items: center;
+    justify-content: center;
+    -webkit-justify-content: center;
+    -ms-justify-content: center;
+}
+
+.center {
+    text-align: center;
+    margin: auto;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.flex-reverse {
+    flex-direction: row-reverse;
+    -webkit-flex-direction: row-reverse;
+}
+
+.hide {
+    display: none !important;
+}
+
+.no-margin {
+    margin: 0;
+}
+
+/*End Universal CSS Classes*/
