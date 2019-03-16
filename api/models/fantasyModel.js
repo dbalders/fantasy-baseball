@@ -6,12 +6,6 @@ var PlayersSchema = new Schema({
     leagueId: {
         type: Number
     },
-    firstName: {
-        type: String
-    },
-    lastName: {
-        type: String
-    },
     fullName: {
         type: String
     },
@@ -39,103 +33,69 @@ var TeamsSchema = new Schema({
 });
 
 var BBMRankingsSeasonSchema = new Schema({
-    playerName: {
-        type: String
-    },
-    overallRank: {
-        type: Number
-    },
-    overallRating: {
-        type: Number
-    },
-    ptsRating: {
-        type: Number
-    },
-    rebRating: {
-        type: Number
-    },
-    astRating: {
-        type: Number
-    },
-    stlRating: {
-        type: Number
-    },
-    blkRating: {
-        type: Number
-    },
-    fgMixedRating: {
-        type: Number
-    },
-    ftMixedRating: {
-        type: Number
-    },
-    toRating: {
-        type: Number
-    },
-    threeRating: {
-        type: Number
-    },
-    fgPct: Number,
-    ftPct: Number,
-    fG3M: Number,
-    reb: Number,
-    ast: Number,
-    tov: Number,
-    stl: Number,
-    blk: Number,
-    pts: Number,
-    fta: Number,
-    fga: Number
+    playerId: Number,
+    playerName: String,
+    teamId: Number,
+    team: String,
+    games: Number,
+    hit: Number,
+    double: Number,
+    homeRun: Number,
+    run: Number,
+    rbi: Number,
+    walk: Number,
+    sb: Number,
+    avg: Number,
+    obp: Number,
+    slg: Number,
+    ops: Number,
+    gamesRating: Number,
+    hitRating: Number,
+    doubleRating: Number,
+    homeRunRating: Number,
+    runRating: Number,
+    rbiRating: Number,
+    walkRating: Number,
+    sbRating: Number,
+    avgRating: Number,
+    obpRating: Number,
+    slgRating: Number,
+    opsRating: Number,
+    overallRating: Number,
+    overallRank: Number
 });
 
 var BBMRankingsRecentSchema = new Schema({
-    playerName: {
-        type: String
-    },
-    overallRank: {
-        type: Number
-    },
-    overallRating: {
-        type: Number
-    },
-    ptsRating: {
-        type: Number
-    },
-    rebRating: {
-        type: Number
-    },
-    astRating: {
-        type: Number
-    },
-    stlRating: {
-        type: Number
-    },
-    blkRating: {
-        type: Number
-    },
-    fgMixedRating: {
-        type: Number
-    },
-    ftMixedRating: {
-        type: Number
-    },
-    toRating: {
-        type: Number
-    },
-    threeRating: {
-        type: Number
-    },
-    fgPct: Number,
-    ftPct: Number,
-    fG3M: Number,
-    reb: Number,
-    ast: Number,
-    tov: Number,
-    stl: Number,
-    blk: Number,
-    pts: Number,
-    fta: Number,
-    fga: Number
+    playerId: Number,
+    playerName: String,
+    teamId: Number,
+    team: String,
+    games: Number,
+    hit: Number,
+    double: Number,
+    homeRun: Number,
+    run: Number,
+    rbi: Number,
+    walk: Number,
+    sb: Number,
+    avg: Number,
+    obp: Number,
+    slg: Number,
+    ops: Number,
+    gamesRating: Number,
+    hitRating: Number,
+    doubleRating: Number,
+    homeRunRating: Number,
+    runRating: Number,
+    rbiRating: Number,
+    walkRating: Number,
+    sbRating: Number,
+    avgRating: Number,
+    obpRating: Number,
+    slgRating: Number,
+    opsRating: Number,
+    overallRating: Number,
+    overallRank: Number
 });
 
 var PickupTargetsSeasonSchema = new Schema({
@@ -178,43 +138,31 @@ var PlayerSeasonDataSchema = new Schema({
     playerId: Number,
     playerName: String,
     teamId: Number,
-    teamAbbreviation: String,
-    min: Number,
-    fgPct: Number,
-    ftPct: Number,
-    fG3M: Number,
-    reb: Number,
-    ast: Number,
-    tov: Number,
-    stl: Number,
-    blk: Number,
-    pts: Number,
-    fta: Number,
-    fga: Number,
-    fgPctRank: Number,
-    ftPctRank: Number,
-    fg3mRank: Number,
-    rebRank: Number,
-    astRank: Number,
-    tovRank: Number,
-    stlRank: Number,
-    blkRank: Number,
-    ptsRank: Number,
-    ftaRank: Number,
-    fgaRank: Number,
-    ftRating: Number,
-    fgRating: Number,
-    ptsRating: Number,
-    threeRating: Number,
-    rebRating: Number,
-    astRating: Number,
-    stlRating: Number,
-    blkRating: Number,
-    toRating: Number,
-    ftaRating: Number,
-    fgaRating: Number,
-    ftMixedRating: Number,
-    fgMixedRating: Number,
+    team: String,
+    games: Number,
+    hit: Number,
+    double: Number,
+    homeRun: Number,
+    run: Number,
+    rbi: Number,
+    walk: Number,
+    sb: Number,
+    avg: Number,
+    obp: Number,
+    slg: Number,
+    ops: Number,
+    gamesRating: Number,
+    hitRating: Number,
+    doubleRating: Number,
+    homeRunRating: Number,
+    runRating: Number,
+    rbiRating: Number,
+    walkRating: Number,
+    sbRating: Number,
+    avgRating: Number,
+    obpRating: Number,
+    slgRating: Number,
+    opsRating: Number,
     overallRating: Number,
     overallRank: Number
 })
@@ -223,43 +171,31 @@ var PlayerRecentDataSchema = new Schema({
     playerId: Number,
     playerName: String,
     teamId: Number,
-    teamAbbreviation: String,
-    min: Number,
-    fgPct: Number,
-    ftPct: Number,
-    fG3M: Number,
-    reb: Number,
-    ast: Number,
-    tov: Number,
-    stl: Number,
-    blk: Number,
-    pts: Number,
-    fta: Number,
-    fga: Number,
-    fgPctRank: Number,
-    ftPctRank: Number,
-    fg3mRank: Number,
-    rebRank: Number,
-    astRank: Number,
-    tovRank: Number,
-    stlRank: Number,
-    blkRank: Number,
-    ptsRank: Number,
-    ftaRank: Number,
-    fgaRank: Number,
-    ftRating: Number,
-    fgRating: Number,
-    ptsRating: Number,
-    threeRating: Number,
-    rebRating: Number,
-    astRating: Number,
-    stlRating: Number,
-    blkRating: Number,
-    toRating: Number,
-    ftaRating: Number,
-    fgaRating: Number,
-    ftMixedRating: Number,
-    fgMixedRating: Number,
+    team: String,
+    games: Number,
+    hit: Number,
+    double: Number,
+    homeRun: Number,
+    run: Number,
+    rbi: Number,
+    walk: Number,
+    sb: Number,
+    avg: Number,
+    obp: Number,
+    slg: Number,
+    ops: Number,
+    gamesRating: Number,
+    hitRating: Number,
+    doubleRating: Number,
+    homeRunRating: Number,
+    runRating: Number,
+    rbiRating: Number,
+    walkRating: Number,
+    sbRating: Number,
+    avgRating: Number,
+    obpRating: Number,
+    slgRating: Number,
+    opsRating: Number,
     overallRating: Number,
     overallRank: Number
 })

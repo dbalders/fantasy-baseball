@@ -14,6 +14,7 @@
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "express-session": "^1.14.1",
+    "fs-then": "^0.2.0",
     "jade": "^1.11.0",
     "mongoose": "^4.13.7",
     "nba": "^4.5.0",

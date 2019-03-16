@@ -35,7 +35,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // mongoose instance connection url connection
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost/fantasydb'); 
+mongoose.connect('mongodb://localhost/fantasybaseballdb'); 
 
 var routes = require('./api/routes/fantasyRoutes'); //importing route
 routes(app); //register the route

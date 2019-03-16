@@ -39,11 +39,7 @@ exports.getYahooData = function (req, res, options) {
 
             //Get either current year or last year for when season rolls into the new year
             var currentYear = (new Date());
-            if (currentYear.getMonth() > 6) {
-                currentYear = currentYear.getFullYear();
-            } else {
-                currentYear = currentYear.getFullYear() - 1;
-            }
+            currentYear = currentYear.getFullYear();
 
             req.session.token = accessToken;
 
@@ -58,11 +54,13 @@ exports.getYahooData = function (req, res, options) {
                     else
                         //first get the nba leagues user is in 
                         //First call only provides yahoo overall league ID
-                        yf.games.user({ seasons: currentYear, game_codes: 'nba' }, function cb(err, data) {
+                        yf.games.user({ seasons: currentYear, game_codes: 'mlb' }, function cb(err, data) {
                             console.log(err)
                             if (err) {
                                 return
                             }
+
+                            console.log(data)
 
                             leagueIdShort = data[0].game_key;
 
