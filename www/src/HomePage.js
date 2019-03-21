@@ -4,8 +4,8 @@ import Select from 'react-select';
 import { EspnInput } from './EspnInput';
 import { EspnModal } from './EspnModal';
 import ReactGA from 'react-ga';
-ReactGA.initialize('UA-135378238-1');
-ReactGA.pageview("/");
+// ReactGA.initialize('UA-135378238-1');
+// ReactGA.pageview("/");
 
 export class HomePage extends Component {
     constructor(props) {

@@ -60,8 +60,6 @@ exports.getYahooData = function (req, res, options) {
                                 return
                             }
 
-                            console.log(data)
-
                             leagueIdShort = data[0].game_key;
 
                             //Now that we have overall ID, get user specific league ID
@@ -203,6 +201,7 @@ exports.getYahooData = function (req, res, options) {
                                             console.log(err);
                                         else
                                             var teamPlayers = [];
+                                            // console.log(playersData)
                                         //After having their roster, store each player into a single player array
                                         async.forEachOf(playersData.roster, function (value, playerKey, callback) {
                                             playerObject = {
