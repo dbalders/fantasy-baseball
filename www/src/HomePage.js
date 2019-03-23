@@ -41,11 +41,13 @@ export class HomePage extends Component {
     espnIdError = (error) => {
         this.setState({ espnIdError: error });
 
-        if (error === 'Not Found') {
+        console.log(error[0])
+
+        if (error[0] === 'Not Found') {
             this.setState({ espnIdError: 'ESPN league is not found' });
         }
 
-        if (error === 'You are not authorized to view this League.') {
+        if (error[0] === 'You are not authorized to view this League.') {
             this.setState({ espnIdError: 'This league is private, it has to be made public.' });
         }
     }

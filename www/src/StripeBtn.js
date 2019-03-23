@@ -24,7 +24,7 @@ export class StripeBtn extends Component {
     }
 
     render() {
-        const publishableKey = "pk_live_1hpF0Z605W8TfOsC1SUcV7Bx";
+        const publishableKey = "pk_test_J9A4W2CFQsPDfvmWJYDTCnAc";
         var body;
 
         const onToken = token => {

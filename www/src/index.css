@@ -441,7 +441,7 @@ code {
 }
 
 .team-avg-table {
-    width: 70%;
+    width: 90%;
 }
 
 .team-table-header {
@@ -470,6 +470,11 @@ code {
 
 .ReactTable .rt-tr {
     cursor: pointer;
+    font-size: .95rem;
+}
+
+.ReactTable .rt-td {
+    padding: 5px 3px;
 }
 
 .hide-button {

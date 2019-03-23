@@ -269,7 +269,7 @@ function getPickups(leagueId, playerNames) {
             var similarPlayer = stringSimilarity.findBestMatch(players[i].playerName, playerNames);
             var similarPlayerRating = similarPlayer.bestMatch.rating;
 
-            if (similarPlayerRating < 0.7) {
+            if (similarPlayerRating < 0.65) {
                 pickupTargets.push(players[i]);
             }
 
@@ -415,7 +415,7 @@ function getPickups(leagueId, playerNames) {
 }
 
 exports.getEspnData = function (espnId, res) {
-    var url = 'http://fantasy.espn.com/apis/v3/games/fba/seasons/2019/segments/0/leagues/' + espnId + '?view=mRoster&view=mTeam';
+    var url = 'http://fantasy.espn.com/apis/v3/games/flb/seasons/2019/segments/0/leagues/' + espnId + '?view=mRoster&view=mTeam';
     var teams = [];
     var players = [];
     var playerNames = [];

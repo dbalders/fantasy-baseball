@@ -85,6 +85,8 @@ export class CompareTeams extends Component {
         var teamPlayers = team;
         var playerRankingsSeason = [];
         var playerRankingsRecent = [];
+        var batterLength = 0;
+        var pitcherLength = 0;
 
         if ((this.state.playerRankingsSeason.length === 0) || (this.state.playerRankingsRecent.length === 0)) {
             playerRankingsSeason = JSON.parse(localStorage.getItem('playerRankingsSeason'));
@@ -101,37 +103,109 @@ export class CompareTeams extends Component {
                 if (similarPlayerSeason > 0.7) {
                     //Push the player to the team array
                     teamStatsSeason.push(playerRankingsSeason[j]);
+
+                    if (playerRankingsSeason[j].playerType === "Batter") {
+                        batterLength++;
+                    } else {
+                        pitcherLength++;
+                    }
+
+                    var avgRating = (playerRankingsSeason[j].avgRating) ? (playerRankingsSeason[j].avgRating) : 0;
+                    var runRating = (playerRankingsSeason[j].runRating) ? (playerRankingsSeason[j].runRating) : 0;
+                    var rbiRating = (playerRankingsSeason[j].rbiRating) ? (playerRankingsSeason[j].rbiRating) : 0;
+                    var homeRunRating = (playerRankingsSeason[j].homeRunRating) ? (playerRankingsSeason[j].homeRunRating) : 0;
+                    var sbRating = (playerRankingsSeason[j].sbRating) ? (playerRankingsSeason[j].sbRating) : 0;
+                    var obpRating = (playerRankingsSeason[j].obpRating) ? (playerRankingsSeason[j].obpRating) : 0;
+                    var slgRating = (playerRankingsSeason[j].slgRating) ? (playerRankingsSeason[j].slgRating) : 0;
+                    var doubleRating = (playerRankingsSeason[j].doubleRating) ? (playerRankingsSeason[j].doubleRating) : 0;
+                    var walkRating = (playerRankingsSeason[j].walkRating) ? (playerRankingsSeason[j].walkRating) : 0;
+                    var opsRating = (playerRankingsSeason[j].opsRating) ? (playerRankingsSeason[j].opsRating) : 0;
+                    var winRating = (playerRankingsSeason[j].winRating) ? (playerRankingsSeason[j].winRating) : 0;
+                    var eraRating = (playerRankingsSeason[j].eraRating) ? (playerRankingsSeason[j].eraRating) : 0;
+                    var whipRating = (playerRankingsSeason[j].whipRating) ? (playerRankingsSeason[j].whipRating) : 0;
+                    var ipRating = (playerRankingsSeason[j].ipRating) ? (playerRankingsSeason[j].ipRating) : 0;
+                    var svRating = (playerRankingsSeason[j].svRating) ? (playerRankingsSeason[j].svRating) : 0;
+                    var kRating = (playerRankingsSeason[j].kRating) ? (playerRankingsSeason[j].kRating) : 0;
+                    var holdRating = (playerRankingsSeason[j].holdRating) ? (playerRankingsSeason[j].holdRating) : 0;
+                    var saveholdRating = (playerRankingsSeason[j].saveholdRating) ? (playerRankingsSeason[j].saveholdRating) : 0;
+                    var k9Rating = (playerRankingsSeason[j].k9Rating) ? (playerRankingsSeason[j].k9Rating) : 0;
+
                     //Start calculating averages by adding them all up
                     teamStatsSeasonAvg = {
-                        ptsRating: (teamStatsSeasonAvg.ptsRating) ? (teamStatsSeasonAvg.ptsRating + playerRankingsSeason[j].ptsRating) : playerRankingsSeason[j].ptsRating,
-                        threeRating: (teamStatsSeasonAvg.threeRating) ? (teamStatsSeasonAvg.threeRating + playerRankingsSeason[j].threeRating) : playerRankingsSeason[j].threeRating,
-                        astRating: (teamStatsSeasonAvg.astRating) ? (teamStatsSeasonAvg.astRating + playerRankingsSeason[j].astRating) : playerRankingsSeason[j].astRating,
-                        rebRating: (teamStatsSeasonAvg.rebRating) ? (teamStatsSeasonAvg.rebRating + playerRankingsSeason[j].rebRating) : playerRankingsSeason[j].rebRating,
-                        stlRating: (teamStatsSeasonAvg.stlRating) ? (teamStatsSeasonAvg.stlRating + playerRankingsSeason[j].stlRating) : playerRankingsSeason[j].stlRating,
-                        blkRating: (teamStatsSeasonAvg.blkRating) ? (teamStatsSeasonAvg.blkRating + playerRankingsSeason[j].blkRating) : playerRankingsSeason[j].blkRating,
-                        fgMixedRating: (teamStatsSeasonAvg.fgMixedRating) ? (teamStatsSeasonAvg.fgMixedRating + playerRankingsSeason[j].fgMixedRating) : playerRankingsSeason[j].fgMixedRating,
-                        ftMixedRating: (teamStatsSeasonAvg.ftMixedRating) ? (teamStatsSeasonAvg.ftMixedRating + playerRankingsSeason[j].ftMixedRating) : playerRankingsSeason[j].ftMixedRating,
-                        toRating: (teamStatsSeasonAvg.toRating) ? (teamStatsSeasonAvg.toRating + playerRankingsSeason[j].toRating) : playerRankingsSeason[j].toRating
+                        overallRating: (teamStatsSeasonAvg.overallRating) ? (teamStatsSeasonAvg.overallRating + playerRankingsSeason[j].overallRating) : playerRankingsSeason[j].overallRating,
+                        avgRating: (teamStatsSeasonAvg.avgRating) ? (teamStatsSeasonAvg.avgRating + avgRating) : avgRating,
+                        runRating: (teamStatsSeasonAvg.runRating) ? (teamStatsSeasonAvg.runRating + runRating) : runRating,
+                        rbiRating: (teamStatsSeasonAvg.rbiRating) ? (teamStatsSeasonAvg.rbiRating + rbiRating) : rbiRating,
+                        homeRunRating: (teamStatsSeasonAvg.homeRunRating) ? (teamStatsSeasonAvg.homeRunRating + homeRunRating) : homeRunRating,
+                        sbRating: (teamStatsSeasonAvg.sbRating) ? (teamStatsSeasonAvg.sbRating + sbRating) : sbRating,
+                        obpRating: (teamStatsSeasonAvg.obpRating) ? (teamStatsSeasonAvg.obpRating + obpRating) : obpRating,
+                        slgRating: (teamStatsSeasonAvg.slgRating) ? (teamStatsSeasonAvg.slgRating + slgRating) : slgRating,
+                        doubleRating: (teamStatsSeasonAvg.doubleRating) ? (teamStatsSeasonAvg.doubleRating + doubleRating) : doubleRating,
+                        walkRating: (teamStatsSeasonAvg.walkRating) ? (teamStatsSeasonAvg.walkRating + walkRating) : walkRating,
+                        opsRating: (teamStatsSeasonAvg.opsRating) ? (teamStatsSeasonAvg.opsRating + opsRating) : opsRating,
+                        winRating: (teamStatsSeasonAvg.winRating) ? (teamStatsSeasonAvg.winRating + winRating) : winRating,
+                        eraRating: (teamStatsSeasonAvg.eraRating) ? (teamStatsSeasonAvg.eraRating + eraRating) : eraRating,
+                        whipRating: (teamStatsSeasonAvg.whipRating) ? (teamStatsSeasonAvg.whipRating + whipRating) : whipRating,
+                        ipRating: (teamStatsSeasonAvg.ipRating) ? (teamStatsSeasonAvg.ipRating + ipRating) : ipRating,
+                        svRating: (teamStatsSeasonAvg.svRating) ? (teamStatsSeasonAvg.svRating + svRating) : svRating,
+                        kRating: (teamStatsSeasonAvg.kRating) ? (teamStatsSeasonAvg.kRating + kRating) : kRating,
+                        holdRating: (teamStatsSeasonAvg.holdRating) ? (teamStatsSeasonAvg.holdRating + holdRating) : holdRating,
+                        saveholdRating: (teamStatsSeasonAvg.saveholdRating) ? (teamStatsSeasonAvg.saveholdRating + saveholdRating) : saveholdRating,
+                        k9Rating: (teamStatsSeasonAvg.k9Rating) ? (teamStatsSeasonAvg.k9Rating + k9Rating) : k9Rating
                     }
                     break
                 }
             }
 
-            //Same here for recent data
+            // Same here for recent data
             for (var k = 0; k < playerRankingsRecent.length; k++) {
+                
                 var similarPlayerRecent = stringSimilarity.compareTwoStrings(teamPlayers[i].full, playerRankingsRecent[k].playerName);
                 if (similarPlayerRecent > 0.7) {
                     teamStatsRecent.push(playerRankingsRecent[k]);
+
+                    var avgRating = (playerRankingsRecent[j].avgRating) ? (playerRankingsRecent[j].avgRating) : 0;
+                    var runRating = (playerRankingsRecent[j].runRating) ? (playerRankingsRecent[j].runRating) : 0;
+                    var rbiRating = (playerRankingsRecent[j].rbiRating) ? (playerRankingsRecent[j].rbiRating) : 0;
+                    var homeRunRating = (playerRankingsRecent[j].homeRunRating) ? (playerRankingsRecent[j].homeRunRating) : 0;
+                    var sbRating = (playerRankingsRecent[j].sbRating) ? (playerRankingsRecent[j].sbRating) : 0;
+                    var obpRating = (playerRankingsRecent[j].obpRating) ? (playerRankingsRecent[j].obpRating) : 0;
+                    var slgRating = (playerRankingsRecent[j].slgRating) ? (playerRankingsRecent[j].slgRating) : 0;
+                    var doubleRating = (playerRankingsRecent[j].doubleRating) ? (playerRankingsRecent[j].doubleRating) : 0;
+                    var walkRating = (playerRankingsRecent[j].walkRating) ? (playerRankingsRecent[j].walkRating) : 0;
+                    var opsRating = (playerRankingsRecent[j].opsRating) ? (playerRankingsRecent[j].opsRating) : 0;
+                    var winRating = (playerRankingsRecent[j].winRating) ? (playerRankingsRecent[j].winRating) : 0;
+                    var eraRating = (playerRankingsRecent[j].eraRating) ? (playerRankingsRecent[j].eraRating) : 0;
+                    var whipRating = (playerRankingsRecent[j].whipRating) ? (playerRankingsRecent[j].whipRating) : 0;
+                    var ipRating = (playerRankingsRecent[j].ipRating) ? (playerRankingsRecent[j].ipRating) : 0;
+                    var svRating = (playerRankingsRecent[j].svRating) ? (playerRankingsRecent[j].svRating) : 0;
+                    var kRating = (playerRankingsRecent[j].kRating) ? (playerRankingsRecent[j].kRating) : 0;
+                    var holdRating = (playerRankingsRecent[j].holdRating) ? (playerRankingsRecent[j].holdRating) : 0;
+                    var saveholdRating = (playerRankingsRecent[j].saveholdRating) ? (playerRankingsRecent[j].saveholdRating) : 0;
+                    var k9Rating = (playerRankingsRecent[j].k9Rating) ? (playerRankingsRecent[j].k9Rating) : 0;
+
+
                     teamStatsRecentAvg = {
-                        ptsRating: (teamStatsRecentAvg.ptsRating) ? (teamStatsRecentAvg.ptsRating + playerRankingsRecent[k].ptsRating) : playerRankingsRecent[k].ptsRating,
-                        threeRating: (teamStatsRecentAvg.threeRating) ? (teamStatsRecentAvg.threeRating + playerRankingsRecent[k].threeRating) : playerRankingsRecent[k].threeRating,
-                        astRating: (teamStatsRecentAvg.astRating) ? (teamStatsRecentAvg.astRating + playerRankingsRecent[k].astRating) : playerRankingsRecent[k].astRating,
-                        rebRating: (teamStatsRecentAvg.rebRating) ? (teamStatsRecentAvg.rebRating + playerRankingsRecent[k].rebRating) : playerRankingsRecent[k].rebRating,
-                        stlRating: (teamStatsRecentAvg.stlRating) ? (teamStatsRecentAvg.stlRating + playerRankingsRecent[k].stlRating) : playerRankingsRecent[k].stlRating,
-                        blkRating: (teamStatsRecentAvg.blkRating) ? (teamStatsRecentAvg.blkRating + playerRankingsRecent[k].blkRating) : playerRankingsRecent[k].blkRating,
-                        fgMixedRating: (teamStatsRecentAvg.fgMixedRating) ? (teamStatsRecentAvg.fgMixedRating + playerRankingsRecent[k].fgMixedRating) : playerRankingsRecent[k].fgMixedRating,
-                        ftMixedRating: (teamStatsRecentAvg.ftMixedRating) ? (teamStatsRecentAvg.ftMixedRating + playerRankingsRecent[k].ftMixedRating) : playerRankingsRecent[k].ftMixedRating,
-                        toRating: (teamStatsRecentAvg.toRating) ? (teamStatsRecentAvg.toRating + playerRankingsRecent[k].toRating) : playerRankingsRecent[k].toRating
+                        overallRating: (teamStatsRecentAvg.overallRating) ? (teamStatsRecentAvg.overallRating + playerRankingsRecent[j].overallRating) : playerRankingsRecent[j].overallRating,
+                        avgRating: (teamStatsRecentAvg.avgRating) ? (teamStatsRecentAvg.avgRating + avgRating) : avgRating,
+                        runRating: (teamStatsRecentAvg.runRating) ? (teamStatsRecentAvg.runRating + runRating) : runRating,
+                        rbiRating: (teamStatsRecentAvg.rbiRating) ? (teamStatsRecentAvg.rbiRating + rbiRating) : rbiRating,
+                        homeRunRating: (teamStatsRecentAvg.homeRunRating) ? (teamStatsRecentAvg.homeRunRating + homeRunRating) : homeRunRating,
+                        sbRating: (teamStatsRecentAvg.sbRating) ? (teamStatsRecentAvg.sbRating + sbRating) : sbRating,
+                        obpRating: (teamStatsRecentAvg.obpRating) ? (teamStatsRecentAvg.obpRating + obpRating) : obpRating,
+                        slgRating: (teamStatsRecentAvg.slgRating) ? (teamStatsRecentAvg.slgRating + slgRating) : slgRating,
+                        doubleRating: (teamStatsRecentAvg.doubleRating) ? (teamStatsRecentAvg.doubleRating + doubleRating) : doubleRating,
+                        walkRating: (teamStatsRecentAvg.walkRating) ? (teamStatsRecentAvg.walkRating + walkRating) : walkRating,
+                        opsRating: (teamStatsRecentAvg.opsRating) ? (teamStatsRecentAvg.opsRating + opsRating) : opsRating,
+                        winRating: (teamStatsRecentAvg.winRating) ? (teamStatsRecentAvg.winRating + winRating) : winRating,
+                        eraRating: (teamStatsRecentAvg.eraRating) ? (teamStatsRecentAvg.eraRating + eraRating) : eraRating,
+                        whipRating: (teamStatsRecentAvg.whipRating) ? (teamStatsRecentAvg.whipRating + whipRating) : whipRating,
+                        ipRating: (teamStatsRecentAvg.ipRating) ? (teamStatsRecentAvg.ipRating + ipRating) : ipRating,
+                        svRating: (teamStatsRecentAvg.svRating) ? (teamStatsRecentAvg.svRating + svRating) : svRating,
+                        kRating: (teamStatsRecentAvg.kRating) ? (teamStatsRecentAvg.kRating + kRating) : kRating,
+                        holdRating: (teamStatsRecentAvg.holdRating) ? (teamStatsRecentAvg.holdRating + holdRating) : holdRating,
+                        saveholdRating: (teamStatsRecentAvg.saveholdRating) ? (teamStatsRecentAvg.saveholdRating + saveholdRating) : saveholdRating,
+                        k9Rating: (teamStatsRecentAvg.k9Rating) ? (teamStatsRecentAvg.k9Rating + k9Rating) : k9Rating
                     }
                     break
                 }
@@ -143,28 +217,48 @@ export class CompareTeams extends Component {
 
         //Divide averages total by the number of players they have to get avg number
         teamStatsSeasonAvg = {
-            ptsRating: Number(teamStatsSeasonAvg.ptsRating / teamStatsSeason.length).toFixed(2),
-            threeRating: Number(teamStatsSeasonAvg.threeRating / teamStatsSeason.length).toFixed(2),
-            astRating: Number(teamStatsSeasonAvg.astRating / teamStatsSeason.length).toFixed(2),
-            rebRating: Number(teamStatsSeasonAvg.rebRating / teamStatsSeason.length).toFixed(2),
-            stlRating: Number(teamStatsSeasonAvg.stlRating / teamStatsSeason.length).toFixed(2),
-            blkRating: Number(teamStatsSeasonAvg.blkRating / teamStatsSeason.length).toFixed(2),
-            fgMixedRating: Number(teamStatsSeasonAvg.fgMixedRating / teamStatsSeason.length).toFixed(2),
-            ftMixedRating: Number(teamStatsSeasonAvg.ftMixedRating / teamStatsSeason.length).toFixed(2),
-            toRating: Number(teamStatsSeasonAvg.ftRating / teamStatsSeason.length).toFixed(2)
+            overallRating: Number(teamStatsSeasonAvg.overallRating / teamStatsSeason.length).toFixed(2),
+            avgRating: Number(teamStatsSeasonAvg.avgRating / batterLength).toFixed(2),
+            runRating: Number(teamStatsSeasonAvg.runRating / batterLength).toFixed(2),
+            rbiRating: Number(teamStatsSeasonAvg.rbiRating / batterLength).toFixed(2),
+            homeRunRating: Number(teamStatsSeasonAvg.homeRunRating / batterLength).toFixed(2),
+            sbRating: Number(teamStatsSeasonAvg.sbRating / batterLength).toFixed(2),
+            obpRating: Number(teamStatsSeasonAvg.obpRating / batterLength).toFixed(2),
+            slgRating: Number(teamStatsSeasonAvg.slgRating / batterLength).toFixed(2),
+            doubleRating: Number(teamStatsSeasonAvg.doubleRating / batterLength).toFixed(2),
+            walkRating: Number(teamStatsSeasonAvg.walkRating / batterLength).toFixed(2),
+            opsRating: Number(teamStatsSeasonAvg.opsRating / batterLength).toFixed(2),
+            winRating: Number(teamStatsSeasonAvg.winRating / pitcherLength).toFixed(2),
+            eraRating: Number(teamStatsSeasonAvg.eraRating / pitcherLength).toFixed(2),
+            whipRating: Number(teamStatsSeasonAvg.whipRating / pitcherLength).toFixed(2),
+            ipRating: Number(teamStatsSeasonAvg.ipRating / pitcherLength).toFixed(2),
+            svRating: Number(teamStatsSeasonAvg.svRating / pitcherLength).toFixed(2),
+            kRating: Number(teamStatsSeasonAvg.kRating / pitcherLength).toFixed(2),
+            holdRating: Number(teamStatsSeasonAvg.holdRating / pitcherLength).toFixed(2),
+            saveholdRating: Number(teamStatsSeasonAvg.saveholdRating / pitcherLength).toFixed(2),
+            k9Rating: Number(teamStatsSeasonAvg.k9Rating / pitcherLength).toFixed(2)
         }
 
-
         teamStatsRecentAvg = {
-            ptsRating: Number(teamStatsRecentAvg.ptsRating / teamStatsRecent.length).toFixed(2),
-            threeRating: Number(teamStatsRecentAvg.threeRating / teamStatsRecent.length).toFixed(2),
-            astRating: Number(teamStatsRecentAvg.astRating / teamStatsRecent.length).toFixed(2),
-            rebRating: Number(teamStatsRecentAvg.rebRating / teamStatsRecent.length).toFixed(2),
-            stlRating: Number(teamStatsRecentAvg.stlRating / teamStatsRecent.length).toFixed(2),
-            blkRating: Number(teamStatsRecentAvg.blkRating / teamStatsRecent.length).toFixed(2),
-            fgMixedRating: Number(teamStatsRecentAvg.fgMixedRating / teamStatsRecent.length).toFixed(2),
-            ftMixedRating: Number(teamStatsRecentAvg.ftMixedRating / teamStatsRecent.length).toFixed(2),
-            toRating: Number(teamStatsRecentAvg.ftRating / teamStatsRecent.length).toFixed(2)
+            overallRating: Number(teamStatsRecentAvg.overallRating / batterLength).toFixed(2),
+            runRating: Number(teamStatsRecentAvg.runRating / batterLength).toFixed(2),
+            rbiRating: Number(teamStatsRecentAvg.rbiRating / batterLength).toFixed(2),
+            homeRunRating: Number(teamStatsRecentAvg.homeRunRating / batterLength).toFixed(2),
+            sbRating: Number(teamStatsRecentAvg.sbRating / batterLength).toFixed(2),
+            obpRating: Number(teamStatsRecentAvg.obpRating / batterLength).toFixed(2),
+            slgRating: Number(teamStatsRecentAvg.slgRating / batterLength).toFixed(2),
+            doubleRating: Number(teamStatsRecentAvg.doubleRating / batterLength).toFixed(2),
+            walkRating: Number(teamStatsRecentAvg.walkRating / batterLength).toFixed(2),
+            opsRating: Number(teamStatsRecentAvg.opsRating / batterLength).toFixed(2),
+            winRating: Number(teamStatsRecentAvg.winRating / pitcherLength).toFixed(2),
+            eraRating: Number(teamStatsRecentAvg.eraRating / pitcherLength).toFixed(2),
+            whipRating: Number(teamStatsRecentAvg.whipRating / pitcherLength).toFixed(2),
+            ipRating: Number(teamStatsRecentAvg.ipRating / pitcherLength).toFixed(2),
+            svRating: Number(teamStatsRecentAvg.svRating / pitcherLength).toFixed(2),
+            kRating: Number(teamStatsRecentAvg.kRating / pitcherLength).toFixed(2),
+            holdRating: Number(teamStatsRecentAvg.holdRating / pitcherLength).toFixed(2),
+            saveholdRating: Number(teamStatsRecentAvg.saveholdRating / pitcherLength).toFixed(2),
+            k9Rating: Number(teamStatsRecentAvg.k9Rating / pitcherLength).toFixed(2)
         }
 
         //Put the [] around the arrays so the table below can know its a single row

@@ -62,19 +62,30 @@ export class BuildPlayers extends Component {
         if (!(JSON.parse(localStorage.getItem('playerRankingsLocalRecent')))) allData = false;
         if (!(JSON.parse(localStorage.getItem('playerRankingsRecent')))) allData = false;
         if (!(JSON.parse(localStorage.getItem('teams')))) allData = false;
-        if (!(JSON.parse(localStorage.getItem('playerTargetsBBMRecent')))) allData = false;
-        if (!(JSON.parse(localStorage.getItem('playerTargetsBBMSeason')))) allData = false;
-        if (!(JSON.parse(localStorage.getItem('playerRankingsBBMRecent')))) allData = false;
-        if (!(JSON.parse(localStorage.getItem('playerRankingsBBMSeason')))) allData = false;
+        // if (!(JSON.parse(localStorage.getItem('playerTargetsBBMRecent')))) allData = false;
+        // if (!(JSON.parse(localStorage.getItem('playerTargetsBBMSeason')))) allData = false;
+        // if (!(JSON.parse(localStorage.getItem('playerRankingsBBMRecent')))) allData = false;
+        // if (!(JSON.parse(localStorage.getItem('playerRankingsBBMSeason')))) allData = false;
         if (!(JSON.parse(localStorage.getItem('teamPlayers')))) allData = false;
-
 
         if (leagueId) {
             this.setState({ leagueId: leagueId });
 
             //If it is greater or equal to the day after the last time they got data, expire doesn't exist, or dont have all data, update all
             if ((today >= expireDate) || (expireDate === undefined) || allData === false) {
+
+                var expireDate = new Date();
+                expireDate.setDate(today.getDate()+7);
+
                 //Get all the league info from each api endpoint
+                callApi('/api/rankings/season/')
+                    .then(results => {
+                        var playerData = results;
+                        this.setState({ playerRankingsSeason: playerData });
+                        localStorage.setItem('playerRankingsSeason', JSON.stringify(playerData));
+                    })
+                    .catch(err => console.log(err));
+
                 callApi('/api/targets/recent/' + leagueId)
                     .then(results => {
                         var playerData = results[0].players;
@@ -135,41 +146,41 @@ export class BuildPlayers extends Component {
                     })
                     .catch(err => console.log(err));
 
-                //BBM targets recent
-                callApi('/api/targets/bbm/recent/' + leagueId)
-                    .then(results => {
-                        var playerData = results[0].players;
-                        this.setState({ playerTargetsBBMRecent: playerData });
-                        localStorage.setItem('playerTargetsBBMRecent', JSON.stringify(playerData));
-                    })
-                    .catch(err => console.log(err));
+                // //BBM targets recent
+                // callApi('/api/targets/bbm/recent/' + leagueId)
+                //     .then(results => {
+                //         var playerData = results[0].players;
+                //         this.setState({ playerTargetsBBMRecent: playerData });
+                //         localStorage.setItem('playerTargetsBBMRecent', JSON.stringify(playerData));
+                //     })
+                //     .catch(err => console.log(err));
 
-                //BBM targets season
-                callApi('/api/targets/bbm/season/' + leagueId)
-                    .then(results => {
-                        var playerData = results[0].players;
-                        this.setState({ playerTargetsBBMSeason: playerData });
-                        localStorage.setItem('playerTargetsBBMSeason', JSON.stringify(playerData));
-                    })
-                    .catch(err => console.log(err));
+                // //BBM targets season
+                // callApi('/api/targets/bbm/season/' + leagueId)
+                //     .then(results => {
+                //         var playerData = results[0].players;
+                //         this.setState({ playerTargetsBBMSeason: playerData });
+                //         localStorage.setItem('playerTargetsBBMSeason', JSON.stringify(playerData));
+                //     })
+                //     .catch(err => console.log(err));
 
-                //BBM rankings season
-                callApi('/api/rankings/bbm/season/')
-                    .then(results => {
-                        var playerData = results;
-                        this.setState({ playerRankingsBBMSeason: playerData });
-                        localStorage.setItem('playerRankingsBBMSeason', JSON.stringify(playerData));
-                    })
-                    .catch(err => console.log(err));
+                // //BBM rankings season
+                // callApi('/api/rankings/bbm/season/')
+                //     .then(results => {
+                //         var playerData = results;
+                //         this.setState({ playerRankingsBBMSeason: playerData });
+                //         localStorage.setItem('playerRankingsBBMSeason', JSON.stringify(playerData));
+                //     })
+                //     .catch(err => console.log(err));
 
-                //BBM rankings recent
-                callApi('/api/rankings/bbm/recent/')
-                    .then(results => {
-                        var playerData = results;
-                        this.setState({ playerRankingsBBMRecent: playerData });
-                        localStorage.setItem('playerRankingsBBMRecent', JSON.stringify(playerData));
-                    })
-                    .catch(err => console.log(err));
+                // //BBM rankings recent
+                // callApi('/api/rankings/bbm/recent/')
+                //     .then(results => {
+                //         var playerData = results;
+                //         this.setState({ playerRankingsBBMRecent: playerData });
+                //         localStorage.setItem('playerRankingsBBMRecent', JSON.stringify(playerData));
+                //     })
+                //     .catch(err => console.log(err));
 
                 if (teamId) {
                     //Their team data
@@ -179,8 +190,13 @@ export class BuildPlayers extends Component {
                             //check if the data is there, and if not, add a 1 sec wait then send to the build function
                             if (this.state.playerRankingsSeason.length === 0 || this.state.playerRankingsRecent.length === 0) {
                                 setTimeout(function () {
-                                    localStorage.setItem('teamPlayers', JSON.stringify(playerData));
-                                    this.setState({ teamPlayers: playerData }, this.buildTeam);
+                                    if (this.state.playerRankingsSeason.length === 0 || this.state.playerRankingsRecent.length === 0) {
+                                        setTimeout(function () {
+                                            localStorage.setItem('teamPlayers', JSON.stringify(playerData));
+                                            Cookies.set('dataExpireDate', expireDate)
+                                            this.setState({ teamPlayers: playerData }, this.buildTeam);
+                                        }.bind(this), 1000)
+                                    }
                                 }.bind(this), 1000)
                             } else {
                                 localStorage.setItem('teamPlayers', JSON.stringify(playerData));
@@ -264,6 +280,8 @@ export class BuildPlayers extends Component {
         var playerRankingsRecent = this.state.playerRankingsRecent;
         var playerPickupsSeason = this.state.playerTargetsSeason;
         var playerPickupsRecent = this.state.playerTargetsRecent;
+        var batterLength = 0;
+        var pitcherLength = 0;
 
         //for each player on the team, if string similarity > .7 in the player rankings, then add that player to the array
         for (var i = 0; i < teamPlayers.length; i++) {
@@ -272,31 +290,55 @@ export class BuildPlayers extends Component {
                 if (similarPlayerSeason > 0.7) {
                     //Push the player to the team array
                     teamStatsSeason.push(playerRankingsSeason[j]);
+
+                    if (playerRankingsSeason[j].playerType === "Batter") {
+                        batterLength++;
+                    } else {
+                        pitcherLength++;
+                    }
                     //Start calculating averages by adding them all up
                     var avgRating = (playerRankingsSeason[j].avgRating) ? (playerRankingsSeason[j].avgRating) : 0;
+                    var runRating = (playerRankingsSeason[j].runRating) ? (playerRankingsSeason[j].runRating) : 0;
+                    var rbiRating = (playerRankingsSeason[j].rbiRating) ? (playerRankingsSeason[j].rbiRating) : 0;
+                    var homeRunRating = (playerRankingsSeason[j].homeRunRating) ? (playerRankingsSeason[j].homeRunRating) : 0;
+                    var sbRating = (playerRankingsSeason[j].sbRating) ? (playerRankingsSeason[j].sbRating) : 0;
+                    var obpRating = (playerRankingsSeason[j].obpRating) ? (playerRankingsSeason[j].obpRating) : 0;
+                    var slgRating = (playerRankingsSeason[j].slgRating) ? (playerRankingsSeason[j].slgRating) : 0;
+                    var doubleRating = (playerRankingsSeason[j].doubleRating) ? (playerRankingsSeason[j].doubleRating) : 0;
+                    var walkRating = (playerRankingsSeason[j].walkRating) ? (playerRankingsSeason[j].walkRating) : 0;
+                    var opsRating = (playerRankingsSeason[j].opsRating) ? (playerRankingsSeason[j].opsRating) : 0;
+                    var winRating = (playerRankingsSeason[j].winRating) ? (playerRankingsSeason[j].winRating) : 0;
+                    var eraRating = (playerRankingsSeason[j].eraRating) ? (playerRankingsSeason[j].eraRating) : 0;
+                    var whipRating = (playerRankingsSeason[j].whipRating) ? (playerRankingsSeason[j].whipRating) : 0;
+                    var ipRating = (playerRankingsSeason[j].ipRating) ? (playerRankingsSeason[j].ipRating) : 0;
+                    var svRating = (playerRankingsSeason[j].svRating) ? (playerRankingsSeason[j].svRating) : 0;
+                    var kRating = (playerRankingsSeason[j].kRating) ? (playerRankingsSeason[j].kRating) : 0;
+                    var holdRating = (playerRankingsSeason[j].holdRating) ? (playerRankingsSeason[j].holdRating) : 0;
+                    var saveholdRating = (playerRankingsSeason[j].saveholdRating) ? (playerRankingsSeason[j].saveholdRating) : 0;
+                    var k9Rating = (playerRankingsSeason[j].k9Rating) ? (playerRankingsSeason[j].k9Rating) : 0;
+
                     teamStatsSeasonAvg = {
                         overallRating: (teamStatsSeasonAvg.overallRating) ? (teamStatsSeasonAvg.overallRating + playerRankingsSeason[j].overallRating) : playerRankingsSeason[j].overallRating,
                         avgRating: (teamStatsSeasonAvg.avgRating) ? (teamStatsSeasonAvg.avgRating + avgRating) : avgRating,
-                        runRating: (teamStatsSeasonAvg.runRating) ? (teamStatsSeasonAvg.runRating + playerRankingsSeason[j].runRating) : playerRankingsSeason[j].runRating,
-                        rbiRating: (teamStatsSeasonAvg.rbiRating) ? (teamStatsSeasonAvg.rbiRating + playerRankingsSeason[j].rbiRating) : playerRankingsSeason[j].rbiRating,
-                        homeRunRating: (teamStatsSeasonAvg.homeRunRating) ? (teamStatsSeasonAvg.homeRunRating + playerRankingsSeason[j].homeRunRating) : playerRankingsSeason[j].homeRunRating,
-                        sbRating: (teamStatsSeasonAvg.sbRating) ? (teamStatsSeasonAvg.sbRating + playerRankingsSeason[j].sbRating) : playerRankingsSeason[j].sbRating,
-                        obpRating: (teamStatsSeasonAvg.obpRating) ? (teamStatsSeasonAvg.obpRating + playerRankingsSeason[j].obpRating) : playerRankingsSeason[j].obpRating,
-                        slgRating: (teamStatsSeasonAvg.slgRating) ? (teamStatsSeasonAvg.slgRating + playerRankingsSeason[j].slgRating) : playerRankingsSeason[j].slgRating,
-                        doubleRating: (teamStatsSeasonAvg.doubleRating) ? (teamStatsSeasonAvg.doubleRating + playerRankingsSeason[j].doubleRating) : playerRankingsSeason[j].doubleRating,
-                        walkRating: (teamStatsSeasonAvg.walkRating) ? (teamStatsSeasonAvg.walkRating + playerRankingsSeason[j].walkRating) : playerRankingsSeason[j].walkRating,
-                        opsRating: (teamStatsSeasonAvg.opsRating) ? (teamStatsSeasonAvg.opsRating + playerRankingsSeason[j].opsRating) : playerRankingsSeason[j].opsRating,
-                        winRating: (teamStatsSeasonAvg.winRating) ? (teamStatsSeasonAvg.winRating + playerRankingsSeason[j].winRating) : playerRankingsSeason[j].winRating,
-                        eraRating: (teamStatsSeasonAvg.eraRating) ? (teamStatsSeasonAvg.eraRating + playerRankingsSeason[j].eraRating) : playerRankingsSeason[j].eraRating,
-                        whipRating: (teamStatsSeasonAvg.whipRating) ? (teamStatsSeasonAvg.whipRating + playerRankingsSeason[j].whipRating) : playerRankingsSeason[j].whipRating,
-                        ipRating: (teamStatsSeasonAvg.ipRating) ? (teamStatsSeasonAvg.ipRating + playerRankingsSeason[j].ipRating) : playerRankingsSeason[j].ipRating,
-                        svRating: (teamStatsSeasonAvg.svRating) ? (teamStatsSeasonAvg.svRating + playerRankingsSeason[j].svRating) : playerRankingsSeason[j].svRating,
-                        kRating: (teamStatsSeasonAvg.kRating) ? (teamStatsSeasonAvg.kRating + playerRankingsSeason[j].kRating) : playerRankingsSeason[j].kRating,
-                        holdRating: (teamStatsSeasonAvg.holdRating) ? (teamStatsSeasonAvg.holdRating + playerRankingsSeason[j].holdRating) : playerRankingsSeason[j].holdRating,
-                        saveholdRating: (teamStatsSeasonAvg.saveholdRating) ? (teamStatsSeasonAvg.saveholdRating + playerRankingsSeason[j].saveholdRating) : playerRankingsSeason[j].saveholdRating,
-                        k9Rating: (teamStatsSeasonAvg.k9Rating) ? (teamStatsSeasonAvg.k9Rating + playerRankingsSeason[j].k9Rating) : playerRankingsSeason[j].k9Rating
+                        runRating: (teamStatsSeasonAvg.runRating) ? (teamStatsSeasonAvg.runRating + runRating) : runRating,
+                        rbiRating: (teamStatsSeasonAvg.rbiRating) ? (teamStatsSeasonAvg.rbiRating + rbiRating) : rbiRating,
+                        homeRunRating: (teamStatsSeasonAvg.homeRunRating) ? (teamStatsSeasonAvg.homeRunRating + homeRunRating) : homeRunRating,
+                        sbRating: (teamStatsSeasonAvg.sbRating) ? (teamStatsSeasonAvg.sbRating + sbRating) : sbRating,
+                        obpRating: (teamStatsSeasonAvg.obpRating) ? (teamStatsSeasonAvg.obpRating + obpRating) : obpRating,
+                        slgRating: (teamStatsSeasonAvg.slgRating) ? (teamStatsSeasonAvg.slgRating + slgRating) : slgRating,
+                        doubleRating: (teamStatsSeasonAvg.doubleRating) ? (teamStatsSeasonAvg.doubleRating + doubleRating) : doubleRating,
+                        walkRating: (teamStatsSeasonAvg.walkRating) ? (teamStatsSeasonAvg.walkRating + walkRating) : walkRating,
+                        opsRating: (teamStatsSeasonAvg.opsRating) ? (teamStatsSeasonAvg.opsRating + opsRating) : opsRating,
+                        winRating: (teamStatsSeasonAvg.winRating) ? (teamStatsSeasonAvg.winRating + winRating) : winRating,
+                        eraRating: (teamStatsSeasonAvg.eraRating) ? (teamStatsSeasonAvg.eraRating + eraRating) : eraRating,
+                        whipRating: (teamStatsSeasonAvg.whipRating) ? (teamStatsSeasonAvg.whipRating + whipRating) : whipRating,
+                        ipRating: (teamStatsSeasonAvg.ipRating) ? (teamStatsSeasonAvg.ipRating + ipRating) : ipRating,
+                        svRating: (teamStatsSeasonAvg.svRating) ? (teamStatsSeasonAvg.svRating + svRating) : svRating,
+                        kRating: (teamStatsSeasonAvg.kRating) ? (teamStatsSeasonAvg.kRating + kRating) : kRating,
+                        holdRating: (teamStatsSeasonAvg.holdRating) ? (teamStatsSeasonAvg.holdRating + holdRating) : holdRating,
+                        saveholdRating: (teamStatsSeasonAvg.saveholdRating) ? (teamStatsSeasonAvg.saveholdRating + saveholdRating) : saveholdRating,
+                        k9Rating: (teamStatsSeasonAvg.k9Rating) ? (teamStatsSeasonAvg.k9Rating + k9Rating) : k9Rating
                     }
-                    console.log(teamStatsSeasonAvg.avgRating)
                     break
                 }
             }
@@ -306,27 +348,48 @@ export class BuildPlayers extends Component {
                 var similarPlayerRecent = stringSimilarity.compareTwoStrings(teamPlayers[i].full, playerRankingsRecent[j].playerName);
                 if (similarPlayerRecent > 0.7) {
                     teamStatsRecent.push(playerRankingsRecent[j]);
+
+                    var avgRating = (playerRankingsRecent[j].avgRating) ? (playerRankingsRecent[j].avgRating) : 0;
+                    var runRating = (playerRankingsRecent[j].runRating) ? (playerRankingsRecent[j].runRating) : 0;
+                    var rbiRating = (playerRankingsRecent[j].rbiRating) ? (playerRankingsRecent[j].rbiRating) : 0;
+                    var homeRunRating = (playerRankingsRecent[j].homeRunRating) ? (playerRankingsRecent[j].homeRunRating) : 0;
+                    var sbRating = (playerRankingsRecent[j].sbRating) ? (playerRankingsRecent[j].sbRating) : 0;
+                    var obpRating = (playerRankingsRecent[j].obpRating) ? (playerRankingsRecent[j].obpRating) : 0;
+                    var slgRating = (playerRankingsRecent[j].slgRating) ? (playerRankingsRecent[j].slgRating) : 0;
+                    var doubleRating = (playerRankingsRecent[j].doubleRating) ? (playerRankingsRecent[j].doubleRating) : 0;
+                    var walkRating = (playerRankingsRecent[j].walkRating) ? (playerRankingsRecent[j].walkRating) : 0;
+                    var opsRating = (playerRankingsRecent[j].opsRating) ? (playerRankingsRecent[j].opsRating) : 0;
+                    var winRating = (playerRankingsRecent[j].winRating) ? (playerRankingsRecent[j].winRating) : 0;
+                    var eraRating = (playerRankingsRecent[j].eraRating) ? (playerRankingsRecent[j].eraRating) : 0;
+                    var whipRating = (playerRankingsRecent[j].whipRating) ? (playerRankingsRecent[j].whipRating) : 0;
+                    var ipRating = (playerRankingsRecent[j].ipRating) ? (playerRankingsRecent[j].ipRating) : 0;
+                    var svRating = (playerRankingsRecent[j].svRating) ? (playerRankingsRecent[j].svRating) : 0;
+                    var kRating = (playerRankingsRecent[j].kRating) ? (playerRankingsRecent[j].kRating) : 0;
+                    var holdRating = (playerRankingsRecent[j].holdRating) ? (playerRankingsRecent[j].holdRating) : 0;
+                    var saveholdRating = (playerRankingsRecent[j].saveholdRating) ? (playerRankingsRecent[j].saveholdRating) : 0;
+                    var k9Rating = (playerRankingsRecent[j].k9Rating) ? (playerRankingsRecent[j].k9Rating) : 0;
+
                     teamStatsRecentAvg = {
                         overallRating: (teamStatsRecentAvg.overallRating) ? (teamStatsRecentAvg.overallRating + playerRankingsRecent[j].overallRating) : playerRankingsRecent[j].overallRating,
-                        avgRating: (teamStatsRecentAvg.avgRating) ? (teamStatsRecentAvg.avgRating + playerRankingsSeason[j].avgRating) : playerRankingsSeason[j].avgRating,
-                        runRating: (teamStatsRecentAvg.runRating) ? (teamStatsRecentAvg.runRating + playerRankingsSeason[j].runRating) : playerRankingsSeason[j].runRating,
-                        rbiRating: (teamStatsRecentAvg.rbiRating) ? (teamStatsRecentAvg.rbiRating + playerRankingsSeason[j].rbiRating) : playerRankingsSeason[j].rbiRating,
-                        homeRunRating: (teamStatsRecentAvg.homeRunRating) ? (teamStatsRecentAvg.homeRunRating + playerRankingsSeason[j].homeRunRating) : playerRankingsSeason[j].homeRunRating,
-                        sbRating: (teamStatsRecentAvg.sbRating) ? (teamStatsRecentAvg.sbRating + playerRankingsSeason[j].sbRating) : playerRankingsSeason[j].sbRating,
-                        obpRating: (teamStatsRecentAvg.obpRating) ? (teamStatsRecentAvg.obpRating + playerRankingsSeason[j].obpRating) : playerRankingsSeason[j].obpRating,
-                        slgRating: (teamStatsRecentAvg.slgRating) ? (teamStatsRecentAvg.slgRating + playerRankingsSeason[j].slgRating) : playerRankingsSeason[j].slgRating,
-                        doubleRating: (teamStatsRecentAvg.doubleRating) ? (teamStatsRecentAvg.doubleRating + playerRankingsSeason[j].doubleRating) : playerRankingsSeason[j].doubleRating,
-                        walkRating: (teamStatsRecentAvg.walkRating) ? (teamStatsRecentAvg.walkRating + playerRankingsSeason[j].walkRating) : playerRankingsSeason[j].walkRating,
-                        opsRating: (teamStatsRecentAvg.opsRating) ? (teamStatsRecentAvg.opsRating + playerRankingsSeason[j].opsRating) : playerRankingsSeason[j].opsRating,
-                        winRating: (teamStatsRecentAvg.winRating) ? (teamStatsRecentAvg.winRating + playerRankingsSeason[j].winRating) : playerRankingsSeason[j].winRating,
-                        eraRating: (teamStatsRecentAvg.eraRating) ? (teamStatsRecentAvg.eraRating + playerRankingsSeason[j].eraRating) : playerRankingsSeason[j].eraRating,
-                        whipRating: (teamStatsRecentAvg.whipRating) ? (teamStatsRecentAvg.whipRating + playerRankingsSeason[j].whipRating) : playerRankingsSeason[j].whipRating,
-                        ipRating: (teamStatsRecentAvg.ipRating) ? (teamStatsRecentAvg.ipRating + playerRankingsSeason[j].ipRating) : playerRankingsSeason[j].ipRating,
-                        svRating: (teamStatsRecentAvg.svRating) ? (teamStatsRecentAvg.svRating + playerRankingsSeason[j].svRating) : playerRankingsSeason[j].svRating,
-                        kRating: (teamStatsRecentAvg.kRating) ? (teamStatsRecentAvg.kRating + playerRankingsSeason[j].kRating) : playerRankingsSeason[j].kRating,
-                        holdRating: (teamStatsRecentAvg.holdRating) ? (teamStatsRecentAvg.holdRating + playerRankingsSeason[j].holdRating) : playerRankingsSeason[j].holdRating,
-                        saveholdRating: (teamStatsRecentAvg.saveholdRating) ? (teamStatsRecentAvg.saveholdRating + playerRankingsSeason[j].saveholdRating) : playerRankingsSeason[j].saveholdRating,
-                        k9Rating: (teamStatsRecentAvg.k9Rating) ? (teamStatsRecentAvg.k9Rating + playerRankingsSeason[j].k9Rating) : playerRankingsSeason[j].k9Rating
+                        avgRating: (teamStatsRecentAvg.avgRating) ? (teamStatsRecentAvg.avgRating + avgRating) : avgRating,
+                        runRating: (teamStatsRecentAvg.runRating) ? (teamStatsRecentAvg.runRating + runRating) : runRating,
+                        rbiRating: (teamStatsRecentAvg.rbiRating) ? (teamStatsRecentAvg.rbiRating + rbiRating) : rbiRating,
+                        homeRunRating: (teamStatsRecentAvg.homeRunRating) ? (teamStatsRecentAvg.homeRunRating + homeRunRating) : homeRunRating,
+                        sbRating: (teamStatsRecentAvg.sbRating) ? (teamStatsRecentAvg.sbRating + sbRating) : sbRating,
+                        obpRating: (teamStatsRecentAvg.obpRating) ? (teamStatsRecentAvg.obpRating + obpRating) : obpRating,
+                        slgRating: (teamStatsRecentAvg.slgRating) ? (teamStatsRecentAvg.slgRating + slgRating) : slgRating,
+                        doubleRating: (teamStatsRecentAvg.doubleRating) ? (teamStatsRecentAvg.doubleRating + doubleRating) : doubleRating,
+                        walkRating: (teamStatsRecentAvg.walkRating) ? (teamStatsRecentAvg.walkRating + walkRating) : walkRating,
+                        opsRating: (teamStatsRecentAvg.opsRating) ? (teamStatsRecentAvg.opsRating + opsRating) : opsRating,
+                        winRating: (teamStatsRecentAvg.winRating) ? (teamStatsRecentAvg.winRating + winRating) : winRating,
+                        eraRating: (teamStatsRecentAvg.eraRating) ? (teamStatsRecentAvg.eraRating + eraRating) : eraRating,
+                        whipRating: (teamStatsRecentAvg.whipRating) ? (teamStatsRecentAvg.whipRating + whipRating) : whipRating,
+                        ipRating: (teamStatsRecentAvg.ipRating) ? (teamStatsRecentAvg.ipRating + ipRating) : ipRating,
+                        svRating: (teamStatsRecentAvg.svRating) ? (teamStatsRecentAvg.svRating + svRating) : svRating,
+                        kRating: (teamStatsRecentAvg.kRating) ? (teamStatsRecentAvg.kRating + kRating) : kRating,
+                        holdRating: (teamStatsRecentAvg.holdRating) ? (teamStatsRecentAvg.holdRating + holdRating) : holdRating,
+                        saveholdRating: (teamStatsRecentAvg.saveholdRating) ? (teamStatsRecentAvg.saveholdRating + saveholdRating) : saveholdRating,
+                        k9Rating: (teamStatsRecentAvg.k9Rating) ? (teamStatsRecentAvg.k9Rating + k9Rating) : k9Rating
                     }
                     break
                 }
@@ -367,47 +430,48 @@ export class BuildPlayers extends Component {
         //Divide averages total by the number of players they have to get avg number
         teamStatsSeasonAvg = {
             overallRating: Number(teamStatsSeasonAvg.overallRating / teamStatsSeason.length).toFixed(2),
-            avgRating: Number(teamStatsSeasonAvg.avgRating / teamStatsSeason.length).toFixed(2),
-            runRating: Number(teamStatsSeasonAvg.runRating / teamStatsSeason.length).toFixed(2),
-            rbiRating: Number(teamStatsSeasonAvg.rbiRating / teamStatsSeason.length).toFixed(2),
-            homeRunRating: Number(teamStatsSeasonAvg.homeRunRating / teamStatsSeason.length).toFixed(2),
-            sbRating: Number(teamStatsSeasonAvg.sbRating / teamStatsSeason.length).toFixed(2),
-            obpRating: Number(teamStatsSeasonAvg.obpRating / teamStatsSeason.length).toFixed(2),
-            slgRating: Number(teamStatsSeasonAvg.slgRating / teamStatsSeason.length).toFixed(2),
-            doubleRating: Number(teamStatsSeasonAvg.doubleRating / teamStatsSeason.length).toFixed(2),
-            walkRating: Number(teamStatsSeasonAvg.walkRating / teamStatsSeason.length).toFixed(2),
-            opsRating: Number(teamStatsSeasonAvg.opsRating / teamStatsSeason.length).toFixed(2),
-            winRating: Number(teamStatsSeasonAvg.winRating / teamStatsSeason.length).toFixed(2),
-            eraRating: Number(teamStatsSeasonAvg.eraRating / teamStatsSeason.length).toFixed(2),
-            whipRating: Number(teamStatsSeasonAvg.whipRating / teamStatsSeason.length).toFixed(2),
-            ipRating: Number(teamStatsSeasonAvg.ipRating / teamStatsSeason.length).toFixed(2),
-            svRating: Number(teamStatsSeasonAvg.svRating / teamStatsSeason.length).toFixed(2),
-            kRating: Number(teamStatsSeasonAvg.kRating / teamStatsSeason.length).toFixed(2),
-            holdRating: Number(teamStatsSeasonAvg.holdRating / teamStatsSeason.length).toFixed(2),
-            saveholdRating: Number(teamStatsSeasonAvg.saveholdRating / teamStatsSeason.length).toFixed(2),
-            k9Rating: Number(teamStatsSeasonAvg.k9Rating / teamStatsSeason.length).toFixed(2)
+            avgRating: Number(teamStatsSeasonAvg.avgRating / batterLength).toFixed(2),
+            runRating: Number(teamStatsSeasonAvg.runRating / batterLength).toFixed(2),
+            rbiRating: Number(teamStatsSeasonAvg.rbiRating / batterLength).toFixed(2),
+            homeRunRating: Number(teamStatsSeasonAvg.homeRunRating / batterLength).toFixed(2),
+            sbRating: Number(teamStatsSeasonAvg.sbRating / batterLength).toFixed(2),
+            obpRating: Number(teamStatsSeasonAvg.obpRating / batterLength).toFixed(2),
+            slgRating: Number(teamStatsSeasonAvg.slgRating / batterLength).toFixed(2),
+            doubleRating: Number(teamStatsSeasonAvg.doubleRating / batterLength).toFixed(2),
+            walkRating: Number(teamStatsSeasonAvg.walkRating / batterLength).toFixed(2),
+            opsRating: Number(teamStatsSeasonAvg.opsRating / batterLength).toFixed(2),
+            winRating: Number(teamStatsSeasonAvg.winRating / pitcherLength).toFixed(2),
+            eraRating: Number(teamStatsSeasonAvg.eraRating / pitcherLength).toFixed(2),
+            whipRating: Number(teamStatsSeasonAvg.whipRating / pitcherLength).toFixed(2),
+            ipRating: Number(teamStatsSeasonAvg.ipRating / pitcherLength).toFixed(2),
+            svRating: Number(teamStatsSeasonAvg.svRating / pitcherLength).toFixed(2),
+            kRating: Number(teamStatsSeasonAvg.kRating / pitcherLength).toFixed(2),
+            holdRating: Number(teamStatsSeasonAvg.holdRating / pitcherLength).toFixed(2),
+            saveholdRating: Number(teamStatsSeasonAvg.saveholdRating / pitcherLength).toFixed(2),
+            k9Rating: Number(teamStatsSeasonAvg.k9Rating / pitcherLength).toFixed(2)
         }
 
         teamStatsRecentAvg = {
             overallRating: Number(teamStatsRecentAvg.overallRating / teamStatsRecent.length).toFixed(2),
-            runRating: Number(teamStatsRecentAvg.runRating / teamStatsRecent.length).toFixed(2),
-            rbiRating: Number(teamStatsRecentAvg.rbiRating / teamStatsRecent.length).toFixed(2),
-            homeRunRating: Number(teamStatsRecentAvg.homeRunRating / teamStatsRecent.length).toFixed(2),
-            sbRating: Number(teamStatsRecentAvg.sbRating / teamStatsRecent.length).toFixed(2),
-            obpRating: Number(teamStatsRecentAvg.obpRating / teamStatsRecent.length).toFixed(2),
-            slgRating: Number(teamStatsRecentAvg.slgRating / teamStatsRecent.length).toFixed(2),
-            doubleRating: Number(teamStatsRecentAvg.doubleRating / teamStatsRecent.length).toFixed(2),
-            walkRating: Number(teamStatsRecentAvg.walkRating / teamStatsRecent.length).toFixed(2),
-            opsRating: Number(teamStatsRecentAvg.opsRating / teamStatsRecent.length).toFixed(2),
-            winRating: Number(teamStatsRecentAvg.winRating / teamStatsRecent.length).toFixed(2),
-            eraRating: Number(teamStatsRecentAvg.eraRating / teamStatsRecent.length).toFixed(2),
-            whipRating: Number(teamStatsRecentAvg.whipRating / teamStatsRecent.length).toFixed(2),
-            ipRating: Number(teamStatsRecentAvg.ipRating / teamStatsRecent.length).toFixed(2),
-            svRating: Number(teamStatsRecentAvg.svRating / teamStatsRecent.length).toFixed(2),
-            kRating: Number(teamStatsRecentAvg.kRating / teamStatsRecent.length).toFixed(2),
-            holdRating: Number(teamStatsRecentAvg.holdRating / teamStatsRecent.length).toFixed(2),
-            saveholdRating: Number(teamStatsRecentAvg.saveholdRating / teamStatsRecent.length).toFixed(2),
-            k9Rating: Number(teamStatsRecentAvg.k9Rating / teamStatsRecent.length).toFixed(2)
+            avgRating: Number(teamStatsRecentAvg.avgRating / batterLength).toFixed(2),
+            runRating: Number(teamStatsRecentAvg.runRating / batterLength).toFixed(2),
+            rbiRating: Number(teamStatsRecentAvg.rbiRating / batterLength).toFixed(2),
+            homeRunRating: Number(teamStatsRecentAvg.homeRunRating / batterLength).toFixed(2),
+            sbRating: Number(teamStatsRecentAvg.sbRating / batterLength).toFixed(2),
+            obpRating: Number(teamStatsRecentAvg.obpRating / batterLength).toFixed(2),
+            slgRating: Number(teamStatsRecentAvg.slgRating / batterLength).toFixed(2),
+            doubleRating: Number(teamStatsRecentAvg.doubleRating / batterLength).toFixed(2),
+            walkRating: Number(teamStatsRecentAvg.walkRating / batterLength).toFixed(2),
+            opsRating: Number(teamStatsRecentAvg.opsRating / batterLength).toFixed(2),
+            winRating: Number(teamStatsRecentAvg.winRating / pitcherLength).toFixed(2),
+            eraRating: Number(teamStatsRecentAvg.eraRating / pitcherLength).toFixed(2),
+            whipRating: Number(teamStatsRecentAvg.whipRating / pitcherLength).toFixed(2),
+            ipRating: Number(teamStatsRecentAvg.ipRating / pitcherLength).toFixed(2),
+            svRating: Number(teamStatsRecentAvg.svRating / pitcherLength).toFixed(2),
+            kRating: Number(teamStatsRecentAvg.kRating / pitcherLength).toFixed(2),
+            holdRating: Number(teamStatsRecentAvg.holdRating / pitcherLength).toFixed(2),
+            saveholdRating: Number(teamStatsRecentAvg.saveholdRating / pitcherLength).toFixed(2),
+            k9Rating: Number(teamStatsRecentAvg.k9Rating / pitcherLength).toFixed(2)
         }
 
         //Put the [] around the arrays so the table below can know its a single row
@@ -457,22 +521,22 @@ export class BuildPlayers extends Component {
         const columnNames = [{
             Header: 'Rank',
             accessor: rankHeader,
-            minWidth: 60,
+            minWidth: 50,
             className: "center"
         }, {
             Header: 'Value',
             accessor: ratingHeader,
-            minWidth: 60,
+            minWidth: 50,
             className: "center"
         }, {
             Header: 'Name',
             accessor: nameHeader,
-            width: 200,
+            width: 150,
             className: "center"
         }, {
             Header: 'Avg',
             accessor: avgHeader,
-            minWidth: 60,
+            minWidth: 50,
             className: "center",
             getProps: (state, rowInfo, column) => {
                 return {
@@ -490,7 +554,7 @@ export class BuildPlayers extends Component {
         }, {
             Header: 'R',
             accessor: runHeader,
-            minWidth: 60,
+            minWidth: 50,
             className: "center",
             getProps: (state, rowInfo, column) => {
                 return {
@@ -508,7 +572,7 @@ export class BuildPlayers extends Component {
             Header: 'RBI',
             accessor: rbiHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -525,7 +589,7 @@ export class BuildPlayers extends Component {
             Header: 'HR',
             accessor: hrHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -542,7 +606,7 @@ export class BuildPlayers extends Component {
             Header: 'SB',
             accessor: sbHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -559,7 +623,7 @@ export class BuildPlayers extends Component {
             Header: 'OBP',
             accessor: obpHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -576,7 +640,7 @@ export class BuildPlayers extends Component {
             Header: 'SLG',
             accessor: slgHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -593,7 +657,7 @@ export class BuildPlayers extends Component {
             Header: '2B',
             accessor: doubleHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -610,7 +674,7 @@ export class BuildPlayers extends Component {
             Header: 'BB',
             accessor: walkHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -627,7 +691,7 @@ export class BuildPlayers extends Component {
             Header: 'OPS',
             accessor: opsHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -644,7 +708,7 @@ export class BuildPlayers extends Component {
             Header: 'W',
             accessor: winHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -661,7 +725,7 @@ export class BuildPlayers extends Component {
             Header: 'ERA',
             accessor: eraHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -678,7 +742,7 @@ export class BuildPlayers extends Component {
             Header: 'WHIP',
             accessor: whipHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -695,7 +759,7 @@ export class BuildPlayers extends Component {
             Header: 'IP',
             accessor: ipHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -712,7 +776,7 @@ export class BuildPlayers extends Component {
             Header: 'SV',
             accessor: svHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -729,7 +793,7 @@ export class BuildPlayers extends Component {
             Header: 'K',
             accessor: kHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -746,7 +810,7 @@ export class BuildPlayers extends Component {
             Header: 'HD',
             accessor: holdHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -763,7 +827,7 @@ export class BuildPlayers extends Component {
             Header: 'SVHD',
             accessor: saveholdHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -780,7 +844,7 @@ export class BuildPlayers extends Component {
             Header: 'K/9',
             accessor: k9Header,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -799,7 +863,7 @@ export class BuildPlayers extends Component {
         const columnNamesAvg = [{
             Header: 'Avg',
             accessor: avgHeader,
-            minWidth: 60,
+            minWidth: 50,
             className: "center",
             getProps: (state, rowInfo, column) => {
                 return {
@@ -817,7 +881,7 @@ export class BuildPlayers extends Component {
         }, {
             Header: 'R',
             accessor: runHeader,
-            minWidth: 60,
+            minWidth: 50,
             className: "center",
             getProps: (state, rowInfo, column) => {
                 return {
@@ -835,7 +899,7 @@ export class BuildPlayers extends Component {
             Header: 'RBI',
             accessor: rbiHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -852,7 +916,7 @@ export class BuildPlayers extends Component {
             Header: 'HR',
             accessor: hrHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -869,7 +933,7 @@ export class BuildPlayers extends Component {
             Header: 'SB',
             accessor: sbHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -886,7 +950,7 @@ export class BuildPlayers extends Component {
             Header: 'OBP',
             accessor: obpHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -903,7 +967,7 @@ export class BuildPlayers extends Component {
             Header: 'SLG',
             accessor: slgHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -920,7 +984,7 @@ export class BuildPlayers extends Component {
             Header: '2B',
             accessor: doubleHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -937,7 +1001,7 @@ export class BuildPlayers extends Component {
             Header: 'BB',
             accessor: walkHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -954,7 +1018,7 @@ export class BuildPlayers extends Component {
             Header: 'OPS',
             accessor: opsHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -971,7 +1035,7 @@ export class BuildPlayers extends Component {
             Header: 'W',
             accessor: winHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -988,7 +1052,7 @@ export class BuildPlayers extends Component {
             Header: 'ERA',
             accessor: eraHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -1005,7 +1069,7 @@ export class BuildPlayers extends Component {
             Header: 'WHIP',
             accessor: whipHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -1022,7 +1086,7 @@ export class BuildPlayers extends Component {
             Header: 'IP',
             accessor: ipHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -1039,7 +1103,7 @@ export class BuildPlayers extends Component {
             Header: 'SV',
             accessor: svHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -1056,7 +1120,7 @@ export class BuildPlayers extends Component {
             Header: 'K',
             accessor: kHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -1073,7 +1137,7 @@ export class BuildPlayers extends Component {
             Header: 'HD',
             accessor: holdHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -1090,7 +1154,7 @@ export class BuildPlayers extends Component {
             Header: 'SVHD',
             accessor: saveholdHeader,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -1107,7 +1171,7 @@ export class BuildPlayers extends Component {
             Header: 'K/9',
             accessor: k9Header,
             className: "center",
-            minWidth: 60,
+            minWidth: 50,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -1128,113 +1192,113 @@ export class BuildPlayers extends Component {
             className: "center"
         }, {
             headerClassName: 'hide',
-            minWidth: 60,
+            minWidth: 50,
             className: "center"
         }, {
             headerClassName: 'hide',
-            minWidth: 60,
+            minWidth: 50,
             className: "center"
         }, {
             headerClassName: 'hide',
-            width: 200,
+            width: 150,
             className: "center",
             Cell: row => (
                 <div>Stats per game</div>
             )
         }, {
             headerClassName: 'hide',
-            minWidth: 60,
+            minWidth: 50,
             accessor: 'avg',
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'run',
-            minWidth: 60,
+            minWidth: 50,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'rbi',
-            minWidth: 60,
+            minWidth: 50,
             className: "center"
         }, {
             headerClassName: 'hide',
-            accessor: 'hr',
-            minWidth: 60,
+            accessor: 'homeRun',
+            minWidth: 50,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'sb',
-            minWidth: 60,
+            minWidth: 50,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'obp',
-            minWidth: 60,
+            minWidth: 50,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'slg',
-            minWidth: 60,
+            minWidth: 50,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'double',
-            minWidth: 60,
+            minWidth: 50,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'walk',
-            minWidth: 60,
+            minWidth: 50,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'ops',
-            minWidth: 60,
+            minWidth: 50,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'win',
-            minWidth: 60,
+            minWidth: 50,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'era',
-            minWidth: 60,
+            minWidth: 50,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'whip',
-            minWidth: 60,
+            minWidth: 50,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'ip',
-            minWidth: 60,
+            minWidth: 50,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'sv',
-            minWidth: 60,
+            minWidth: 50,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'k',
-            minWidth: 60,
+            minWidth: 50,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'hold',
-            minWidth: 60,
+            minWidth: 50,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'savehold',
-            minWidth: 60,
+            minWidth: 50,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'k9',
-            minWidth: 60,
+            minWidth: 50,
             className: "center"
         }]
 
@@ -1251,6 +1315,7 @@ export class BuildPlayers extends Component {
 
         //Update the switch stats button text on state change
         var showStatsText;
+
         if (!this.state.showBBMStats) {
             showStatsText = 'Use BasketballMonster Rankings';
         } else {
