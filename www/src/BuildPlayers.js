@@ -6,8 +6,8 @@ import stringSimilarity from 'string-similarity';
 import { CompareTeams } from './CompareTeams';
 import { callApi } from './CallApi';
 import ReactGA from 'react-ga';
-// ReactGA.initialize('UA-135378238-1');
-// ReactGA.pageview("/?logged-in=true");
+ReactGA.initialize('UA-135378238-2');
+ReactGA.pageview("/?logged-in=true");
 
 export class BuildPlayers extends Component {
     constructor(props) {
@@ -38,7 +38,8 @@ export class BuildPlayers extends Component {
             showBBMStats: false,
             showRecentRankings: false,
             statsHeaders: [],
-            updateCompareTable: false
+            updateCompareTable: false,
+            drafted: true
         }
         this.changeStats = this.changeStats.bind(this);
         this.changeRankings = this.changeRankings.bind(this);
@@ -75,7 +76,7 @@ export class BuildPlayers extends Component {
             if ((today >= expireDate) || (expireDate === undefined) || allData === false) {
 
                 var expireDate = new Date();
-                expireDate.setDate(today.getDate()+7);
+                expireDate.setDate(today.getDate() + 7);
 
                 //Get all the league info from each api endpoint
                 callApi('/api/rankings/season/')
@@ -187,23 +188,31 @@ export class BuildPlayers extends Component {
                     callApi('/api/teams/' + leagueId + '/' + teamId)
                         .then(results => {
                             var playerData = results;
-                            //check if the data is there, and if not, add a 1 sec wait then send to the build function
-                            if (this.state.playerRankingsSeason.length === 0 || this.state.playerRankingsRecent.length === 0) {
-                                setTimeout(function () {
-                                    if (this.state.playerRankingsSeason.length === 0 || this.state.playerRankingsRecent.length === 0) {
-                                        setTimeout(function () {
-                                            localStorage.setItem('teamPlayers', JSON.stringify(playerData));
-                                            Cookies.set('dataExpireDate', expireDate)
-                                            this.setState({ teamPlayers: playerData }, this.buildTeam);
-                                        }.bind(this), 1000)
-                                    }
-                                }.bind(this), 1000)
+                            if (playerData.length === 0) {
+                                this.setState({ drafted: false })
                             } else {
-                                localStorage.setItem('teamPlayers', JSON.stringify(playerData));
-                                this.setState({ teamPlayers: playerData }, this.buildTeam);
+                                //check if the data is there, and if not, add a 1 sec wait then send to the build function
+                                if (this.state.playerRankingsSeason.length === 0 || this.state.playerRankingsRecent.length === 0) {
+                                    setTimeout(function () {
+                                        if (this.state.playerRankingsSeason.length === 0 || this.state.playerRankingsRecent.length === 0) {
+                                            setTimeout(function () {
+                                                localStorage.setItem('teamPlayers', JSON.stringify(playerData));
+                                                Cookies.set('dataExpireDate', expireDate)
+                                                this.setState({ teamPlayers: playerData }, this.buildTeam);
+                                            }.bind(this), 1000)
+                                        }
+                                    }.bind(this), 1000)
+                                } else {
+                                    localStorage.setItem('teamPlayers', JSON.stringify(playerData));
+                                    this.setState({ teamPlayers: playerData }, this.buildTeam);
+                                }
                             }
+
                         })
-                        .catch(err => console.log(err));
+                        .catch(err => {
+                            console.log(err)
+                            this.setState({ drafted: false })
+                        });
                 }
             } else {
                 //If it is the same day, then just load all the data from local storage
@@ -1317,9 +1326,9 @@ export class BuildPlayers extends Component {
         var showStatsText;
 
         if (!this.state.showBBMStats) {
-            showStatsText = 'Use BasketballMonster Rankings';
+            showStatsText = 'Use BaseballMonster Rankings';
         } else {
-            showStatsText = 'Use FantasyBasketball.io Rankings';
+            showStatsText = 'Use FantasyBaseball.io Rankings';
         }
 
         var showRankingsText;
@@ -1333,10 +1342,18 @@ export class BuildPlayers extends Component {
         if (this.state.teamStatsSeasonAvg.length > 0) {
             loading = <span></span>
         } else {
-            loading =
-                <div className="site-loading flex">
-                    <div className="site-loading-text">Loading...</div>
-                </div>;
+            if (this.state.drafted === true) {
+                loading =
+                    <div className="site-loading flex">
+                        <div className="site-loading-text">Loading...</div>
+                    </div>;
+            } else {
+                loading =
+                    <div className="site-loading flex">
+                        <div className="site-loading-text"><a href="/logout">League has not drafted. Please Logout</a>.</div>
+                    </div>;
+            }
+
         }
 
         return (

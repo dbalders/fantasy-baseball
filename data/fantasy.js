@@ -201,8 +201,8 @@ exports.getYahooData = function (req, res, options) {
                                             console.log(err);
                                         else
                                             var teamPlayers = [];
-                                            // console.log(playersData)
-                                        //After having their roster, store each player into a single player array
+
+                                            //After having their roster, store each player into a single player array
                                         async.forEachOf(playersData.roster, function (value, playerKey, callback) {
                                             playerObject = {
                                                 'team_key': teamKey,

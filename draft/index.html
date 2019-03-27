@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.8/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.1.2/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/select/1.1.2/js/dataTables.select.min.js"></script>
+    <script type="text/javascript" src="math.min.js"></script>
+<!--     <script>
+    (function(i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function() {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date();
+        a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-68503719-1', 'auto');
+    ga('send', 'pageview');
+    </script> -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.8/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.1.2/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.1.2/css/select.dataTables.min.css">
+    <style>
+    body {
+        text-align: center;
+    }
+    
+    #add-team {
+        width: 100%;
+        margin-bottom: 25px;
+        position: fixed;
+        top: 0;
+        z-index: 1000;
+        background-color: #848484;
+        font-size: 24px;
+        color: white;
+        padding-top: 15px;
+        height: 45px;
+    }
+    
+    #add-team:hover {
+        background-color: #bcbcbc;
+    }
+    
+    h1,
+    h2 {
+        padding-top: 50px;
+    }
+    
+    .table-container {
+        margin-top: 20px;
+        padding: 0 10px;
+    }
+    
+    .bright-green {
+        background-color: #95ff95 !important;
+    }
+    
+    .medium-green {
+        background-color: #b2ffb2 !important;
+    }
+    
+    .light-green {
+        background-color: #b9ffb9 !important;
+    }
+    
+    .light-red {
+        background-color: #ffdfdf !important;
+    }
+    
+    .medium-red {
+        background-color: #ffb8b8 !important;
+    }
+    
+    .bright-red {
+        background-color: #ff8282 !important;
+    }
+    .strikethrough {
+        text-decoration: line-through;
+        color: gray;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="table-container">
+        <h3 class="header">My Team</h3>
+        <table id="my-team" class="dt-table display responsive" style="width:100%">
+            <thead>
+                <td>Round</td>
+                <td>Rank</td>
+                <td>Value</td>
+                <td>Name</td>
+                <td>Team</td>
+                <td>Pos</td>
+                <td class="colored">Avg</td>
+                <td class="colored">Runs</td>
+                <td class="colored">2B</td>
+                <td class="colored">HR</td>
+                <td class="colored">RBI</td>
+                <td class="colored">SB</td>
+                <td class="colored">OBP</td>
+                <td class="colored">ERA</td>
+                <td class="colored">WHIP</td>
+                <td class="colored">SO</td>
+                <td class="colored">IP</td>
+                <td class="colored">QS</td>
+                <td class="colored">HD/SV</td>
+            </thead>
+        </table>
+    </div>
+    <div id="strengths">
+        <h3 class="header">Team Strengths</h3>
+        <table class="table" border="1" style="border-collapse: collapse;margin:auto;margin-top:25px;">
+            <thead>
+                <tr>
+                    <td>Avg</td>
+                    <td>Runs</td>
+                    <td>2B</td>
+                    <td>HR</td>
+                    <td>RBI</td>
+                    <td>SB</td>
+                    <td>OBP</td>
+                    <td>ERA</td>
+                    <td>WHIP</td>
+                    <td>SO</td>
+                    <td>IP</td>
+                    <td>QS</td>
+                    <td>HD/SV</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="s-6">0</td>
+                    <td id="s-7">0</td>
+                    <td id="s-8">0</td>
+                    <td id="s-9">0</td>
+                    <td id="s-10">0</td>
+                    <td id="s-11">0</td>
+                    <td id="s-12">0</td>
+                    <td id="s-13">0</td>
+                    <td id="s-14">0</td>
+                    <td id="s-15">0</td>
+                    <td id="s-16">0</td>
+                    <td id="s-17">0</td>
+                    <td id="s-18">0</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="table-container">
+        <h3 class="header">Available Players</h3>
+        <table id="mlb" class="dt-table display responsive" style="width:100%">
+            <thead>
+                <td>Round</td>
+                <td>Rank</td>
+                <td>Value</td>
+                <td>Name</td>
+                <td>Team</td>
+                <td>Pos</td>
+                <td>Avg</td>
+                <td>Runs</td>
+                <td>2B</td>
+                <td>HR</td>
+                <td>RBI</td>
+                <td>SB</td>
+                <td>OBP</td>
+                <td>ERA</td>
+                <td>WHIP</td>
+                <td>SO</td>
+                <td>IP</td>
+                <td>QS</td>
+                <td>HD/SV</td>
+            </thead>
+        </table>
+    </div>
+    <script>
+    var mlbTable;
+    var mlbArray;
+
+    $(document).ready(function() {
+        //Begin Datatables Initializing
+        $.fn.dataTable.defaults.column.asSorting = ['desc', 'asc'];
+
+        var mlbTable = $('#mlb').DataTable({
+            paging: false,
+            info: false,
+            dom: 'Bfrtip',
+            select: 'multi',
+            // order: [
+            //     [1, "desc"]
+            // ],
+            aaSorting: [
+                [1, 'asc']
+            ],
+            columnDefs: [{
+                type: "num",
+                targets: [0, 1, 2, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+            }, {
+                // orderSequence: ["asc"],
+                // targets: 6
+            }],
+            scrollY: '75vh',
+            scrollCollapse: true,
+            language: {
+                emptyTable: "Loading...",
+                search: "Filter:"
+            },
+            buttons: [{
+                text: 'Add to Team',
+                action: function(e, dt, node, config) {
+                    addToTeam();
+                }
+            }, {
+                extend: 'selected',
+                text: 'Drafted',
+                action: function(e, dt, node, config) {
+                    addToLocalStorage(mlbTable.row('.selected').data()[1], 'drafted')
+                    $('.selected').addClass('strikethrough');
+                    mlbTable.rows().deselect();
+                }
+            }, {
+                extend: 'selected',
+                text: 'Not Drafted',
+                action: function(e, dt, node, config) {
+                    removeFromLocalStorage(mlbTable.row('.selected').data()[1], 'drafted');
+                    $('.selected').removeClass('strikethrough');
+                    mlbTable.rows().deselect();
+                }
+            }]
+        });
+
+        var myteamTable = $('#my-team').DataTable({
+            paging: false,
+            info: false,
+            dom: 'Bfrtip',
+            select: true,
+            // order: [
+            //     [1, "desc"]
+            // ],
+            aaSorting: [
+                [1, 'asc']
+            ],
+            columnDefs: [{
+                type: "num",
+                targets: [0, 1, 2, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+            }, {
+                // orderSequence: ["asc"],
+                // targets: 6
+            }],
+            language: {
+                search: "Filter:"
+            },
+            buttons: [{
+                text: 'Remove from Team',
+                action: function(e, dt, node, config) {
+                    removeFromTeam();
+                }
+            }]
+
+        });
+
+        var mlbjson;
+
+        //Grab the data.json file
+        $.getJSON('data.json', function(data) {
+            mlbjson = data;
+        }).done(function() {
+            var storageArray = [];
+            var draftedArray = [];
+            if (JSON.parse(localStorage.getItem("rank")) !== null) {
+                storageArray = JSON.parse(localStorage.getItem("rank"));
+            }
+            if (JSON.parse(localStorage.getItem("drafted")) !== null) {
+                draftedArray = JSON.parse(localStorage.getItem("drafted"));
+            }
+            for (var i = 0; i < mlbjson.length; i++) {
+                if (storageArray.indexOf(i + 1) > -1) {
+                    myteamTable.row.add([
+                        mlbjson[i]['Round'],
+                        mlbjson[i]['Rank'],
+                        mlbjson[i]['Value'].toFixed(2),
+                        mlbjson[i]['Name'],
+                        mlbjson[i]['Team'],
+                        mlbjson[i]['Pos'],
+                        mlbjson[i]['BAV'].toFixed(2),
+                        mlbjson[i]['RV'].toFixed(2),
+                        mlbjson[i]['2BV'].toFixed(2),
+                        mlbjson[i]['HRV'].toFixed(2),
+                        mlbjson[i]['RBIV'].toFixed(2),
+                        mlbjson[i]['SBV'].toFixed(2),
+                        mlbjson[i]['OBPV'].toFixed(2),
+                        mlbjson[i]['ERAV'].toFixed(2),
+                        mlbjson[i]['WHIPV'].toFixed(2),
+                        mlbjson[i]['SOV'].toFixed(2),
+                        mlbjson[i]['IPV'].toFixed(2),
+                        mlbjson[i]['QSV'].toFixed(2),
+                        mlbjson[i]['SnHV'].toFixed(2)
+                    ]).draw();
+
+                    $('#s-6').text((Number($('#s-6').text()) + Number(mlbjson[i]['BAV'].toFixed(2))));
+                    $('#s-7').text((Number($('#s-7').text()) + Number(mlbjson[i]['RV'].toFixed(2))));
+                    $('#s-8').text((Number($('#s-8').text()) + Number(mlbjson[i]['2BV'].toFixed(2))));
+                    $('#s-9').text((Number($('#s-9').text()) + Number(mlbjson[i]['HRV'].toFixed(2))));
+                    $('#s-10').text((Number($('#s-10').text()) + Number(mlbjson[i]['RBIV'].toFixed(2))));
+                    $('#s-11').text((Number($('#s-11').text()) + Number(mlbjson[i]['SBV'].toFixed(2))));
+                    $('#s-12').text((Number($('#s-12').text()) + Number(mlbjson[i]['OBPV'].toFixed(2))));
+                    $('#s-13').text((Number($('#s-13').text()) + Number(mlbjson[i]['ERAV'].toFixed(2))));
+                    $('#s-14').text((Number($('#s-14').text()) + Number(mlbjson[i]['WHIPV'].toFixed(2))));
+                    $('#s-15').text((Number($('#s-15').text()) + Number(mlbjson[i]['SOV'].toFixed(2))));
+                    $('#s-16').text((Number($('#s-16').text()) + Number(mlbjson[i]['IPV'].toFixed(2))));
+                    $('#s-17').text((Number($('#s-17').text()) + Number(mlbjson[i]['QSV'].toFixed(2))));
+                    $('#s-18').text((Number($('#s-18').text()) + Number(mlbjson[i]['SnHV'].toFixed(2))));
+                } else {
+                    mlbTable.row.add([
+                        mlbjson[i]['Round'],
+                        mlbjson[i]['Rank'],
+                        mlbjson[i]['Value'].toFixed(2),
+                        mlbjson[i]['Name'],
+                        mlbjson[i]['Team'],
+                        mlbjson[i]['Pos'],
+                        mlbjson[i]['BAV'].toFixed(2),
+                        mlbjson[i]['RV'].toFixed(2),
+                        mlbjson[i]['2BV'].toFixed(2),
+                        mlbjson[i]['HRV'].toFixed(2),
+                        mlbjson[i]['RBIV'].toFixed(2),
+                        mlbjson[i]['SBV'].toFixed(2),
+                        mlbjson[i]['OBPV'].toFixed(2),
+                        mlbjson[i]['ERAV'].toFixed(2),
+                        mlbjson[i]['WHIPV'].toFixed(2),
+                        mlbjson[i]['SOV'].toFixed(2),
+                        mlbjson[i]['IPV'].toFixed(2),
+                        mlbjson[i]['QSV'].toFixed(2),
+                        mlbjson[i]['SnHV'].toFixed(2)
+                    ]).draw();
+                }
+
+            }
+            mlbTable.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
+                var data = this.data();
+                if (draftedArray.indexOf(data[1]) > 0) {
+                    draftedRow = mlbTable.row(rowIdx).node();
+                    $(draftedRow).addClass('strikethrough');
+                }
+            });
+            mlbTable.draw()
+            // for ()
+        }).done(function() {
+            $('#s-6').text((Number($('#s-6').text()).toFixed(2)));
+            $('#s-7').text((Number($('#s-7').text()).toFixed(2)));
+            $('#s-8').text((Number($('#s-8').text()).toFixed(2)));
+            $('#s-9').text((Number($('#s-9').text()).toFixed(2)));
+            $('#s-10').text((Number($('#s-10').text()).toFixed(2)));
+            $('#s-11').text((Number($('#s-11').text()).toFixed(2)));
+            $('#s-12').text((Number($('#s-12').text()).toFixed(2)));
+            $('#s-13').text((Number($('#s-13').text()).toFixed(2)));
+            $('#s-14').text((Number($('#s-14').text()).toFixed(2)));
+            $('#s-15').text((Number($('#s-15').text()).toFixed(2)));
+            $('#s-16').text((Number($('#s-16').text()).toFixed(2)));
+            $('#s-17').text((Number($('#s-17').text()).toFixed(2)));
+            $('#s-18').text((Number($('#s-18').text()).toFixed(2)));
+
+            colorStrengthsTable();
+            colorTableCells(myteamTable);
+            colorTableCells(mlbTable);
+        });
+    });
+
+    function addToTeam() {
+        var mlbTable = $('#mlb').DataTable();
+        var myteamTable = $('#my-team').DataTable();
+
+        myteamTable.row.add(mlbTable.row('.selected').data()).draw();
+        colorTableCells(myteamTable);
+
+        $('#s-6').text((Number($('#s-6').text()) + Number(mlbTable.row('.selected').data()[6])).toFixed(2));
+        $('#s-7').text((Number($('#s-7').text()) + Number(mlbTable.row('.selected').data()[7])).toFixed(2));
+        $('#s-8').text((Number($('#s-8').text()) + Number(mlbTable.row('.selected').data()[8])).toFixed(2));
+        $('#s-9').text((Number($('#s-9').text()) + Number(mlbTable.row('.selected').data()[9])).toFixed(2));
+        $('#s-10').text((Number($('#s-10').text()) + Number(mlbTable.row('.selected').data()[10])).toFixed(2));
+        $('#s-11').text((Number($('#s-11').text()) + Number(mlbTable.row('.selected').data()[11])).toFixed(2));
+        $('#s-12').text((Number($('#s-12').text()) + Number(mlbTable.row('.selected').data()[12])).toFixed(2));
+        $('#s-13').text((Number($('#s-13').text()) + Number(mlbTable.row('.selected').data()[13])).toFixed(2));
+        $('#s-14').text((Number($('#s-14').text()) + Number(mlbTable.row('.selected').data()[14])).toFixed(2));
+        $('#s-15').text((Number($('#s-15').text()) + Number(mlbTable.row('.selected').data()[15])).toFixed(2));
+        $('#s-16').text((Number($('#s-16').text()) + Number(mlbTable.row('.selected').data()[16])).toFixed(2));
+        $('#s-17').text((Number($('#s-17').text()) + Number(mlbTable.row('.selected').data()[17])).toFixed(2));
+        $('#s-18').text((Number($('#s-18').text()) + Number(mlbTable.row('.selected').data()[18])).toFixed(2));
+
+        addToLocalStorage(mlbTable.row('.selected').data()[1], 'rank');
+
+        colorStrengthsTable();
+
+        mlbTable.row('.selected').remove().draw(false);
+    }
+
+    function removeFromTeam() {
+        var mlbTable = $('#mlb').DataTable();
+        var myteamTable = $('#my-team').DataTable();
+
+        mlbTable.row.add(myteamTable.row('.selected').data()).draw();
+
+        $('#s-6').text((Number($('#s-6').text()) - Number(myteamTable.row('.selected').data()[6])).toFixed(2));
+        $('#s-7').text((Number($('#s-7').text()) - Number(myteamTable.row('.selected').data()[7])).toFixed(2));
+        $('#s-8').text((Number($('#s-8').text()) - Number(myteamTable.row('.selected').data()[8])).toFixed(2));
+        $('#s-9').text((Number($('#s-9').text()) - Number(myteamTable.row('.selected').data()[9])).toFixed(2));
+        $('#s-10').text((Number($('#s-10').text()) - Number(myteamTable.row('.selected').data()[10])).toFixed(2));
+        $('#s-11').text((Number($('#s-11').text()) - Number(myteamTable.row('.selected').data()[11])).toFixed(2));
+        $('#s-12').text((Number($('#s-12').text()) - Number(myteamTable.row('.selected').data()[12])).toFixed(2));
+        $('#s-13').text((Number($('#s-13').text()) - Number(myteamTable.row('.selected').data()[13])).toFixed(2));
+        $('#s-14').text((Number($('#s-14').text()) - Number(myteamTable.row('.selected').data()[14])).toFixed(2));
+        $('#s-15').text((Number($('#s-15').text()) - Number(myteamTable.row('.selected').data()[15])).toFixed(2));
+        $('#s-16').text((Number($('#s-16').text()) - Number(myteamTable.row('.selected').data()[16])).toFixed(2));
+        $('#s-17').text((Number($('#s-17').text()) - Number(myteamTable.row('.selected').data()[17])).toFixed(2));
+        $('#s-18').text((Number($('#s-18').text()) - Number(myteamTable.row('.selected').data()[18])).toFixed(2));
+
+        removeFromLocalStorage(myteamTable.row('.selected').data()[1], 'rank');
+
+        myteamTable.row('.selected').remove().draw(false);
+
+        // colorTableCells(mlbTable); //just delays too much :/ 
+    }
+
+    function addToLocalStorage(rankNumber, name) {
+        var storageArray = [];
+        if (JSON.parse(localStorage.getItem(name)) !== null) {
+            storageArray = JSON.parse(localStorage.getItem(name));
+        }
+
+        storageArray.push(rankNumber);
+        localStorage.setItem(name, JSON.stringify(storageArray));
+    }
+
+    function removeFromLocalStorage(rankNumber, name) {
+        var storageArray = [];
+        if (JSON.parse(localStorage.getItem(name)) !== null) {
+            storageArray = JSON.parse(localStorage.getItem(name));
+        }
+
+        var itemToRemove = storageArray.indexOf(rankNumber);
+
+        if (itemToRemove > -1) {
+            storageArray.splice(itemToRemove, 1);
+            localStorage.setItem(name, JSON.stringify(storageArray));
+        }
+    }
+
+    function colorTableCells(table) {
+        console.log('here')
+        table.cells().every(function(row, column) {
+            if (Number(column) === 2 || column > 5) {
+                if (this.data() > 2) {
+                    $(this.node()).addClass('bright-green');
+                }
+                if (this.data() > 1 && this.data() < 2) {
+                    $(this.node()).addClass('medium-green');
+                }
+                if (this.data() > 0.5 && this.data() < 1) {
+                    $(this.node()).addClass('light-green');
+                }
+                if (this.data() < 0 && this.data() > -1) {
+                    $(this.node()).addClass('light-red');
+                }
+                if (this.data() < -1 && this.data() > -2) {
+                    $(this.node()).addClass('medium-red');
+                }
+                if (this.data() < -2) {
+                    $(this.node()).addClass('bright-red');
+                }
+            }
+        });
+    }
+
+    function colorStrengthsTable() {
+        $("#s-6").removeClass();
+        $("#s-7").removeClass();
+        $("#s-8").removeClass();
+        $("#s-9").removeClass();
+        $("#s-10").removeClass();
+        $("#s-11").removeClass();
+        $("#s-12").removeClass();
+        $("#s-13").removeClass();
+        $("#s-14").removeClass();
+        $("#s-15").removeClass();
+        $("#s-16").removeClass();
+        $("#s-17").removeClass();
+        $("#s-18").removeClass();
+
+        setClasses($('#s-6'));
+        setClasses($('#s-7'));
+        setClasses($('#s-8'));
+        setClasses($('#s-9'));
+        setClasses($('#s-10'));
+        setClasses($('#s-11'));
+        setClasses($('#s-12'));
+        setClasses($('#s-13'));
+        setClasses($('#s-14'));
+        setClasses($('#s-15'));
+        setClasses($('#s-16'));
+        setClasses($('#s-17'));
+        setClasses($('#s-18'));
+    }
+
+    function setClasses(cell) {
+        if (cell.text() > 2) {
+            cell.addClass('bright-green');
+        }
+        if (cell.text() > 1 && cell.text() < 2) {
+            cell.addClass('medium-green');
+        }
+        if (cell.text() > 0.5 && cell.text() < 1) {
+            cell.addClass('light-green');
+        }
+        if (cell.text() < 0 && cell.text() > -1) {
+            cell.addClass('light-red');
+        }
+        if (cell.text() < -1 && cell.text() > -2) {
+            cell.addClass('medium-red');
+        }
+        if (cell.text() < -2) {
+            cell.addClass('bright-red');
+        }
+    }
+    </script>
+</body>
+
+</html>
