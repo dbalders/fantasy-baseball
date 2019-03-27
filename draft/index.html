@@ -281,6 +281,7 @@
                 draftedArray = JSON.parse(localStorage.getItem("drafted"));
             }
             for (var i = 0; i < mlbjson.length; i++) {
+                console.log('in add rows')
                 if (storageArray.indexOf(i + 1) > -1) {
                     myteamTable.row.add([
                         mlbjson[i]['Round'],
@@ -302,7 +303,7 @@
                         mlbjson[i]['IPV'].toFixed(2),
                         mlbjson[i]['QSV'].toFixed(2),
                         mlbjson[i]['SnHV'].toFixed(2)
-                    ]).draw();
+                    ]);
 
                     $('#s-6').text((Number($('#s-6').text()) + Number(mlbjson[i]['BAV'].toFixed(2))));
                     $('#s-7').text((Number($('#s-7').text()) + Number(mlbjson[i]['RV'].toFixed(2))));
@@ -338,7 +339,7 @@
                         mlbjson[i]['IPV'].toFixed(2),
                         mlbjson[i]['QSV'].toFixed(2),
                         mlbjson[i]['SnHV'].toFixed(2)
-                    ]).draw();
+                    ]);
                 }
 
             }
@@ -452,8 +453,8 @@
     }
 
     function colorTableCells(table) {
-        console.log('here')
         table.cells().every(function(row, column) {
+            console.log('in color')
             if (Number(column) === 2 || column > 5) {
                 if (this.data() > 2) {
                     $(this.node()).addClass('bright-green');
