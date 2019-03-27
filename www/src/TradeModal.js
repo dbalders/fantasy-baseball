@@ -33,8 +33,8 @@ export class TradeModal extends Component {
                             <div className="modal-info-header">Premium Access Required</div>
                             <div className="modal-info-desc">
                                 <div className="modal-info-text">
-                                    Gain access to the trade analysis and many more feautres that will be built out before the start of the 2020 season
-                                    (Draft tools, pickup suggestions based on matchups, suggestions based on games left in the week, suggestions based on team comps, and more).
+                                    Gain access to the trade analysis and any future features that will be built this season.
+                                    (Draft tools, pickup suggestions based on matchups, suggestions based on team comps, show/hide categories and more).
                                 </div>
                                 <div className="modal-info-text">
                                     Also, get in early and help drive which new features are added to help you win. Only $5.
