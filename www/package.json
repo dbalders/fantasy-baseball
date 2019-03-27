@@ -2,7 +2,7 @@
   "name": "www",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:3000/",
+  "proxy": "http://localhost:3030/",
   "homepage": "http://myapp.com",
   "dependencies": {
     "axios": "^0.18.0",

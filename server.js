@@ -17,7 +17,7 @@ var redirectUri = process.env.APP_REDIRECT_URI || require('./conf.js').APP_CLIEN
 var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || 3030);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false })); //should this be true?
 app.use(function(req, res, next) {

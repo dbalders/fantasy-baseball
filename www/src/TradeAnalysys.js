@@ -6,9 +6,9 @@ import Select from 'react-select';
 import stringSimilarity from 'string-similarity';
 import { callApi } from './CallApi';
 import { TradeModal } from './TradeModal'
-// import ReactGA from 'react-ga';
-// ReactGA.initialize('UA-135378238-1');
-// ReactGA.pageview("/trade");
+import ReactGA from 'react-ga';
+ReactGA.initialize('UA-135378238-2');
+ReactGA.pageview("/trade");
 
 export class TradeAnalysis extends Component {
     constructor(props) {
@@ -1935,9 +1935,9 @@ export class TradeAnalysis extends Component {
         var showStatsText;
         var showRecentText;
         if (!this.state.showBBMStats) {
-            showStatsText = 'Use BasketballMonster Rankings';
+            showStatsText = 'Use BaseballMonster Rankings';
         } else {
-            showStatsText = 'Use FantasyBasketball.io Rankings';
+            showStatsText = 'Use FantasyBaseball.io Rankings';
         }
 
         var teamTradeStatsSeason;

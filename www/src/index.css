@@ -62,9 +62,13 @@ code {
     font-size: 3rem;
 }
 
+.site-loading-text a {
+    color: white;
+}
+
 .landing-top-background {
     width: 100%;
-    background-image: url("/images/basketballcourt.jpg");
+    background-image: url("/images/baseballfield.jpg");
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center 70%;
@@ -238,7 +242,7 @@ code {
 
 @media screen and (max-width: 2000px) {
     .landing-top-background {
-        background-image: url("/images/basketballcourt_medium.jpg");
+        background-image: url("/images/baseballfield_medium.jpg");
     }
 }
 
@@ -268,7 +272,7 @@ code {
     }
 
     .landing-top-background {
-        background-image: url("/images/basketballcourt_small.jpg");
+        background-image: url("/images/baseballfield_small.jpg");
     }
 }
 

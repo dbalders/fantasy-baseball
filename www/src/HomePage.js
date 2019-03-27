@@ -4,8 +4,8 @@ import Select from 'react-select';
 import { EspnInput } from './EspnInput';
 import { EspnModal } from './EspnModal';
 import ReactGA from 'react-ga';
-// ReactGA.initialize('UA-135378238-1');
-// ReactGA.pageview("/");
+ReactGA.initialize('UA-135378238-2');
+ReactGA.pageview("/");
 
 export class HomePage extends Component {
     constructor(props) {
@@ -73,7 +73,7 @@ export class HomePage extends Component {
             <div className="landing-container flex-vertical flex-one">
                 <div className="landing-top-background">
                     <div className="landing-top-container flex-vertical">
-                        <div className="landing-site">FantasyBasketball.io</div>
+                        <div className="landing-site">FantasyBaseball.io</div>
                         <div className="landing-site-title">Insights into your fantasy league</div>
                         <div className="landing-site-desc">Get analytical data on your team, compare it to the rest of the league, see who to pick up, analyse trades, and more.</div>
                         <div className="landing-laptop-img">
@@ -166,7 +166,7 @@ export class HomePage extends Component {
                 <div className="landing-features-container flex flex-one">
                     <div className="landing-features flex-vertical">
                         <div className="landing-features-title">More to come...</div>
-                        <div className="landing-features-desc">Many more features planned for the start of next season. Matchup based suggestions, games left in the week, drop suggestions, drafting tools, and more...</div>
+                        <div className="landing-features-desc">Many more features planned for the start of next season. Matchup based suggestions, show/hide categories, drop suggestions, drafting tools, probable pitchers, and more...</div>
                     </div>
                     <div className="landing-features flex-vertical">
                         <div className="landing-features-img">

@@ -28,7 +28,7 @@ class App extends Component {
         var teamId = Cookies.get('teamId');
 
         if (teamId !== undefined) {
-            this.setState({ navText: 'Refresh Yahoo Data' });
+            this.setState({ navText: 'Reload Yahoo Data' });
             this.setState({ isLoggedIn: true });
         } else {
             this.setState({ navText: 'Sign in with Yahoo' });
@@ -77,7 +77,7 @@ class App extends Component {
 
         navBar = <div className={`navbar flex ${this.state.isLoggedIn ? '' : 'hide'}`}>
             <div className="nav-title">
-                <Link to="/">FantasyBasketball.io</Link>
+                <Link to="/">FantasyBaseball.io</Link>
             </div>
             <div className="nav-sign-in flex">
                 <div className={`nav-refresh ${this.state.isLoggedIn ? '' : 'hide'}`}>

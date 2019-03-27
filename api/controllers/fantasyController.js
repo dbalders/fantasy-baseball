@@ -151,11 +151,11 @@ exports.erase_current_data = function (req, res) {
     //     res.json({ message: 'All players successfully deleted' });
     // });
 
-    // Payment.remove({}, function (err, task) {
-    //     if (err)
-    //         res.send(err);
-    //     res.json({ message: 'All players successfully deleted' });
-    // });
+    Payment.remove({}, function (err, task) {
+        if (err)
+            res.send(err);
+        res.json({ message: 'All players successfully deleted' });
+    });
 };
 
 exports.get_rankings = function (req, res) {
