@@ -61,9 +61,9 @@ export class StripeBtn extends Component {
         var returnHTML = <StripeCheckout
             label="Get Premium" //Component button text
             name="FantasyBaseball.io" //Modal Header
-            description="Access for 2019 and 2020 seasons."
+            description="Access for the 2019 MLB season."
             panelLabel="Go Premium" //Submit button in modal
-            amount={500} //Amount in cents $9.99
+            amount={500} //Amount in cents $5.00
             token={onToken}
             stripeKey={publishableKey}
             billingAddress={false}
