@@ -281,7 +281,6 @@
                 draftedArray = JSON.parse(localStorage.getItem("drafted"));
             }
             for (var i = 0; i < mlbjson.length; i++) {
-                console.log('in add rows')
                 if (storageArray.indexOf(i + 1) > -1) {
                     myteamTable.row.add([
                         mlbjson[i]['Round'],
@@ -454,7 +453,6 @@
 
     function colorTableCells(table) {
         table.cells().every(function(row, column) {
-            console.log('in color')
             if (Number(column) === 2 || column > 5) {
                 if (this.data() > 2) {
                     $(this.node()).addClass('bright-green');
