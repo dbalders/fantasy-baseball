@@ -6,47 +6,37 @@ from datetime import datetime, timedelta, date
 import json
 
 currentDate = datetime.now()
-print(currentDate)
 currentMonth = f"{currentDate.month:02d}"
 if int(currentMonth) > 3:
     currentYear = currentDate.year
     currentDay = date.today()
     recentDay = currentDay - timedelta(days=14)
-    print(currentDay)
-    print(recentDay)
+    currentDay = str(currentDay)
+    recentDay = str(recentDay)
 else:
     currentYear = currentDate.year -1
     currentDay = None
     recentDay = None
 
 pitchingData = pitching_stats(currentYear)
-# battingData = batting_stats(currentYear)
+battingData = batting_stats(currentYear)
 
-# if currentDay is not None:
-    # recentPitchingData = pitching_stats_range(recentDay, currentDay)
-    # recentBattingData = batting_stats_range(recentDay, currentDay)
+if currentDay is not None:
+    recentPitchingData = pitching_stats_range(recentDay, currentDay)
+    recentBattingData = batting_stats_range(recentDay, currentDay)
 
-    # recentPitchingDataFile = open("./public/json/pitcherRankingsRecent.json", "w")
-    # recentPitchingDataFile.write(json.dumps(json.loads(recentPitchingData.reset_index().to_json(orient='index')), indent=2))
-    # recentPitchingDataFile.close()
+    recentPitchingDataFile = open("../public/json/pitcherRankingsRecent.json", "w")
+    recentPitchingDataFile.write(json.dumps(json.loads(recentPitchingData.reset_index().to_json(orient='index')), indent=2))
+    recentPitchingDataFile.close()
 
-    # recentBattingDataFile = open("./public/json/batterRankingsRecent.json", "w")
-    # recentBattingDataFile.write(json.dumps(json.loads(recentBattingData.reset_index().to_json(orient='index')), indent=2))
-    # recentBattingDataFile.close()
-# else:
-    # recentPitchingDataFile = open("./public/json/pitcherRankingsRecent.json", "w")
-    # recentPitchingDataFile.write('{}')
-    # recentPitchingDataFile.close()
+    recentBattingDataFile = open("../public/json/batterRankingsRecent.json", "w")
+    recentBattingDataFile.write(json.dumps(json.loads(recentBattingData.reset_index().to_json(orient='index')), indent=2))
+    recentBattingDataFile.close()
+else:
+    recentPitchingDataFile = open("../public/json/pitcherRankingsRecent.json", "w")
+    recentPitchingDataFile.write('{}')
+    recentPitchingDataFile.close()
 
-    # recentBattingDataFile = open("./public/json/batterRankingsRecent.json", "w")
-    # recentBattingDataFile.write('{}')
-    # recentBattingDataFile.close()
-
-
-pitchingDataFile = open("./public/json/pitcherRankingsSeason.json", "w")
-pitchingDataFile.write(json.dumps(json.loads(pitchingData.reset_index().to_json(orient='index')), indent=2))
-pitchingDataFile.close()
-
-# battingDataFile = open("./public/json/batterRankingsSeason.json", "w")
-# battingDataFile.write(json.dumps(json.loads(battingData.reset_index().to_json(orient='index')), indent=2))
-# battingDataFile.close()
+    recentBattingDataFile = open("../public/json/batterRankingsRecent.json", "w")
+    recentBattingDataFile.write('{}')
+    recentBattingDataFile.close()

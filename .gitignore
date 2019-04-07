@@ -80,3 +80,7 @@ conf.js
 package-lock.json
 *.lock
 /www/build
+public/json/batterRankingsRecent.json
+public/json/batterRankingsSeason.json
+public/json/pitcherRankingsRecent.json
+public/json/pitcherRankingsSeason.json
