@@ -56,7 +56,13 @@ exports.getRankings = function (req, res) {
     var slgSeasonAvg;
     var opsSeasonAvg;
 
+    PlayerSeasonData.remove({}, function (err, task) {
+        if (err)
+            res.send(err);
+    });
+
     fs.readFile('./public/json/batterRankingsSeason.json', (err, data) => {
+        
         if (err) throw err;
         let mlbSeasonBattersJSON = JSON.parse(data);
 
@@ -77,11 +83,8 @@ exports.getRankings = function (req, res) {
             mlbSeasonBatters.push(mlbSeasonBattersJSON[i])
         }
 
-        // console.log(mlbSeasonBatters[1])
-
         async.forEachOf(mlbSeasonBatters, function (value, i, callback) {
-            if (mlbSeasonBatters[i].AB > 300) {
-                // console.log(i)
+            if (mlbSeasonBatters[i].AB > 0) {
                 gamesSeasonArray.push(mlbSeasonBatters[i].G);
                 hitSeasonArray.push(mlbSeasonBatters[i].H);
                 doubleSeasonArray.push(mlbSeasonBatters[i]['2B']);
@@ -166,7 +169,7 @@ exports.getRankings = function (req, res) {
                 mlbSeasonBatters.sort((a, b) => Number(b.overallRating) - Number(a.overallRating));
 
                 for (var i = 0; i < mlbSeasonBatters.length; i++) {
-                    if (mlbSeasonBatters[i].AB > 300) {
+                    if (mlbSeasonBatters[i].AB > 0) {
                         PlayerSeasonData.create({
                             playerId: mlbSeasonBatters[i].index,
                             playerName: mlbSeasonBatters[i].Name,
@@ -324,7 +327,7 @@ exports.getRankings = function (req, res) {
         }
 
         async.forEachOf(mlbSeasonPitchers, function (value, i, callback) {
-            if (mlbSeasonPitchers[i].IP > 25) {
+            if (mlbSeasonPitchers[i].IP > 0) {
                 gamesSeasonArray.push(mlbSeasonPitchers[i].G);
                 winSeasonArray.push(mlbSeasonPitchers[i].W);
                 eraSeasonArray.push(mlbSeasonPitchers[i].ERA);
@@ -399,7 +402,7 @@ exports.getRankings = function (req, res) {
                 mlbSeasonPitchers.sort((a, b) => Number(b.overallRating) - Number(a.overallRating));
 
                 for (var i = 0; i < mlbSeasonPitchers.length; i++) {
-                    if (mlbSeasonPitchers[i].IP > 25) {
+                    if (mlbSeasonPitchers[i].IP > 0) {
                         // console.log(mlbSeasonPitchers[i].svRating)
                         PlayerSeasonData.create({
                             playerId: mlbSeasonPitchers[i].index,
@@ -514,15 +517,6 @@ exports.getRankings = function (req, res) {
             });
         });
     })
-
-    PlayerSeasonData.remove({}, function (err, task) {
-        if (err)
-            res.send(err);
-    });
-    PlayerRecentData.remove({}, function (err, task) {
-        if (err)
-            res.send(err);
-    });
 }
 
 exports.getBBMRankings = function () {
