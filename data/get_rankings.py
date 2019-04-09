@@ -32,6 +32,7 @@ if currentDay is not None:
     recentBattingDataFile = open("../public/json/batterRankingsRecent.json", "w")
     recentBattingDataFile.write(json.dumps(json.loads(recentBattingData.reset_index().to_json(orient='index')), indent=2))
     recentBattingDataFile.close()
+
 else:
     recentPitchingDataFile = open("../public/json/pitcherRankingsRecent.json", "w")
     recentPitchingDataFile.write('{}')
@@ -40,3 +41,13 @@ else:
     recentBattingDataFile = open("../public/json/batterRankingsRecent.json", "w")
     recentBattingDataFile.write('{}')
     recentBattingDataFile.close()
+
+pitchingDataFile = open("../public/json/pitcherRankingsSeason.json", "w")
+pitchingDataFile.write(json.dumps(json.loads(pitchingData.reset_index().to_json(orient='index')), indent=2))
+pitchingDataFile.close()
+
+battingDataFile = open("../public/json/batterRankingsSeason.json", "w")
+battingDataFile.write(json.dumps(json.loads(battingData.reset_index().to_json(orient='index')), indent=2))
+battingDataFile.close() 
+
+print("Get Rankings Done " + str(currentDate))
