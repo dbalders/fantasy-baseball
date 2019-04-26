@@ -60,9 +60,13 @@ exports.getRankings = function (req, res) {
         if (err)
             res.send(err);
     });
+    PlayerRecentData.remove({}, function (err, task) {
+        if (err)
+            res.send(err);
+    });
 
     fs.readFile('./public/json/batterRankingsSeason.json', (err, data) => {
-        
+
         if (err) throw err;
         let mlbSeasonBattersJSON = JSON.parse(data);
 
@@ -378,7 +382,7 @@ exports.getRankings = function (req, res) {
                 var saveholdRating = Number((Number(mlbSeasonPitchers[i].SV + mlbSeasonPitchers[i].HLD) - saveholdSeasonAvg) / (saveholdSeasonStDev * 2)).toFixed(2);
                 var k9Rating = Number((mlbSeasonPitchers[i]["K/9"] - k9SeasonAvg) / k9SeasonStDev).toFixed(2);
 
-                var overallRating = ((+winRating + +eraRating + +whipRating + +ipRating + +svRating + +kRating + +holdRating + +saveholdRating + +k9Rating + +svRating) / 9).toFixed(2);                
+                var overallRating = ((+winRating + +eraRating + +whipRating + +ipRating + +svRating + +kRating + +holdRating + +saveholdRating + +k9Rating + +svRating) / 9).toFixed(2);
 
                 mlbSeasonPitchers[i].gamesRating = gamesRating;
                 mlbSeasonPitchers[i].winRating = winRating;
@@ -511,6 +515,393 @@ exports.getRankings = function (req, res) {
         }, function (err, results) {
             //Here put the creation of the standard deviations and stuff and making the rankings prob
             PlayerSeasonData.find({}, function (err, players) {
+                if (err) {
+                    res.send(err);
+                }
+            });
+        });
+    })
+
+    fs.readFile('./public/json/batterRankingsRecent.json', (err, data) => {
+
+        if (err) throw err;
+        let mlbRecentBattersJSON = JSON.parse(data);
+
+        var gamesRecentArray = [];
+        var hitRecentArray = [];
+        var doubleRecentArray = [];
+        var homeRunRecentArray = [];
+        var runRecentArray = [];
+        var rbiRecentArray = [];
+        var walkRecentArray = [];
+        var sbRecentArray = [];
+        var avgRecentArray = [];
+        var obpRecentArray = [];
+        var slgRecentArray = [];
+        var opsRecentArray = [];
+
+        for (var i = 0; i < Object.keys(mlbRecentBattersJSON).length; i++) {
+            mlbRecentBatters.push(mlbRecentBattersJSON[i])
+        }
+
+        async.forEachOf(mlbRecentBatters, function (value, i, callback) {
+            if (mlbRecentBatters[i].AB > 0) {
+                gamesRecentArray.push(mlbRecentBatters[i].G);
+                hitRecentArray.push(mlbRecentBatters[i].H);
+                doubleRecentArray.push(mlbRecentBatters[i]['2B']);
+                homeRunRecentArray.push(mlbRecentBatters[i].HR);
+                runRecentArray.push(mlbRecentBatters[i].R);
+                rbiRecentArray.push(mlbRecentBatters[i].RBI);
+                walkRecentArray.push(mlbRecentBatters[i].BB);
+                sbRecentArray.push(mlbRecentBatters[i].SB);
+                avgRecentArray.push(mlbRecentBatters[i].BA);
+                obpRecentArray.push(mlbRecentBatters[i].OBP);
+                slgRecentArray.push(mlbRecentBatters[i].SLG);
+                opsRecentArray.push(mlbRecentBatters[i].OPS);
+            }
+
+            callback();
+        }, function (err) {
+
+            gamesRecentStDev = stats.stdev(gamesRecentArray).toFixed(2);
+            hitRecentStDev = stats.stdev(hitRecentArray).toFixed(2);
+            doubleRecentStDev = stats.stdev(doubleRecentArray).toFixed(2);
+            homeRunRecentStDev = stats.stdev(homeRunRecentArray).toFixed(2);
+            runRecentStDev = stats.stdev(runRecentArray).toFixed(2);
+            rbiRecentStDev = stats.stdev(rbiRecentArray).toFixed(2);
+            walkRecentStDev = stats.stdev(walkRecentArray).toFixed(2);
+            sbRecentStDev = stats.stdev(sbRecentArray).toFixed(2);
+            avgRecentStDev = stats.stdev(avgRecentArray).toFixed(2);
+            obpRecentStDev = stats.stdev(obpRecentArray).toFixed(2);
+            slgRecentStDev = stats.stdev(slgRecentArray).toFixed(2);
+            opsRecentStDev = (stats.stdev(opsRecentArray) * 5).toFixed(2);
+
+            gamesRecentAvg = stats.mean(gamesRecentArray).toFixed(2);
+            hitRecentAvg = stats.mean(hitRecentArray).toFixed(2);
+
+            doubleRecentAvg = stats.mean(doubleRecentArray).toFixed(2);
+            homeRunRecentAvg = stats.mean(homeRunRecentArray).toFixed(2);
+            runRecentAvg = stats.mean(runRecentArray).toFixed(2);
+            rbiRecentAvg = stats.mean(rbiRecentArray).toFixed(2);
+            walkRecentAvg = stats.mean(walkRecentArray).toFixed(2);
+            sbRecentAvg = stats.mean(sbRecentArray).toFixed(2);
+            avgRecentAvg = stats.mean(avgRecentArray).toFixed(2);
+            obpRecentAvg = stats.mean(obpRecentArray).toFixed(2);
+            slgRecentAvg = stats.mean(slgRecentArray).toFixed(2);
+            opsRecentAvg = stats.mean(opsRecentArray).toFixed(2);
+
+            for (var i = 0; i < mlbRecentBatters.length; i++) {
+                var gamesRating = Number((mlbRecentBatters[i].G - gamesRecentAvg) / gamesRecentStDev).toFixed(2);
+                var hitRating = Number((mlbRecentBatters[i].H - hitRecentAvg) / hitRecentStDev).toFixed(2);
+                var doubleRating = Number((mlbRecentBatters[i]['2B'] - doubleRecentAvg) / doubleRecentStDev).toFixed(2);
+                var homeRunRating = Number((mlbRecentBatters[i].HR - homeRunRecentAvg) / homeRunRecentStDev).toFixed(2);
+                var runRating = Number((mlbRecentBatters[i].R - runRecentAvg) / runRecentStDev).toFixed(2);
+                var rbiRating = Number((mlbRecentBatters[i].RBI - rbiRecentAvg) / rbiRecentStDev).toFixed(2);
+                var walkRating = Number((mlbRecentBatters[i].BB - walkRecentAvg) / walkRecentStDev).toFixed(2);
+                var sbRating = Number((mlbRecentBatters[i].SB - sbRecentAvg) / sbRecentStDev).toFixed(2);
+                var avgRating = Number((mlbRecentBatters[i].BA - avgRecentAvg) / avgRecentStDev).toFixed(2);
+                var obpRating = Number((mlbRecentBatters[i].OBP - obpRecentAvg) / obpRecentStDev).toFixed(2);
+                var slgRating = Number((mlbRecentBatters[i].SLG - slgRecentAvg) / slgRecentStDev).toFixed(2);
+                var opsRating = Number((mlbRecentBatters[i].OPS - opsRecentAvg) / opsRecentStDev).toFixed(2);
+
+                var overallRating = ((+hitRating + +doubleRating + +homeRunRating + +runRating + +rbiRating + +sbRating + +avgRating + +obpRating + +slgRating + +opsRating) / 12).toFixed(2);
+
+                mlbRecentBatters[i].gamesRating = gamesRating;
+                mlbRecentBatters[i].hitRating = hitRating;
+                mlbRecentBatters[i].doubleRating = doubleRating;
+                mlbRecentBatters[i].homeRunRating = homeRunRating;
+                mlbRecentBatters[i].runRating = runRating;
+                mlbRecentBatters[i].rbiRating = rbiRating;
+                mlbRecentBatters[i].walkRating = walkRating;
+                mlbRecentBatters[i].sbRating = sbRating;
+                mlbRecentBatters[i].avgRating = avgRating;
+                mlbRecentBatters[i].obpRating = obpRating;
+                mlbRecentBatters[i].slgRating = slgRating;
+                mlbRecentBatters[i].opsRating = opsRating;
+                mlbRecentBatters[i].overallRating = overallRating;
+            }
+        })
+    }).then(function (data) {
+
+        playerRank = 1;
+
+        mlbRecentBatters.sort((a, b) => Number(b.overallRating) - Number(a.overallRating));
+
+        for (var i = 0; i < mlbRecentBatters.length; i++) {
+            if (mlbRecentBatters[i].AB > 0) {
+                PlayerRecentData.create({
+                    playerId: mlbRecentBatters[i].index,
+                    playerName: mlbRecentBatters[i].Name,
+                    playerType: "Batter",
+                    team: mlbRecentBatters[i].Team,
+                    games: mlbRecentBatters[i].G,
+                    hit: mlbRecentBatters[i].H,
+                    double: mlbRecentBatters[i]['2B'],
+                    homeRun: mlbRecentBatters[i].HR,
+                    run: mlbRecentBatters[i].R,
+                    rbi: mlbRecentBatters[i].RBI,
+                    walk: mlbRecentBatters[i].BB,
+                    sb: mlbRecentBatters[i].SB,
+                    avg: mlbRecentBatters[i].AVG,
+                    obp: mlbRecentBatters[i].OBP,
+                    slg: mlbRecentBatters[i].SLG,
+                    ops: mlbRecentBatters[i].OPS,
+                    gamesRating: mlbRecentBatters[i].gamesRating,
+                    hitRating: mlbRecentBatters[i].hitRating,
+                    doubleRating: mlbRecentBatters[i].doubleRating,
+                    homeRunRating: mlbRecentBatters[i].homeRunRating,
+                    runRating: mlbRecentBatters[i].runRating,
+                    rbiRating: mlbRecentBatters[i].rbiRating,
+                    walkRating: mlbRecentBatters[i].walkRating,
+                    sbRating: mlbRecentBatters[i].sbRating,
+                    avgRating: mlbRecentBatters[i].avgRating,
+                    obpRating: mlbRecentBatters[i].obpRating,
+                    slgRating: mlbRecentBatters[i].slgRating,
+                    opsRating: mlbRecentBatters[i].opsRating,
+
+                    win: 0,
+                    era: 0,
+                    whip: 0,
+                    ip: 0,
+                    sv: 0,
+                    k: 0,
+                    hold: 0,
+                    savehold: 0,
+                    k9: 0,
+                    gamesRating: 0,
+                    winRating: 0,
+                    eraRating: 0,
+                    whipRating: 0,
+                    ipRating: 0,
+                    svRating: 0,
+                    kRating: 0,
+                    holdRating: 0,
+                    saveholdRating: 0,
+                    k9Rating: 0,
+
+                    overallRating: mlbRecentBatters[i].overallRating,
+                    overallRank: playerRank
+                });
+                playerRank++
+            }
+        }
+    }, function (err, results) {
+        //Here put the creation of the standard deviations and stuff and making the rankings prob
+        PlayerRecentData.find({}, function (err, players) {
+            if (err) {
+                res.send(err);
+            }
+        });
+    });
+
+    fs.readFile('./public/json/pitcherRankingsRecent.json', (err, data) => {
+        console.log('in pitcher')
+        if (err) throw err;
+        let mlbRecentPitchersJSON = JSON.parse(data);
+        var mlbRecentPitchers = [];
+        
+        var gamesRecentArray = [];
+        var winRecentArray = [];
+        var eraRecentArray = [];
+        var whipRunRecentArray = [];
+        var ipRecentArray = [];
+        var saveRecentArray = [];
+        var kRecentArray = [];
+        // var qsRecentArray = [];
+        var holdRecentArray = [];
+        var saveholdRecentArray = [];
+        var k9RecentArray = [];
+
+        var gamesRecentStDev;
+        var winRecentStDev;
+        var eraRecentStDev;
+        var whipRecentStDev;
+        var ipRecentStDev;
+        var saveRecentStDev;
+        var kRecentStDev;
+        var holdRecentStDev;
+        var saveholdRecentStDev;
+        var k9RecentStDev;
+
+        var gamesRecentAvg;
+        var winRecentAvg;
+        var eraRecentAvg;
+        var whipRecentAvg;
+        var ipRecentAvg;
+        var saveRecentAvg;
+        var kRecentAvg;
+        var holdRecentAvg;
+        var saveholdRecentAvg;
+        var k9RecentAvg;
+
+        console.log(Object.keys(mlbRecentPitchersJSON).length)
+
+        for (var i = 0; i < Object.keys(mlbRecentPitchersJSON).length; i++) {
+            console.log(i)
+            mlbRecentPitchers.push(mlbRecentPitchersJSON[i])
+        }
+
+        console.log(mlbRecentPitchers.length)
+
+        async.forEachOf(mlbRecentPitchers, function (value, i, callback) {
+            if (mlbRecentPitchers[i].IP > 0) {
+                gamesRecentArray.push(mlbRecentPitchers[i].G);
+                winRecentArray.push(mlbRecentPitchers[i].W);
+                eraRecentArray.push(mlbRecentPitchers[i].ERA);
+                whipRunRecentArray.push(mlbRecentPitchers[i].WHIP);
+                ipRecentArray.push(mlbRecentPitchers[i].IP);
+                saveRecentArray.push(mlbRecentPitchers[i].SV);
+                kRecentArray.push(mlbRecentPitchers[i].SO);
+                // qsRecentArray.push(mlbRecentBatters[i].QS);
+                holdRecentArray.push(mlbRecentPitchers[i].HLD);
+                saveholdRecentArray.push(Number(mlbRecentPitchers[i].SV + mlbRecentPitchers[i].HLD));
+                k9RecentArray.push(mlbRecentPitchers[i]["K/9"]);
+            }
+
+            console.log('here first')
+
+            callback();
+        }, function (err) {
+            console.log('here')
+
+            gamesRecentStDev = stats.stdev(gamesRecentArray).toFixed(2);
+            winRecentStDev = stats.stdev(winRecentArray).toFixed(2);
+            eraRecentStDev = stats.stdev(eraRecentArray).toFixed(2);
+            whipRecentStDev = stats.stdev(whipRunRecentArray).toFixed(2);
+            ipRecentStDev = stats.stdev(ipRecentArray).toFixed(2);
+            saveRecentStDev = stats.stdev(saveRecentArray).toFixed(2);
+            kRecentStDev = stats.stdev(kRecentArray).toFixed(2);
+            holdRecentStDev = stats.stdev(holdRecentArray).toFixed(2);
+            saveholdRecentStDev = stats.stdev(saveholdRecentArray).toFixed(2);
+            k9RecentStDev = stats.stdev(k9RecentArray).toFixed(2);
+
+            gamesRecentAvg = stats.mean(gamesRecentArray).toFixed(2);
+            winRecentAvg = stats.mean(winRecentArray).toFixed(2);
+            eraRecentAvg = stats.mean(eraRecentArray).toFixed(2);
+            whipRecentAvg = stats.mean(whipRunRecentArray).toFixed(2);
+            ipRecentAvg = stats.mean(ipRecentArray).toFixed(2);
+            saveRecentAvg = stats.mean(saveRecentArray).toFixed(2);
+            kRecentAvg = stats.mean(kRecentArray).toFixed(2);
+            holdRecentAvg = stats.mean(holdRecentArray).toFixed(2);
+            saveholdRecentAvg = stats.mean(saveholdRecentArray).toFixed(2);
+            k9RecentAvg = stats.mean(k9RecentArray).toFixed(2);
+
+            console.log(holdRecentArray)
+
+            for (var i = 0; i < mlbRecentPitchers.length; i++) {
+                var gamesRating = Number((mlbRecentPitchers[i].G - gamesRecentAvg) / gamesRecentStDev).toFixed(2);
+                var winRating = Number((mlbRecentPitchers[i].W - winRecentAvg) / winRecentStDev).toFixed(2);
+                var eraRating = Number((eraRecentAvg - mlbRecentPitchers[i].ERA) / eraRecentStDev).toFixed(2);
+                var whipRating = Number((whipRecentAvg - mlbRecentPitchers[i].WHIP) / whipRecentStDev).toFixed(2);
+                var ipRating = Number((mlbRecentPitchers[i].IP - ipRecentAvg) / ipRecentStDev).toFixed(2);
+                var svRating = Number((mlbRecentPitchers[i].SV - saveRecentAvg) / (saveRecentStDev * 2)).toFixed(2);
+                var kRating = Number((mlbRecentPitchers[i].SO - kRecentAvg) / kRecentStDev).toFixed(2);
+                var holdRating = Number((mlbRecentPitchers[i].HLD - holdRecentAvg) / (holdRecentStDev * 2)).toFixed(2);
+                var saveholdRating = Number((Number(mlbRecentPitchers[i].SV + mlbRecentPitchers[i].HLD) - saveholdRecentAvg) / (saveholdRecentStDev * 2)).toFixed(2);
+                var k9Rating = Number((mlbRecentPitchers[i]["K/9"] - k9RecentAvg) / k9RecentStDev).toFixed(2);
+                // console.log(gamesRating + " gamesRating")
+                // console.log(winRating + " winRating")
+                // console.log(eraRating + " eraRating")
+                // console.log(whipRating + " whipRating")
+                // console.log(ipRating + " ipRating")
+                // console.log(svRating + " svRating")
+                // console.log(kRating + " kRating")
+                // console.log(holdRating + " holdRating")
+                // console.log(saveholdRating + " saveholdRating")
+
+
+                var overallRating = ((+winRating + +eraRating + +whipRating + +ipRating + +svRating + +kRating + +holdRating + +saveholdRating + +k9Rating + +svRating) / 9).toFixed(2);
+
+                // console.log(overallRating)
+                mlbRecentPitchers[i].gamesRating = gamesRating;
+                mlbRecentPitchers[i].winRating = winRating;
+                mlbRecentPitchers[i].eraRating = eraRating;
+                mlbRecentPitchers[i].whipRating = whipRating;
+                mlbRecentPitchers[i].ipRating = ipRating;
+                mlbRecentPitchers[i].svRating = svRating;
+                mlbRecentPitchers[i].kRating = kRating;
+                mlbRecentPitchers[i].holdRating = holdRating;
+                mlbRecentPitchers[i].saveholdRating = saveholdRating;
+                mlbRecentPitchers[i].k9Rating = k9Rating;
+                mlbRecentPitchers[i].overallRating = overallRating;
+            }
+        })
+    }).then(function (data) {
+        async.parallel({
+            one: function (callback) {
+
+                playerRank = 1;
+
+                mlbRecentPitchers.sort((a, b) => Number(b.overallRating) - Number(a.overallRating));
+
+                console.log(mlbRecentPitchers.length)
+                console.log('pitcher')
+
+                for (var i = 0; i < mlbRecentPitchers.length; i++) {
+                    if (mlbRecentPitchers[i].IP > 0) {
+                        // console.log(mlbRecentPitchers[i].svRating)
+                        console.log(overallRating)
+                        PlayerRecentData.create({
+                            playerId: mlbRecentPitchers[i].index,
+                            playerName: mlbRecentPitchers[i].Name,
+                            playerType: "Pitcher",
+                            team: mlbRecentPitchers[i].Team,
+                            games: mlbRecentPitchers[i].G,
+                            win: mlbRecentPitchers[i].W,
+                            era: mlbRecentPitchers[i].ERA,
+                            whip: mlbRecentPitchers[i].WHIP,
+                            ip: mlbRecentPitchers[i].IP,
+                            sv: mlbRecentPitchers[i].SV,
+                            k: mlbRecentPitchers[i].SO,
+                            hold: mlbRecentPitchers[i].HLD,
+                            savehold: Number(mlbRecentPitchers[i].SV + mlbRecentPitchers[i].HLD),
+                            k9: mlbRecentPitchers[i]["K/9"],
+                            gamesRating: mlbRecentPitchers[i].gamesRating,
+                            winRating: mlbRecentPitchers[i].winRating,
+                            eraRating: mlbRecentPitchers[i].eraRating,
+                            whipRating: mlbRecentPitchers[i].whipRating,
+                            ipRating: mlbRecentPitchers[i].ipRating,
+                            svRating: mlbRecentPitchers[i].svRating,
+                            kRating: mlbRecentPitchers[i].kRating,
+                            holdRating: mlbRecentPitchers[i].holdRating,
+                            saveholdRating: mlbRecentPitchers[i].saveholdRating,
+                            k9Rating: mlbRecentPitchers[i].k9Rating,
+
+                            hit: 0,
+                            double: 0,
+                            homeRun: 0,
+                            run: 0,
+                            rbi: 0,
+                            walk: 0,
+                            sb: 0,
+                            avg: 0,
+                            obp: 0,
+                            slg: 0,
+                            ops: 0,
+                            gamesRating: 0,
+                            hitRating: 0,
+                            doubleRating: 0,
+                            homeRunRating: 0,
+                            runRating: 0,
+                            rbiRating: 0,
+                            walkRating: 0,
+                            sbRating: 0,
+                            avgRating: 0,
+                            obpRating: 0,
+                            slgRating: 0,
+                            opsRating: 0,
+
+                            overallRating: mlbRecentPitchers[i].overallRating,
+                            overallRank: playerRank
+                        });
+                        playerRank++
+                    }
+                }
+                callback()
+            }
+        }, function (err, results) {
+            //Here put the creation of the standard deviations and stuff and making the rankings prob
+            PlayerRecentData.find({}, function (err, players) {
                 if (err) {
                     res.send(err);
                 }

@@ -10,7 +10,7 @@ currentMonth = f"{currentDate.month:02d}"
 if int(currentMonth) > 3:
     currentYear = currentDate.year
     currentDay = date.today()
-    recentDay = currentDay - timedelta(days=14)
+    recentDay = currentDay - timedelta(days=7)
     currentDay = str(currentDay)
     recentDay = str(recentDay)
 else:

@@ -76,7 +76,7 @@ export class BuildPlayers extends Component {
             if ((today >= expireDate) || (expireDate === undefined) || allData === false) {
 
                 var expireDate = new Date();
-                expireDate.setDate(today.getDate() + 7);
+                expireDate.setDate(today.getDate());
 
                 //Get all the league info from each api endpoint
                 callApi('/api/rankings/season/')
@@ -285,6 +285,7 @@ export class BuildPlayers extends Component {
         var teamPickupsSeason = [];
         var teamPickupsRecent = [];
         var teamPlayers = this.state.teamPlayers;
+
         var playerRankingsSeason = this.state.playerRankingsSeason;
         var playerRankingsRecent = this.state.playerRankingsRecent;
         var playerPickupsSeason = this.state.playerTargetsSeason;
@@ -295,8 +296,10 @@ export class BuildPlayers extends Component {
         //for each player on the team, if string similarity > .7 in the player rankings, then add that player to the array
         for (var i = 0; i < teamPlayers.length; i++) {
             for (var j = 0; j < playerRankingsSeason.length; j++) {
+                
                 var similarPlayerSeason = stringSimilarity.compareTwoStrings(teamPlayers[i].full, playerRankingsSeason[j].playerName);
                 if (similarPlayerSeason > 0.7) {
+
                     //Push the player to the team array
                     teamStatsSeason.push(playerRankingsSeason[j]);
 
@@ -353,6 +356,8 @@ export class BuildPlayers extends Component {
             }
 
             //Same here for recent data
+            console.log(playerRankingsRecent.length)
+            console.log('here')
             for (j = 0; j < playerRankingsRecent.length; j++) {
                 var similarPlayerRecent = stringSimilarity.compareTwoStrings(teamPlayers[i].full, playerRankingsRecent[j].playerName);
                 if (similarPlayerRecent > 0.7) {
@@ -1361,8 +1366,8 @@ export class BuildPlayers extends Component {
                 {loading}
                 <div className="table-info-container flex-vertical">
                     <div className="table-info-headers flex">
-                        {/* <div className="table-info-header" onClick={this.changeRankings}>{showRankingsText}</div>
-                        <div className="table-info-header" onClick={this.changeStats}>{showStatsText}</div> */}
+                        <div className="table-info-header" onClick={this.changeRankings}>{showRankingsText}</div>
+                        {/* <div className="table-info-header" onClick={this.changeStats}>{showStatsText}</div> */}
                     </div>
                     <div className="table-info-tables">
                         <div className="table-group">
@@ -1383,6 +1388,7 @@ export class BuildPlayers extends Component {
                                         showPagination={false}
                                         minRows={0}
                                         defaultSortDesc={true}
+                                        defaultPageSize={-1}
                                         defaultSorted={[{
                                             id: 'overallRank',
                                             desc: false
@@ -1425,6 +1431,7 @@ export class BuildPlayers extends Component {
                                         id: 'overallRank',
                                         desc: false
                                     }]}
+                                    defaultPageSize={-1}
                                     SubComponent={row => {
                                         return (
                                             <ReactTable
@@ -1483,6 +1490,7 @@ export class BuildPlayers extends Component {
                                         id: 'overallRank',
                                         desc: false
                                     }]}
+                                    defaultPageSize={-1}
                                     SubComponent={row => {
                                         return (
                                             <ReactTable
