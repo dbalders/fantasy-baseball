@@ -118,21 +118,7 @@ button.click()
 
 
 rankings_table = driver.find_elements_by_class_name("table")[0]
-rankings_table_headers = rankings_table.find_elements(By.TAG_NAME, "thead")[0]
-rankings_table_headers = rankings_table_headers.find_elements(By.TAG_NAME, "th")
 rankings_table_html = driver.execute_script("return arguments[0].outerHTML;", rankings_table)
-# print(rankings_table_html)
-
-table_headers_length = len(rankings_table_headers)
-table_headers = []
-pitcher_start = 0
-
-for i in range(table_headers_length):
-    table_headers.append(rankings_table_headers[i].text)
-    if rankings_table_headers[i].text == 'IP':
-        pitcher_start = i
-    
-print(table_headers)
 
 
 # In[13]:
@@ -146,67 +132,84 @@ def isfloat(value):
         return False
 
 
+# In[ ]:
+
+
+
+
+
+# In[14]:
+
+
+soup = BeautifulSoup(rankings_table_html)
+table_header = soup.find_all("thead")
+table_headers = table_header[0].find_all("th")
+table_body = soup.find_all("tbody")
+
+table_headers_array = []
+pitcher_start = 0
+
+for i in range(len(table_headers)):
+    table_headers_array.append(table_headers[i].string.strip())
+    if table_headers[i].string.strip() == 'IP':
+        pitcher_start = i
+
+
 # In[15]:
 
 
-rankings_table_tbody = rankings_table.find_elements(By.TAG_NAME, "tbody")
-    
+table_body = soup.find_all("tbody")
 rankings_table_json = []
 
-for i in range(len(rankings_table_tbody)):
-# for i in range(20):
-    print(i)
-    rankings_table_tr = rankings_table_tbody[i].find_elements(By.TAG_NAME, "tr")
-    for j in range(len(rankings_table_tr)):
-        rankings_table_td = rankings_table_tr[j].find_elements(By.TAG_NAME, "td")
-        rankings_table_td_length = int(len(rankings_table_td) / 2)
+for i in range(len(table_body)):
+    table_rows = table_body[i].find_all("tr")
+    for j in range(len(table_rows)):
+        rankings_table_td = table_rows[j].find_all("td")
         rankings_table_object = {}
-        
         for k in range(len(rankings_table_td)):
             pitcher = False
     
-            if rankings_table_td[7].text == 'SP':
+            if rankings_table_td[7].string.strip() == 'SP':
                 pitcher = True
                 rankings_table_object["playerType"] = "Pitcher"
                 
-            elif rankings_table_td[7].text == 'RP':
+            elif rankings_table_td[7].string.strip() == 'RP':
                 pitcher = True
                 rankings_table_object["playerType"] = "Pitcher"
                 
             else:
                 rankings_table_object["playerType"] = "Batter"
-                
+
             if pitcher == True:
                 if k < 8:
-                    if (isfloat(rankings_table_td[k].text)):
-                        rankings_table_object[table_headers[k]] = float(rankings_table_td[k].text)
-                    elif rankings_table_td[k].text == " ":
-                        rankings_table_object[table_headers[k]] = 0
+                    if (isfloat(rankings_table_td[k].string.strip())):
+                        rankings_table_object[table_headers_array[k]] = float(rankings_table_td[k].string.strip())
+                    elif rankings_table_td[k].string.strip() == " ":
+                        rankings_table_object[table_headers_array[k]] = 0
                     else:
-                        rankings_table_object[table_headers[k]] = rankings_table_td[k].text
+                        rankings_table_object[table_headers_array[k]] = rankings_table_td[k].string.strip()
                 elif k >= (pitcher_start):
-                    if (isfloat(rankings_table_td[k].text)):
-                        rankings_table_object[table_headers[k]] = float(rankings_table_td[k].text)
-                    elif rankings_table_td[k].text == " ":
-                        rankings_table_object[table_headers[k]] = 0
+                    if (isfloat(rankings_table_td[k].string.strip())):
+                        rankings_table_object[table_headers_array[k]] = float(rankings_table_td[k].string.strip())
+                    elif rankings_table_td[k].string.strip() == " ":
+                        rankings_table_object[table_headers_array[k]] = 0
                     else:
-                        rankings_table_object[table_headers[k]] = rankings_table_td[k].text
+                        rankings_table_object[table_headers_array[k]] = rankings_table_td[k].string.strip()
                 else:
                     k = pitcher_start
             else:
                 if k < pitcher_start:
-                    if (isfloat(rankings_table_td[k].text)):
-                        rankings_table_object[table_headers[k]] = float(rankings_table_td[k].text)
-                    elif rankings_table_td[k].text == " ":
-                        rankings_table_object[table_headers[k]] = 0
+                    if (isfloat(rankings_table_td[k].string.strip())):
+                        rankings_table_object[table_headers_array[k]] = float(rankings_table_td[k].string.strip())
+                    elif rankings_table_td[k].string.strip() == " ":
+                        rankings_table_object[table_headers_array[k]] = 0
                     else:
-                        rankings_table_object[table_headers[k]] = rankings_table_td[k].text
+                        rankings_table_object[table_headers_array[k]] = rankings_table_td[k].string.strip()
     
         rankings_table_json.append(rankings_table_object)
         
 with open('data.json', 'w') as outfile:
     json.dump(rankings_table_json, outfile)
-print(rankings_table_json)
 
 
 # In[ ]:
