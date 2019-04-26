@@ -14,6 +14,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import re
 import os
+import json
 
 
 # In[2]:
@@ -60,9 +61,6 @@ pitcher_rows = pitcher_table.find_elements(By.TAG_NAME, "tr")
 
 batter_rows = len(batter_rows)
 pitcher_rows = len(pitcher_rows)
-
-print(batter_rows)
-print(pitcher_rows)
 
 
 # In[7]:
@@ -151,8 +149,6 @@ def isfloat(value):
 # In[15]:
 
 
-import json
-
 rankings_table_tbody = rankings_table.find_elements(By.TAG_NAME, "tbody")
     
 rankings_table_json = []
@@ -162,18 +158,11 @@ for i in range(len(rankings_table_tbody)):
     print(i)
     rankings_table_tr = rankings_table_tbody[i].find_elements(By.TAG_NAME, "tr")
     for j in range(len(rankings_table_tr)):
-        print(j)
-#     for j in range(20):
         rankings_table_td = rankings_table_tr[j].find_elements(By.TAG_NAME, "td")
         rankings_table_td_length = int(len(rankings_table_td) / 2)
         rankings_table_object = {}
         
-#         print(len(rankings_table_td))
-#         print(rankings_table_td_length)
-        
         for k in range(len(rankings_table_td)):
-#             print(table_headers[k] + " | " + rankings_table_td[k].text)
-#             print(rankings_table_object.get(rankings_table_object[table_headers[k]]))
             pitcher = False
     
             if rankings_table_td[7].text == 'SP':
@@ -212,27 +201,9 @@ for i in range(len(rankings_table_tbody)):
                         rankings_table_object[table_headers[k]] = 0
                     else:
                         rankings_table_object[table_headers[k]] = rankings_table_td[k].text
-            
-#             if (isfloat(rankings_table_td[k].text)):
-#                 rankings_table_object[table_headers[k]] = float(rankings_table_td[k].text)
-#             elif rankings_table_td[k].text == " ":
-#                 rankings_table_object[table_headers[k]] = 0
-#             else:
-#                 rankings_table_object[table_headers[k]] = rankings_table_td[k].text
-#         for k in range(5):
-#             print(float(rankings_table_td[k].text))
-#             print(isfloat(rankings_table_td[k].text))
-#             if k < 4:
-#                 rankings_table_object[table_headers[k]] = float(rankings_table_td[k].text)
-#             elif k > 7:
-#                 rankings_table_object[table_headers[k]] = float(rankings_table_td[k].text)
-#             else:
-#                 rankings_table_object[table_headers[k]] = rankings_table_td[k].text
     
         rankings_table_json.append(rankings_table_object)
         
-# rankings_table_json = json.dumps(rankings_table_json)
-
 with open('data.json', 'w') as outfile:
     json.dump(rankings_table_json, outfile)
 print(rankings_table_json)
