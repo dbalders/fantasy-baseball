@@ -85,3 +85,6 @@ public/json/batterRankingsSeason.json
 public/json/pitcherRankingsRecent.json
 public/json/pitcherRankingsSeason.json
 data/data.json
+data/.ipynb_checkpoints/baseball_scrape-checkpoint.ipynb
+public/json/rankings.json
+public/json/rankings_recent.json

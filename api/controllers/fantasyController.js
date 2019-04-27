@@ -2,10 +2,12 @@
 
 var fantasy = require('../../data/fantasy');
 var rankings = require('../../data/rankings');
+var bbmRankings = require('../../data/bbmrankings');
 
 var mongoose = require('mongoose'),
     Players = mongoose.model('Players'),
     Teams = mongoose.model('Teams'),
+    Scoring = mongoose.model('Scoring'),
     BBMRankingsSeason = mongoose.model('BBMRankingsSeason'),
     BBMRankingsRecent = mongoose.model('BBMRankingsRecent'),
     PickupTargetsSeason = mongoose.model('PickupTargetsSeason'),
@@ -63,6 +65,14 @@ exports.list_teams = function (req, res) {
         if (err)
             res.send(err);
         res.json(teams);
+    });
+};
+
+exports.list_scoring = function (req, res) {
+    Scoring.find({ leagueId: req.params.leagueId }, function (err, scoring) {
+        if (err)
+            res.send(err);
+        res.json(scoring);
     });
 };
 
@@ -159,8 +169,8 @@ exports.erase_current_data = function (req, res) {
 };
 
 exports.get_rankings = function (req, res) {
-    rankings.getRankings(req, res);
-    rankings.getBBMRankings(req, res);
+    bbmRankings.getRankings(req, res);
+    // rankings.getBBMRankings(req, res);
     res.json("Rankings Completed");
 }
 

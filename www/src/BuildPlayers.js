@@ -87,6 +87,14 @@ export class BuildPlayers extends Component {
                     })
                     .catch(err => console.log(err));
 
+                callApi('/api/rankings/recent/')
+                    .then(results => {
+                        var playerData = results;
+                        this.setState({ playerRankingsRecent: playerData });
+                        localStorage.setItem('playerRankingsRecent', JSON.stringify(playerData));
+                    })
+                    .catch(err => console.log(err));
+
                 callApi('/api/targets/recent/' + leagueId)
                     .then(results => {
                         var playerData = results[0].players;
@@ -113,30 +121,30 @@ export class BuildPlayers extends Component {
                     .catch(err => console.log(err));
 
                 //Local rankings for the season
-                callApi('/api/player_data/season/')
-                    .then(results => {
-                        var playerData = results;
-                        this.setState({
-                            playerRankingsLocalSeason: playerData,
-                            playerRankingsSeason: playerData
-                        });
-                        localStorage.setItem('playerRankingsLocalSeason', JSON.stringify(playerData));
-                        localStorage.setItem('playerRankingsSeason', JSON.stringify(playerData));
-                    })
-                    .catch(err => console.log(err));
+                // callApi('/api/player_data/season/')
+                //     .then(results => {
+                //         var playerData = results;
+                //         this.setState({
+                //             playerRankingsLocalSeason: playerData,
+                //             playerRankingsSeason: playerData
+                //         });
+                //         localStorage.setItem('playerRankingsLocalSeason', JSON.stringify(playerData));
+                //         localStorage.setItem('playerRankingsSeason', JSON.stringify(playerData));
+                //     })
+                //     .catch(err => console.log(err));
 
                 //Local rankings for recent
-                callApi('/api/player_data/recent/')
-                    .then(results => {
-                        var playerData = results;
-                        this.setState({
-                            playerRankingsLocalRecent: playerData,
-                            playerRankingsRecent: playerData
-                        });
-                        localStorage.setItem('playerRankingsLocalRecent', JSON.stringify(playerData));
-                        localStorage.setItem('playerRankingsRecent', JSON.stringify(playerData));
-                    })
-                    .catch(err => console.log(err));
+                // callApi('/api/player_data/recent/')
+                //     .then(results => {
+                //         var playerData = results;
+                //         this.setState({
+                //             playerRankingsLocalRecent: playerData,
+                //             playerRankingsRecent: playerData
+                //         });
+                //         localStorage.setItem('playerRankingsLocalRecent', JSON.stringify(playerData));
+                //         localStorage.setItem('playerRankingsRecent', JSON.stringify(playerData));
+                //     })
+                //     .catch(err => console.log(err));
 
                 //List of the teams in the league
                 callApi('/api/teams/' + leagueId)
@@ -199,9 +207,12 @@ export class BuildPlayers extends Component {
                                                 localStorage.setItem('teamPlayers', JSON.stringify(playerData));
                                                 Cookies.set('dataExpireDate', expireDate)
                                                 this.setState({ teamPlayers: playerData }, this.buildTeam);
-                                            }.bind(this), 1000)
+                                            }.bind(this), 2000)
+                                        }  else {
+                                            localStorage.setItem('teamPlayers', JSON.stringify(playerData));
+                                            this.setState({ teamPlayers: playerData }, this.buildTeam);
                                         }
-                                    }.bind(this), 1000)
+                                    }.bind(this), 2000)
                                 } else {
                                     localStorage.setItem('teamPlayers', JSON.stringify(playerData));
                                     this.setState({ teamPlayers: playerData }, this.buildTeam);
@@ -356,8 +367,6 @@ export class BuildPlayers extends Component {
             }
 
             //Same here for recent data
-            console.log(playerRankingsRecent.length)
-            console.log('here')
             for (j = 0; j < playerRankingsRecent.length; j++) {
                 var similarPlayerRecent = stringSimilarity.compareTwoStrings(teamPlayers[i].full, playerRankingsRecent[j].playerName);
                 if (similarPlayerRecent > 0.7) {
@@ -1462,6 +1471,7 @@ export class BuildPlayers extends Component {
                                         id: 'overallRank',
                                         desc: false
                                     }]}
+                                    defaultPageSize={25}
                                     SubComponent={row => {
                                         return (
                                             <ReactTable
@@ -1490,7 +1500,7 @@ export class BuildPlayers extends Component {
                                         id: 'overallRank',
                                         desc: false
                                     }]}
-                                    defaultPageSize={-1}
+                                    defaultPageSize={25}
                                     SubComponent={row => {
                                         return (
                                             <ReactTable

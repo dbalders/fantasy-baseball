@@ -6,6 +6,7 @@ var request = require("request"),
 var mongoose = require('mongoose'),
     Players = mongoose.model('Players'),
     Teams = mongoose.model('Teams'),
+    Scoring = mongoose.model('Scoring'),
     PickupTargetsSeason = mongoose.model('PickupTargetsSeason'),
     PickupTargetsRecent = mongoose.model('PickupTargetsRecent'),
     BBMPickupTargetsSeason = mongoose.model('BBMPickupTargetsSeason'),
@@ -117,8 +118,8 @@ exports.getYahooData = function (req, res, options) {
                                 Payment.findOne({
                                     leagues: {
                                         $elemMatch: {
-                                            leagueId:leagueId, 
-                                            teamId:teamId
+                                            leagueId: leagueId,
+                                            teamId: teamId
                                         }
                                     }
                                 }, function (error, result) {
@@ -148,110 +149,110 @@ exports.getYahooData = function (req, res, options) {
                                     }
                                 })
                             }
-                    callback();
-                }
-                    );
-        },
-        function (callback) {
-            //Use the league ID to get a list of all the teams and their players
-            yf.league.teams(leagueId,
-                function cb(err, data) {
-                    if (err)
-                        console.log(err);
-                    else
-                        //For each team, grab their team key, id, and name and store it
-                        async.forEachOf(data.teams, function (value, teamKey, callback) {
-                            var currentTeam = {
-                                'team_key': data.teams[teamKey].team_key,
-                                'team_id': Number(data.teams[teamKey].team_id),
-                                'name': data.teams[teamKey].name
-                            }
-                            teams.push(currentTeam);
-
-                            if (data.teams[teamKey].is_owned_by_current_login !== undefined) {
-                                res.cookie('teamId', data.teams[teamKey].team_id)
-                            }
-
-
                             callback();
-                        }, function (err) {
-                            if (err) console.error(err.message);
-
-                            Teams.findOneAndUpdate({
-                                leagueId: leagueId
-                            }, {
-                                    leagueId: leagueId,
-                                    teams: teams
-                                }, {
-                                    upsert: true
-                                },
-                                function (err, doc) {
-                                    // if (err) return 
-                                    if (doc !== null) {
-                                        doc.teams = teams;
+                        }
+                    );
+                },
+                function (callback) {
+                    //Use the league ID to get a list of all the teams and their players
+                    yf.league.teams(leagueId,
+                        function cb(err, data) {
+                            if (err)
+                                console.log(err);
+                            else
+                                //For each team, grab their team key, id, and name and store it
+                                async.forEachOf(data.teams, function (value, teamKey, callback) {
+                                    var currentTeam = {
+                                        'team_key': data.teams[teamKey].team_key,
+                                        'team_id': Number(data.teams[teamKey].team_id),
+                                        'name': data.teams[teamKey].name
                                     }
-                                });
+                                    teams.push(currentTeam);
 
-                            //With now having each team key, go through each to get their full roster
-                            async.forEachOf(teams, function (value, key, callback) {
-                                yf.team.roster(teams[key].team_key,
-                                    function cb(err, playersData) {
-                                        var teamKey = teams[key].team_key;
-                                        if (err)
-                                            console.log(err);
-                                        else
-                                            var teamPlayers = [];
-
-                                            //After having their roster, store each player into a single player array
-                                        async.forEachOf(playersData.roster, function (value, playerKey, callback) {
-                                            playerObject = {
-                                                'team_key': teamKey,
-                                                'player_key': playersData.roster[playerKey].player_key,
-                                                'player_id': playersData.roster[playerKey].player_id,
-                                                'first': playersData.roster[playerKey].name.first,
-                                                'last': playersData.roster[playerKey].name.last,
-                                                'full': playersData.roster[playerKey].name.full
-                                            };
-                                            players.push(playerObject);
-                                            teamPlayers.push(playerObject);
-                                            //push also to specific player name for string similarity later
-                                            playerNames.push(playersData.roster[playerKey].name.full);
-                                            callback();
-                                        }, function (err) {
-                                            if (err) console.error(err.message);
-                                            callback();
-                                        })
+                                    if (data.teams[teamKey].is_owned_by_current_login !== undefined) {
+                                        res.cookie('teamId', data.teams[teamKey].team_id)
                                     }
-                                )
-                            }, function (err) {
-                                if (err) console.error(err.message);
-                                //Put all the players into the database
-                                Players.findOneAndUpdate({
-                                    leagueId: leagueId
-                                }, {
-                                        leagueId: leagueId,
-                                        players: players
+
+
+                                    callback();
+                                }, function (err) {
+                                    if (err) console.error(err.message);
+
+                                    Teams.findOneAndUpdate({
+                                        leagueId: leagueId
                                     }, {
-                                        upsert: true
-                                    },
-                                    function (err, doc) {
-                                        // if (err) return 
-                                        if (doc !== null) {
-                                            doc.players = players;
-                                        }
-                                    });
+                                            leagueId: leagueId,
+                                            teams: teams
+                                        }, {
+                                            upsert: true
+                                        },
+                                        function (err, doc) {
+                                            // if (err) return 
+                                            if (doc !== null) {
+                                                doc.teams = teams;
+                                            }
+                                        });
 
-                                getPickups(leagueId, playerNames);
-                                res.redirect('/');
-                                return
-                            });
-                        });
+                                    //With now having each team key, go through each to get their full roster
+                                    async.forEachOf(teams, function (value, key, callback) {
+                                        yf.team.roster(teams[key].team_key,
+                                            function cb(err, playersData) {
+                                                var teamKey = teams[key].team_key;
+                                                if (err)
+                                                    console.log(err);
+                                                else
+                                                    var teamPlayers = [];
+
+                                                //After having their roster, store each player into a single player array
+                                                async.forEachOf(playersData.roster, function (value, playerKey, callback) {
+                                                    playerObject = {
+                                                        'team_key': teamKey,
+                                                        'player_key': playersData.roster[playerKey].player_key,
+                                                        'player_id': playersData.roster[playerKey].player_id,
+                                                        'first': playersData.roster[playerKey].name.first,
+                                                        'last': playersData.roster[playerKey].name.last,
+                                                        'full': playersData.roster[playerKey].name.full
+                                                    };
+                                                    players.push(playerObject);
+                                                    teamPlayers.push(playerObject);
+                                                    //push also to specific player name for string similarity later
+                                                    playerNames.push(playersData.roster[playerKey].name.full);
+                                                    callback();
+                                                }, function (err) {
+                                                    if (err) console.error(err.message);
+                                                    callback();
+                                                })
+                                            }
+                                        )
+                                    }, function (err) {
+                                        if (err) console.error(err.message);
+                                        //Put all the players into the database
+                                        Players.findOneAndUpdate({
+                                            leagueId: leagueId
+                                        }, {
+                                                leagueId: leagueId,
+                                                players: players
+                                            }, {
+                                                upsert: true
+                                            },
+                                            function (err, doc) {
+                                                // if (err) return 
+                                                if (doc !== null) {
+                                                    doc.players = players;
+                                                }
+                                            });
+
+                                        getPickups(leagueId, playerNames);
+                                        res.redirect('/');
+                                        return
+                                    });
+                                });
+                        }
+                    )
+                    callback(null, 2);
                 }
-            )
-            callback(null, 2);
-        }
             ]);
-}
+        }
     });
 
 }
@@ -415,10 +416,98 @@ function getPickups(leagueId, playerNames) {
 }
 
 exports.getEspnData = function (espnId, res) {
-    var url = 'http://fantasy.espn.com/apis/v3/games/flb/seasons/2019/segments/0/leagues/' + espnId + '?view=mRoster&view=mTeam';
+    var url = 'http://fantasy.espn.com/apis/v3/games/flb/seasons/2019/segments/0/leagues/' + espnId + '?view=mRoster&view=mTeam&view=mSettings';
     var teams = [];
     var players = [];
     var playerNames = [];
+
+    var scoringCats = {
+        AB: 0,
+        H: 1,
+        AVG: 2,
+        '2B': 3,
+        '3B': 4,
+        HR: 5,
+        XBH: 6,
+        '1B': 7,
+        TB: 8,
+        SLG: 9,
+        BB: 10,
+        IBB: 11,
+        HBP: 12,
+        SF: 13,
+        SH: 14,
+        SAC: 15,
+        PA: 16,
+        OBP: 17,
+        OPS: 18,
+        RC: 19,
+        R: 20,
+        RBI: 21,
+        GWRBI: 22,
+        SB: 23,
+        CS: 24,
+        SBN: 25,
+        GIDP: 26,
+        KO: 27,
+        TP: 28,
+        PPA: 29,
+        CVC: 30,
+        GSHR: 31,
+        APP: 32,
+        GS: 33,
+        IP: 34,
+        BF: 35,
+        PC: 36,
+        HA: 37,
+        BAA: 38,
+        BBI: 39,
+        IBII: 40,
+        WHIP: 41,
+        HB: 42,
+        OBA: 43,
+        RA: 44,
+        ER: 45,
+        HRA: 46,
+        ERA: 47,
+        K: 48,
+        'K/9': 49,
+        WP: 50,
+        B: 51,
+        PKO: 52,
+        W: 53,
+        L: 54,
+        'WIN%': 55,
+        SOP: 56,
+        SV: 57,
+        BS: 58,
+        'SV%': 59,
+        HD: 60,
+        IRS: 61,
+        CG: 62,
+        QS: 63,
+        SO: 64,
+        NH: 65,
+        PG: 66,
+        FC: 67,
+        PO: 68,
+        AST: 69,
+        OFAST: 70,
+        FPCT: 71,
+        E: 72,
+        DPT: 73,
+        BTW: 74,
+        BTL: 75,
+        PTW: 76,
+        PTL: 77,
+        SFA: 78,
+        SHA: 79,
+        CIA: 80,
+        GP: 81,
+        'K/BB': 82,
+        SVHD: 83,
+        PBS: 99
+    }
 
     request({
         url: url,
@@ -435,6 +524,8 @@ exports.getEspnData = function (espnId, res) {
 
         var teamData = body.teams;
         var teamPlayersArray = [];
+        var scoringArray = []
+        var scoringData = body.settings.scoringSettings.scoringItems
 
         //Loop through the 10 teams to get each team name and players
         for (var i = 0; i < teamData.length; i++) {
@@ -461,6 +552,11 @@ exports.getEspnData = function (espnId, res) {
                 team_id: teamId,
                 league_id: espnId
             });
+        }
+
+        for (var j = 0; j < scoringData.length; j++) {
+            scoringId = scoringData[j].statId
+            scoringArray.push(Object.keys(scoringCats)[scoringId])
         }
 
         //Submit all the teams to mongo
@@ -492,6 +588,21 @@ exports.getEspnData = function (espnId, res) {
                 // if (err) return 
                 if (doc !== null) {
                     doc.players = players;
+                }
+            });
+
+        Scoring.findOneAndUpdate({
+            leagueId: espnId
+        }, {
+                leagueId: espnId,
+                scoring: scoringArray
+            }, {
+                upsert: true
+            },
+            function (err, doc) {
+                // if (err) return 
+                if (doc !== null) {
+                    doc.scoring = scoring;
                 }
             });
 

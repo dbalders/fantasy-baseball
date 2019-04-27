@@ -32,6 +32,15 @@ var TeamsSchema = new Schema({
     }
 });
 
+var ScoringSchema = new Schema({
+    leagueId: {
+        type: String
+    },
+    scoring: {
+        type: Array
+    }
+});
+
 var BBMRankingsSeasonSchema = new Schema({
     playerId: Number,
     playerName: String,
@@ -290,6 +299,7 @@ var PaymentSchema = new Schema ({
 
 module.exports = mongoose.model('Players', PlayersSchema);
 module.exports = mongoose.model('Teams', TeamsSchema);
+module.exports = mongoose.model('Scoring', ScoringSchema);
 module.exports = mongoose.model('BBMRankingsSeason', BBMRankingsSeasonSchema);
 module.exports = mongoose.model('BBMRankingsRecent', BBMRankingsRecentSchema);
 module.exports = mongoose.model('PickupTargetsSeason', PickupTargetsSeasonSchema);

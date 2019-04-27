@@ -14,6 +14,9 @@ module.exports = function (app) {
     app.route('/api/teams/:leagueId')
         .get(fantasy.list_teams)
 
+    app.route('/api/scoring/:leagueId')
+        .get(fantasy.list_scoring)
+
     app.route('/api/teams/:leagueId/:teamKey')
         .get(fantasy.list_teams_players)
 

@@ -164,29 +164,29 @@ export class CompareTeams extends Component {
                 if (similarPlayerRecent > 0.7) {
                     teamStatsRecent.push(playerRankingsRecent[k]);
 
-                    var avgRating = (playerRankingsRecent[j].avgRating) ? (playerRankingsRecent[j].avgRating) : 0;
-                    var runRating = (playerRankingsRecent[j].runRating) ? (playerRankingsRecent[j].runRating) : 0;
-                    var rbiRating = (playerRankingsRecent[j].rbiRating) ? (playerRankingsRecent[j].rbiRating) : 0;
-                    var homeRunRating = (playerRankingsRecent[j].homeRunRating) ? (playerRankingsRecent[j].homeRunRating) : 0;
-                    var sbRating = (playerRankingsRecent[j].sbRating) ? (playerRankingsRecent[j].sbRating) : 0;
-                    var obpRating = (playerRankingsRecent[j].obpRating) ? (playerRankingsRecent[j].obpRating) : 0;
-                    var slgRating = (playerRankingsRecent[j].slgRating) ? (playerRankingsRecent[j].slgRating) : 0;
-                    var doubleRating = (playerRankingsRecent[j].doubleRating) ? (playerRankingsRecent[j].doubleRating) : 0;
-                    var walkRating = (playerRankingsRecent[j].walkRating) ? (playerRankingsRecent[j].walkRating) : 0;
-                    var opsRating = (playerRankingsRecent[j].opsRating) ? (playerRankingsRecent[j].opsRating) : 0;
-                    var winRating = (playerRankingsRecent[j].winRating) ? (playerRankingsRecent[j].winRating) : 0;
-                    var eraRating = (playerRankingsRecent[j].eraRating) ? (playerRankingsRecent[j].eraRating) : 0;
-                    var whipRating = (playerRankingsRecent[j].whipRating) ? (playerRankingsRecent[j].whipRating) : 0;
-                    var ipRating = (playerRankingsRecent[j].ipRating) ? (playerRankingsRecent[j].ipRating) : 0;
-                    var svRating = (playerRankingsRecent[j].svRating) ? (playerRankingsRecent[j].svRating) : 0;
-                    var kRating = (playerRankingsRecent[j].kRating) ? (playerRankingsRecent[j].kRating) : 0;
-                    var holdRating = (playerRankingsRecent[j].holdRating) ? (playerRankingsRecent[j].holdRating) : 0;
-                    var saveholdRating = (playerRankingsRecent[j].saveholdRating) ? (playerRankingsRecent[j].saveholdRating) : 0;
-                    var k9Rating = (playerRankingsRecent[j].k9Rating) ? (playerRankingsRecent[j].k9Rating) : 0;
+                    var avgRating = (playerRankingsRecent[k].avgRating) ? (playerRankingsRecent[k].avgRating) : 0;
+                    var runRating = (playerRankingsRecent[k].runRating) ? (playerRankingsRecent[k].runRating) : 0;
+                    var rbiRating = (playerRankingsRecent[k].rbiRating) ? (playerRankingsRecent[k].rbiRating) : 0;
+                    var homeRunRating = (playerRankingsRecent[k].homeRunRating) ? (playerRankingsRecent[k].homeRunRating) : 0;
+                    var sbRating = (playerRankingsRecent[k].sbRating) ? (playerRankingsRecent[k].sbRating) : 0;
+                    var obpRating = (playerRankingsRecent[k].obpRating) ? (playerRankingsRecent[k].obpRating) : 0;
+                    var slgRating = (playerRankingsRecent[k].slgRating) ? (playerRankingsRecent[k].slgRating) : 0;
+                    var doubleRating = (playerRankingsRecent[k].doubleRating) ? (playerRankingsRecent[k].doubleRating) : 0;
+                    var walkRating = (playerRankingsRecent[k].walkRating) ? (playerRankingsRecent[k].walkRating) : 0;
+                    var opsRating = (playerRankingsRecent[k].opsRating) ? (playerRankingsRecent[k].opsRating) : 0;
+                    var winRating = (playerRankingsRecent[k].winRating) ? (playerRankingsRecent[k].winRating) : 0;
+                    var eraRating = (playerRankingsRecent[k].eraRating) ? (playerRankingsRecent[k].eraRating) : 0;
+                    var whipRating = (playerRankingsRecent[k].whipRating) ? (playerRankingsRecent[k].whipRating) : 0;
+                    var ipRating = (playerRankingsRecent[k].ipRating) ? (playerRankingsRecent[k].ipRating) : 0;
+                    var svRating = (playerRankingsRecent[k].svRating) ? (playerRankingsRecent[k].svRating) : 0;
+                    var kRating = (playerRankingsRecent[k].kRating) ? (playerRankingsRecent[k].kRating) : 0;
+                    var holdRating = (playerRankingsRecent[k].holdRating) ? (playerRankingsRecent[k].holdRating) : 0;
+                    var saveholdRating = (playerRankingsRecent[k].saveholdRating) ? (playerRankingsRecent[k].saveholdRating) : 0;
+                    var k9Rating = (playerRankingsRecent[k].k9Rating) ? (playerRankingsRecent[k].k9Rating) : 0;
 
 
                     teamStatsRecentAvg = {
-                        overallRating: (teamStatsRecentAvg.overallRating) ? (teamStatsRecentAvg.overallRating + playerRankingsRecent[j].overallRating) : playerRankingsRecent[j].overallRating,
+                        overallRating: (teamStatsRecentAvg.overallRating) ? (teamStatsRecentAvg.overallRating + playerRankingsRecent[k].overallRating) : playerRankingsRecent[k].overallRating,
                         avgRating: (teamStatsRecentAvg.avgRating) ? (teamStatsRecentAvg.avgRating + avgRating) : avgRating,
                         runRating: (teamStatsRecentAvg.runRating) ? (teamStatsRecentAvg.runRating + runRating) : runRating,
                         rbiRating: (teamStatsRecentAvg.rbiRating) ? (teamStatsRecentAvg.rbiRating + rbiRating) : rbiRating,
