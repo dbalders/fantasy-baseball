@@ -602,7 +602,7 @@ exports.getEspnData = function (espnId, res) {
             function (err, doc) {
                 // if (err) return 
                 if (doc !== null) {
-                    doc.scoring = scoring;
+                    doc.scoringArray = scoringArray;
                 }
             });
 
