@@ -99,6 +99,12 @@ class App extends Component {
 
         footer = <div className="footer">
             <div className="footer-info-container flex">
+                <div className="footer-info flex bbm">
+                    <div id="footer-created-by">Data from </div>
+                    <div>
+                        <a href="https://baseballmonster.com/">BaseballMonster.io</a>
+                    </div>
+                </div>
                 <div className="footer-info flex">
                     <div id="footer-created-by">Created by </div>
                     <div>
