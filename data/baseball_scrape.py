@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[57]:
+# In[1]:
 
 
 from bs4 import BeautifulSoup
@@ -19,7 +19,7 @@ import os
 import json
 
 
-# In[58]:
+# In[2]:
 
 
 page_url = "https://baseballmonster.com"
@@ -27,7 +27,7 @@ page = urllib.request.urlopen(page_url)
 soup = BeautifulSoup(page, 'html.parser')
 
 
-# In[59]:
+# In[3]:
 
 
 # Firefox session
@@ -41,22 +41,23 @@ driver.get(page_url)
 driver.implicitly_wait(100)
 
 
-# In[60]:
+# In[4]:
 
 
 #Click settings
-button = driver.find_elements_by_class_name("nav-item")[1]
+button = driver.find_elements_by_class_name("nav-item")
+button = driver.find_element(By.LINK_TEXT, "Settings")
 button.click()
 
 
-# In[61]:
+# In[5]:
 
 
 button = driver.find_element(By.LINK_TEXT, "League Settings")
 button.click()
 
 
-# In[62]:
+# In[6]:
 
 
 batter_table = driver.find_elements_by_class_name("table")[1]
@@ -69,14 +70,14 @@ batter_rows = len(batter_rows)
 pitcher_rows = len(pitcher_rows)
 
 
-# In[63]:
+# In[7]:
 
 
 batter_header_list = ["Games", "At Bats", "On-Base Percentage (OBP)", "Slugging Percentage (SLG)", "On-Base + Slugging (OPS)", "Hits", "Singles", "Doubles", "Triples", "Extra Base Hits", "Walks", "Strikeouts"]
 pitcher_header_list = ["Games", "Innings Pitched", "Opponent Batting Avg (approx.)", "Quality Starts", "Complete Games", "Shutouts", "Holds", "Saves plus Holds", "Earned Runs", "Strikeouts/9", "Outs"]
 
 
-# In[64]:
+# In[8]:
 
 
 for i in range(batter_rows):
@@ -86,11 +87,12 @@ for i in range(batter_rows):
             title = radiotr.find_elements(By.TAG_NAME, "td")[0].text
             if batter_header_list[j] == title:
                 radio = radiotr.find_elements(By.TAG_NAME, "td")[2]
+                radio = radio.find_elements(By.TAG_NAME, "input")[0]
                 radio.click()
         
 
 
-# In[65]:
+# In[ ]:
 
 
 for i in range(pitcher_rows):
@@ -100,17 +102,18 @@ for i in range(pitcher_rows):
             title = radiotr.find_elements(By.TAG_NAME, "td")[0].text
             if pitcher_header_list[j] == title:
                 radio = radiotr.find_elements(By.TAG_NAME, "td")[2]
+                radio = radio.find_elements(By.TAG_NAME, "input")[0]
                 radio.click()
 
 
-# In[66]:
+# In[ ]:
 
 
 save_btn = driver.find_element_by_id("ContentPlaceHolder1_SaveSettingsButton")
 save_btn.click()
 
 
-# In[67]:
+# In[ ]:
 
 
 #Click settings
@@ -120,7 +123,7 @@ button = driver.find_element(By.LINK_TEXT, "Player Rankings")
 button.click()
 
 
-# In[68]:
+# In[ ]:
 
 
 driver.find_element_by_id("PlayerFilterControl").click()
@@ -131,7 +134,7 @@ rankings_table = driver.find_elements_by_class_name("table")[0]
 rankings_table_html = driver.execute_script("return arguments[0].outerHTML;", rankings_table)
 
 
-# In[69]:
+# In[ ]:
 
 
 driver.find_element_by_id("DateFilterControl").click()
@@ -149,13 +152,13 @@ rankings_table_recent = driver.find_elements_by_class_name("table")[0]
 rankings_table_recent_html = driver.execute_script("return arguments[0].outerHTML;", rankings_table_recent)
 
 
-# In[70]:
+# In[ ]:
 
 
 driver.quit()
 
 
-# In[71]:
+# In[ ]:
 
 
 def isfloat(value):
@@ -166,7 +169,7 @@ def isfloat(value):
         return False
 
 
-# In[72]:
+# In[ ]:
 
 
 def getTableJson(tableHTML, outputName):
@@ -238,13 +241,13 @@ def getTableJson(tableHTML, outputName):
         json.dump(rankings_table_json, outfile)
 
 
-# In[73]:
+# In[ ]:
 
 
 getTableJson(rankings_table_html, "../public/json/rankings.json")
 
 
-# In[74]:
+# In[ ]:
 
 
 getTableJson(rankings_table_recent_html, "../public/json/rankings_recent.json")
