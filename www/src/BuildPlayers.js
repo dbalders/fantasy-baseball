@@ -6,6 +6,7 @@ import stringSimilarity from 'string-similarity';
 import { CompareTeams } from './CompareTeams';
 import { callApi } from './CallApi';
 import ReactGA from 'react-ga';
+import { stat } from 'fs';
 ReactGA.initialize('UA-135378238-2');
 ReactGA.pageview("/?logged-in=true");
 
@@ -39,10 +40,12 @@ export class BuildPlayers extends Component {
             showRecentRankings: false,
             statsHeaders: [],
             updateCompareTable: false,
-            drafted: true
+            drafted: true,
+            leagueScoring: []
         }
         this.changeStats = this.changeStats.bind(this);
         this.changeRankings = this.changeRankings.bind(this);
+        this.statExist = this.statExist.bind(this);
     }
 
     componentDidMount() {
@@ -63,6 +66,7 @@ export class BuildPlayers extends Component {
         if (!(JSON.parse(localStorage.getItem('playerRankingsLocalRecent')))) allData = false;
         if (!(JSON.parse(localStorage.getItem('playerRankingsRecent')))) allData = false;
         if (!(JSON.parse(localStorage.getItem('teams')))) allData = false;
+        if (!(JSON.parse(localStorage.getItem('leagueScoring')))) allData = false;
         // if (!(JSON.parse(localStorage.getItem('playerTargetsBBMRecent')))) allData = false;
         // if (!(JSON.parse(localStorage.getItem('playerTargetsBBMSeason')))) allData = false;
         // if (!(JSON.parse(localStorage.getItem('playerRankingsBBMRecent')))) allData = false;
@@ -155,6 +159,14 @@ export class BuildPlayers extends Component {
                     })
                     .catch(err => console.log(err));
 
+                callApi('/api/scoring/' + leagueId)
+                    .then(results => {
+                        var leagueScoring = results[0].scoring;
+                        this.setState({ leagueScoring: leagueScoring });
+                        localStorage.setItem('leagueScoring', JSON.stringify(leagueScoring));
+                    })
+                    .catch(err => console.log(err));
+
                 // //BBM targets recent
                 // callApi('/api/targets/bbm/recent/' + leagueId)
                 //     .then(results => {
@@ -206,16 +218,16 @@ export class BuildPlayers extends Component {
                                             setTimeout(function () {
                                                 localStorage.setItem('teamPlayers', JSON.stringify(playerData));
                                                 Cookies.set('dataExpireDate', expireDate)
-                                                this.setState({ teamPlayers: playerData }, this.buildTeam);
+                                                this.setState({ teamPlayers: playerData }, this.orderRankings);
                                             }.bind(this), 2000)
-                                        }  else {
+                                        } else {
                                             localStorage.setItem('teamPlayers', JSON.stringify(playerData));
-                                            this.setState({ teamPlayers: playerData }, this.buildTeam);
+                                            this.setState({ teamPlayers: playerData }, this.orderRankings);
                                         }
                                     }.bind(this), 2000)
                                 } else {
                                     localStorage.setItem('teamPlayers', JSON.stringify(playerData));
-                                    this.setState({ teamPlayers: playerData }, this.buildTeam);
+                                    this.setState({ teamPlayers: playerData }, this.orderRankings);
                                 }
                             }
 
@@ -242,7 +254,7 @@ export class BuildPlayers extends Component {
                     playerRankingsBBMSeason: JSON.parse(localStorage.getItem('playerRankingsBBMSeason')),
                     playerRankingsBBMRecent: JSON.parse(localStorage.getItem('playerRankingsBBMRecent')),
                     teamPlayers: JSON.parse(localStorage.getItem('teamPlayers'))
-                }, this.buildTeam);
+                }, this.orderRankings());
             }
 
         }
@@ -307,7 +319,7 @@ export class BuildPlayers extends Component {
         //for each player on the team, if string similarity > .7 in the player rankings, then add that player to the array
         for (var i = 0; i < teamPlayers.length; i++) {
             for (var j = 0; j < playerRankingsSeason.length; j++) {
-                
+
                 var similarPlayerSeason = stringSimilarity.compareTwoStrings(teamPlayers[i].full, playerRankingsSeason[j].playerName);
                 if (similarPlayerSeason > 0.7) {
 
@@ -339,6 +351,7 @@ export class BuildPlayers extends Component {
                     var holdRating = (playerRankingsSeason[j].holdRating) ? (playerRankingsSeason[j].holdRating) : 0;
                     var saveholdRating = (playerRankingsSeason[j].saveholdRating) ? (playerRankingsSeason[j].saveholdRating) : 0;
                     var k9Rating = (playerRankingsSeason[j].k9Rating) ? (playerRankingsSeason[j].k9Rating) : 0;
+                    var qsRating = (playerRankingsSeason[j].qsRating) ? (playerRankingsSeason[j].qsRating) : 0;
 
                     teamStatsSeasonAvg = {
                         overallRating: (teamStatsSeasonAvg.overallRating) ? (teamStatsSeasonAvg.overallRating + playerRankingsSeason[j].overallRating) : playerRankingsSeason[j].overallRating,
@@ -360,7 +373,8 @@ export class BuildPlayers extends Component {
                         kRating: (teamStatsSeasonAvg.kRating) ? (teamStatsSeasonAvg.kRating + kRating) : kRating,
                         holdRating: (teamStatsSeasonAvg.holdRating) ? (teamStatsSeasonAvg.holdRating + holdRating) : holdRating,
                         saveholdRating: (teamStatsSeasonAvg.saveholdRating) ? (teamStatsSeasonAvg.saveholdRating + saveholdRating) : saveholdRating,
-                        k9Rating: (teamStatsSeasonAvg.k9Rating) ? (teamStatsSeasonAvg.k9Rating + k9Rating) : k9Rating
+                        k9Rating: (teamStatsSeasonAvg.k9Rating) ? (teamStatsSeasonAvg.k9Rating + k9Rating) : k9Rating,
+                        qsRating: (teamStatsSeasonAvg.qsRating) ? (teamStatsSeasonAvg.qsRating + qsRating) : qsRating
                     }
                     break
                 }
@@ -391,6 +405,7 @@ export class BuildPlayers extends Component {
                     var holdRating = (playerRankingsRecent[j].holdRating) ? (playerRankingsRecent[j].holdRating) : 0;
                     var saveholdRating = (playerRankingsRecent[j].saveholdRating) ? (playerRankingsRecent[j].saveholdRating) : 0;
                     var k9Rating = (playerRankingsRecent[j].k9Rating) ? (playerRankingsRecent[j].k9Rating) : 0;
+                    var qsRating = (playerRankingsRecent[j].qsRating) ? (playerRankingsRecent[j].qsRating) : 0;
 
                     teamStatsRecentAvg = {
                         overallRating: (teamStatsRecentAvg.overallRating) ? (teamStatsRecentAvg.overallRating + playerRankingsRecent[j].overallRating) : playerRankingsRecent[j].overallRating,
@@ -412,7 +427,8 @@ export class BuildPlayers extends Component {
                         kRating: (teamStatsRecentAvg.kRating) ? (teamStatsRecentAvg.kRating + kRating) : kRating,
                         holdRating: (teamStatsRecentAvg.holdRating) ? (teamStatsRecentAvg.holdRating + holdRating) : holdRating,
                         saveholdRating: (teamStatsRecentAvg.saveholdRating) ? (teamStatsRecentAvg.saveholdRating + saveholdRating) : saveholdRating,
-                        k9Rating: (teamStatsRecentAvg.k9Rating) ? (teamStatsRecentAvg.k9Rating + k9Rating) : k9Rating
+                        k9Rating: (teamStatsRecentAvg.k9Rating) ? (teamStatsRecentAvg.k9Rating + k9Rating) : k9Rating,
+                        qsRating: (teamStatsRecentAvg.qsRating) ? (teamStatsRecentAvg.qsRating + qsRating) : qsRating
                     }
                     break
                 }
@@ -471,7 +487,8 @@ export class BuildPlayers extends Component {
             kRating: Number(teamStatsSeasonAvg.kRating / pitcherLength).toFixed(2),
             holdRating: Number(teamStatsSeasonAvg.holdRating / pitcherLength).toFixed(2),
             saveholdRating: Number(teamStatsSeasonAvg.saveholdRating / pitcherLength).toFixed(2),
-            k9Rating: Number(teamStatsSeasonAvg.k9Rating / pitcherLength).toFixed(2)
+            k9Rating: Number(teamStatsSeasonAvg.k9Rating / pitcherLength).toFixed(2),
+            qsRating: Number(teamStatsSeasonAvg.qsRating / pitcherLength).toFixed(2)
         }
 
         teamStatsRecentAvg = {
@@ -494,7 +511,8 @@ export class BuildPlayers extends Component {
             kRating: Number(teamStatsRecentAvg.kRating / pitcherLength).toFixed(2),
             holdRating: Number(teamStatsRecentAvg.holdRating / pitcherLength).toFixed(2),
             saveholdRating: Number(teamStatsRecentAvg.saveholdRating / pitcherLength).toFixed(2),
-            k9Rating: Number(teamStatsRecentAvg.k9Rating / pitcherLength).toFixed(2)
+            k9Rating: Number(teamStatsRecentAvg.k9Rating / pitcherLength).toFixed(2),
+            qsRating: Number(teamStatsRecentAvg.qsRating / pitcherLength).toFixed(2)
         }
 
         //Put the [] around the arrays so the table below can know its a single row
@@ -505,6 +523,215 @@ export class BuildPlayers extends Component {
             localStorage.setItem('teamStatsSeasonAvg', JSON.stringify(this.state.teamStatsSeasonAvg));
             localStorage.setItem('teamStatsRecentAvg', JSON.stringify(this.state.teamStatsRecentAvg));
         });
+    }
+
+    statExist(statName) {
+        for (var i = 0; i < this.state.leagueScoring.length; i++) {
+            if (statName === this.state.leagueScoring[i]) {
+                return true;
+            }
+        }
+    }
+
+    orderRankings() {
+        var seasonRankings = [];
+        var recentRankings = [];
+        var scoringList = [];
+        var newSeasonRankings = [];
+        var newRecentRankings = [];
+        var battingCats = 0;
+        var pitchingCats = 0;
+
+        seasonRankings = this.state.playerRankingsSeason;
+        recentRankings = this.state.playerRankingsRecent;
+
+        for (var i = 0; i < this.state.leagueScoring.length; i++) {
+            switch (this.state.leagueScoring[i]) {
+                case 'HR':
+                    scoringList.push('homeRun');
+                    scoringList.push('homeRunRating');
+                    battingCats = battingCats + 1;
+                    break;
+                case 'G':
+                    scoringList.push('games');
+                    scoringList.push('gamesRating');
+                    battingCats = battingCats + 1;
+                    break;
+                case 'H':
+                    scoringList.push('hit');
+                    scoringList.push('hitRating');
+                    battingCats = battingCats + 1;
+                    break;
+                case '2B':
+                    scoringList.push('double');
+                    scoringList.push('doubleRating');
+                    battingCats = battingCats + 1;
+                    break;
+                case 'BB':
+                    scoringList.push('walk');
+                    scoringList.push('walkRating');
+                    battingCats = battingCats + 1;
+                    break;
+                case 'R':
+                    scoringList.push('run');
+                    scoringList.push('runRating');
+                    battingCats = battingCats + 1;
+                    break;
+                case 'RBI':
+                    scoringList.push('rbi');
+                    scoringList.push('rbiRating');
+                    battingCats = battingCats + 1;
+                    break;
+                case 'SB':
+                    scoringList.push('sb');
+                    scoringList.push('sbRating');
+                    battingCats = battingCats + 1;
+                    break;
+                case 'AVG':
+                    scoringList.push('avg');
+                    scoringList.push('avgRating');
+                    battingCats = battingCats + 1;
+                    break;
+                case 'OBP':
+                    scoringList.push('obp');
+                    scoringList.push('obpRating');
+                    battingCats = battingCats + 1;
+                    break;
+                case 'SLG':
+                    scoringList.push('slg');
+                    scoringList.push('slgRating');
+                    battingCats = battingCats + 1;
+                    break;
+                case 'OPS':
+                    scoringList.push('ops');
+                    scoringList.push('opsRating');
+                    battingCats = battingCats + 1;
+                    break;
+                case 'W':
+                    scoringList.push('win');
+                    scoringList.push('winRating');
+                    pitchingCats = pitchingCats + 1;
+                    break;
+                case 'ERA':
+                    scoringList.push('era');
+                    scoringList.push('eraRating');
+                    pitchingCats = pitchingCats + 1;
+                    break;
+                case 'WHIP':
+                    scoringList.push('whip');
+                    scoringList.push('whipRating');
+                    pitchingCats = pitchingCats + 1;
+                    break;
+                case 'IP':
+                    scoringList.push('ip');
+                    scoringList.push('ipRating');
+                    pitchingCats = pitchingCats + 1;
+                    break;
+                case 'SV':
+                    scoringList.push('sv');
+                    scoringList.push('svRating');
+                    pitchingCats = pitchingCats + 1;
+                    break;
+                case 'K':
+                    scoringList.push('k');
+                    scoringList.push('kRating');
+                    pitchingCats = pitchingCats + 1;
+                    break;
+                case 'HD':
+                    scoringList.push('hold');
+                    scoringList.push('holdRating');
+                    pitchingCats = pitchingCats + 1;
+                    break;
+                case 'SVHD':
+                    scoringList.push('savehold');
+                    scoringList.push('saveholdRating');
+                    pitchingCats = pitchingCats + 1;
+                    break;
+                case 'K/9':
+                    scoringList.push('k9');
+                    scoringList.push('k9Rating');
+                    pitchingCats = pitchingCats + 1;
+                    break;
+                case 'QS':
+                    scoringList.push('qs');
+                    scoringList.push('qsRating');
+                    pitchingCats = pitchingCats + 1;
+                    break;
+            }
+        }
+
+        for (i = 0; i < seasonRankings.length; i++) {
+            var playerObject = {
+                'playerName': seasonRankings[i].playerName,
+                'playerType': seasonRankings[i].playerType
+            };
+            var playerValue = 0;
+
+            for (var j = 0; j < scoringList.length; j++) {
+                playerObject[scoringList[j]] = seasonRankings[i][scoringList[j]]
+
+                if (scoringList[j].includes('Rating')) {
+                    playerValue = playerValue + seasonRankings[i][scoringList[j]]
+                }
+            }
+
+            if (seasonRankings[i].playerType === "Batter") {
+                playerObject['overallRating'] = Number(Number(playerValue / battingCats).toFixed(2))
+            } else {
+                playerObject['overallRating'] = Number(Number(playerValue / pitchingCats).toFixed(2))
+            }
+
+             //figure out some way to get batting or pitching categories?
+
+            newSeasonRankings.push(playerObject)
+        }
+
+        for (i = 0; i < recentRankings.length; i++) {
+            var playerObject = {
+                'playerName': recentRankings[i].playerName,
+                'playerType': recentRankings[i].playerType
+            };
+            var playerValue = 0;
+
+            for (var j = 0; j < scoringList.length; j++) {
+                playerObject[scoringList[j]] = recentRankings[i][scoringList[j]]
+
+                if (scoringList[j].includes('Rating')) {
+                    playerValue = playerValue + recentRankings[i][scoringList[j]]
+                }
+            }
+
+            if (recentRankings[i].playerType === "Batter") {
+                playerObject['overallRating'] = Number(Number(playerValue / battingCats).toFixed(2))
+            } else {
+                playerObject['overallRating'] = Number(Number(playerValue / pitchingCats).toFixed(2))
+            }
+
+            newRecentRankings.push(playerObject)
+        }
+
+        newSeasonRankings = newSeasonRankings.sort(function (a, b) {
+            return b.overallRating - a.overallRating;
+        })
+
+        for (i = 0; i < newSeasonRankings.length; i++) {
+            newSeasonRankings[i].overallRank = i + 1;
+        }
+
+        newRecentRankings = newRecentRankings.sort(function (a, b) {
+            return b.overallRating - a.overallRating;
+        })
+
+        for (i = 0; i < newRecentRankings.length; i++) {
+            newRecentRankings[i].overallRank = i + 1;
+        }
+
+        this.setState({
+            playerRankingsSeason: newSeasonRankings,
+            playerRankingsRecent: newRecentRankings
+        }, function () {
+            this.buildTeam()
+        })
     }
 
     render() {
@@ -539,6 +766,7 @@ export class BuildPlayers extends Component {
         var holdHeader = 'holdRating';
         var saveholdHeader = 'saveholdRating';
         var k9Header = 'k9Rating';
+        var qsHeader = 'qsRating';
 
         //column names for the main player columns
         const columnNames = [{
@@ -561,6 +789,7 @@ export class BuildPlayers extends Component {
             accessor: avgHeader,
             minWidth: 50,
             className: "center",
+            show: (this.statExist('AVG')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -579,6 +808,7 @@ export class BuildPlayers extends Component {
             accessor: runHeader,
             minWidth: 50,
             className: "center",
+            show: (this.statExist('R')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -596,6 +826,7 @@ export class BuildPlayers extends Component {
             accessor: rbiHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('RBI')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -613,6 +844,7 @@ export class BuildPlayers extends Component {
             accessor: hrHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('HR')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -630,6 +862,7 @@ export class BuildPlayers extends Component {
             accessor: sbHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('SB')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -647,6 +880,7 @@ export class BuildPlayers extends Component {
             accessor: obpHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('OBP')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -664,6 +898,7 @@ export class BuildPlayers extends Component {
             accessor: slgHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('SLG')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -681,6 +916,7 @@ export class BuildPlayers extends Component {
             accessor: doubleHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('2B')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -698,6 +934,7 @@ export class BuildPlayers extends Component {
             accessor: walkHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('BB')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -715,6 +952,7 @@ export class BuildPlayers extends Component {
             accessor: opsHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('OPS')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -732,6 +970,7 @@ export class BuildPlayers extends Component {
             accessor: winHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('W')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -749,6 +988,7 @@ export class BuildPlayers extends Component {
             accessor: eraHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('ERA')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -766,6 +1006,7 @@ export class BuildPlayers extends Component {
             accessor: whipHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('WHIP')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -783,6 +1024,25 @@ export class BuildPlayers extends Component {
             accessor: ipHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('IP')) ? true : false,
+            getProps: (state, rowInfo, column) => {
+                return {
+                    style: {
+                        backgroundColor: rowInfo && rowInfo.row[ipHeader] > 2 ? brightGreen :
+                            rowInfo.row[ipHeader] > 1 ? mediumGreen :
+                                rowInfo.row[ipHeader] >= .5 ? lightGreen :
+                                    rowInfo.row[ipHeader] < 0 && rowInfo.row[ipHeader] > -1 ? lightRed :
+                                        rowInfo.row[ipHeader] <= -1 && rowInfo.row[ipHeader] > -2 ? mediumRed :
+                                            rowInfo.row[doubleHeader] <= -2 ? brightRed : null,
+                    },
+                };
+            },
+        }, {
+            Header: 'QS',
+            accessor: qsHeader,
+            className: "center",
+            minWidth: 50,
+            show: (this.statExist('QS')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -800,6 +1060,7 @@ export class BuildPlayers extends Component {
             accessor: svHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('SV')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -817,6 +1078,7 @@ export class BuildPlayers extends Component {
             accessor: kHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('K')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -834,6 +1096,7 @@ export class BuildPlayers extends Component {
             accessor: holdHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('HD')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -851,6 +1114,7 @@ export class BuildPlayers extends Component {
             accessor: saveholdHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('SVHD')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -868,6 +1132,7 @@ export class BuildPlayers extends Component {
             accessor: k9Header,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('K/9')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -888,6 +1153,7 @@ export class BuildPlayers extends Component {
             accessor: avgHeader,
             minWidth: 50,
             className: "center",
+            show: (this.statExist('AVG')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -906,6 +1172,7 @@ export class BuildPlayers extends Component {
             accessor: runHeader,
             minWidth: 50,
             className: "center",
+            show: (this.statExist('R')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -923,6 +1190,7 @@ export class BuildPlayers extends Component {
             accessor: rbiHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('RBI')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -940,6 +1208,7 @@ export class BuildPlayers extends Component {
             accessor: hrHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('HR')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -957,6 +1226,7 @@ export class BuildPlayers extends Component {
             accessor: sbHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('SB')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -974,6 +1244,7 @@ export class BuildPlayers extends Component {
             accessor: obpHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('OBP')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -991,6 +1262,7 @@ export class BuildPlayers extends Component {
             accessor: slgHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('SLG')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -1008,6 +1280,7 @@ export class BuildPlayers extends Component {
             accessor: doubleHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('2B')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -1025,6 +1298,7 @@ export class BuildPlayers extends Component {
             accessor: walkHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('BB')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -1042,6 +1316,7 @@ export class BuildPlayers extends Component {
             accessor: opsHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('OPS')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -1059,6 +1334,7 @@ export class BuildPlayers extends Component {
             accessor: winHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('W')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -1076,6 +1352,7 @@ export class BuildPlayers extends Component {
             accessor: eraHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('ERA')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -1093,6 +1370,7 @@ export class BuildPlayers extends Component {
             accessor: whipHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('WHIP')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -1110,6 +1388,25 @@ export class BuildPlayers extends Component {
             accessor: ipHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('IP')) ? true : false,
+            getProps: (state, rowInfo, column) => {
+                return {
+                    style: {
+                        backgroundColor: rowInfo && rowInfo.row[ipHeader] > 2 ? brightGreen :
+                            rowInfo.row[ipHeader] > 1 ? mediumGreen :
+                                rowInfo.row[ipHeader] >= .5 ? lightGreen :
+                                    rowInfo.row[ipHeader] < 0 && rowInfo.row[ipHeader] > -1 ? lightRed :
+                                        rowInfo.row[ipHeader] <= -1 && rowInfo.row[ipHeader] > -2 ? mediumRed :
+                                            rowInfo.row[doubleHeader] <= -2 ? brightRed : null,
+                    },
+                };
+            },
+        }, {
+            Header: 'QS',
+            accessor: qsHeader,
+            className: "center",
+            minWidth: 50,
+            show: (this.statExist('QS')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -1127,6 +1424,7 @@ export class BuildPlayers extends Component {
             accessor: svHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('SV')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -1144,6 +1442,7 @@ export class BuildPlayers extends Component {
             accessor: kHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('K')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -1161,6 +1460,7 @@ export class BuildPlayers extends Component {
             accessor: holdHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('HD')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -1178,6 +1478,7 @@ export class BuildPlayers extends Component {
             accessor: saveholdHeader,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('SVHD')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -1195,6 +1496,7 @@ export class BuildPlayers extends Component {
             accessor: k9Header,
             className: "center",
             minWidth: 50,
+            show: (this.statExist('K/9')) ? true : false,
             getProps: (state, rowInfo, column) => {
                 return {
                     style: {
@@ -1232,96 +1534,121 @@ export class BuildPlayers extends Component {
             headerClassName: 'hide',
             minWidth: 50,
             accessor: 'avg',
+            show: (this.statExist('AVG')) ? true : false,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'run',
             minWidth: 50,
+            show: (this.statExist('R')) ? true : false,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'rbi',
             minWidth: 50,
+            show: (this.statExist('RBI')) ? true : false,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'homeRun',
             minWidth: 50,
+            show: (this.statExist('HR')) ? true : false,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'sb',
             minWidth: 50,
+            show: (this.statExist('SB')) ? true : false,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'obp',
             minWidth: 50,
+            show: (this.statExist('OBP')) ? true : false,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'slg',
             minWidth: 50,
+            show: (this.statExist('SLG')) ? true : false,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'double',
             minWidth: 50,
+            show: (this.statExist('2B')) ? true : false,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'walk',
             minWidth: 50,
+            show: (this.statExist('BB')) ? true : false,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'ops',
             minWidth: 50,
+            show: (this.statExist('OPS')) ? true : false,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'win',
             minWidth: 50,
+            show: (this.statExist('W')) ? true : false,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'era',
             minWidth: 50,
+            show: (this.statExist('ERA')) ? true : false,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'whip',
             minWidth: 50,
+            show: (this.statExist('WHIP')) ? true : false,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'ip',
             minWidth: 50,
+            show: (this.statExist('IP')) ? true : false,
+            className: "center"
+        }, {
+            headerClassName: 'hide',
+            accessor: 'qs',
+            minWidth: 50,
+            show: (this.statExist('QS')) ? true : false,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'sv',
             minWidth: 50,
+            show: (this.statExist('SV')) ? true : false,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'k',
             minWidth: 50,
+            show: (this.statExist('K')) ? true : false,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'hold',
             minWidth: 50,
+            show: (this.statExist('HD')) ? true : false,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'savehold',
             minWidth: 50,
+            show: (this.statExist('SVHD')) ? true : false,
             className: "center"
         }, {
             headerClassName: 'hide',
             accessor: 'k9',
             minWidth: 50,
+            show: (this.statExist('K/9')) ? true : false,
             className: "center"
         }]
 
