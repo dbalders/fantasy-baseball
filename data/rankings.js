@@ -407,7 +407,6 @@ exports.getRankings = function (req, res) {
 
                 for (var i = 0; i < mlbSeasonPitchers.length; i++) {
                     if (mlbSeasonPitchers[i].IP > 0) {
-                        // console.log(mlbSeasonPitchers[i].svRating)
                         PlayerSeasonData.create({
                             playerId: mlbSeasonPitchers[i].index,
                             playerName: mlbSeasonPitchers[i].Name,
@@ -695,7 +694,6 @@ exports.getRankings = function (req, res) {
     });
 
     fs.readFile('./public/json/pitcherRankingsRecent.json', (err, data) => {
-        console.log('in pitcher')
         if (err) throw err;
         let mlbRecentPitchersJSON = JSON.parse(data);
         var mlbRecentPitchers = [];
@@ -734,14 +732,9 @@ exports.getRankings = function (req, res) {
         var saveholdRecentAvg;
         var k9RecentAvg;
 
-        console.log(Object.keys(mlbRecentPitchersJSON).length)
-
         for (var i = 0; i < Object.keys(mlbRecentPitchersJSON).length; i++) {
-            console.log(i)
             mlbRecentPitchers.push(mlbRecentPitchersJSON[i])
         }
-
-        console.log(mlbRecentPitchers.length)
 
         async.forEachOf(mlbRecentPitchers, function (value, i, callback) {
             if (mlbRecentPitchers[i].IP > 0) {
@@ -758,11 +751,8 @@ exports.getRankings = function (req, res) {
                 k9RecentArray.push(mlbRecentPitchers[i]["K/9"]);
             }
 
-            console.log('here first')
-
             callback();
         }, function (err) {
-            console.log('here')
 
             gamesRecentStDev = stats.stdev(gamesRecentArray).toFixed(2);
             winRecentStDev = stats.stdev(winRecentArray).toFixed(2);
@@ -786,8 +776,6 @@ exports.getRankings = function (req, res) {
             saveholdRecentAvg = stats.mean(saveholdRecentArray).toFixed(2);
             k9RecentAvg = stats.mean(k9RecentArray).toFixed(2);
 
-            console.log(holdRecentArray)
-
             for (var i = 0; i < mlbRecentPitchers.length; i++) {
                 var gamesRating = Number((mlbRecentPitchers[i].G - gamesRecentAvg) / gamesRecentStDev).toFixed(2);
                 var winRating = Number((mlbRecentPitchers[i].W - winRecentAvg) / winRecentStDev).toFixed(2);
@@ -799,20 +787,9 @@ exports.getRankings = function (req, res) {
                 var holdRating = Number((mlbRecentPitchers[i].HLD - holdRecentAvg) / (holdRecentStDev * 2)).toFixed(2);
                 var saveholdRating = Number((Number(mlbRecentPitchers[i].SV + mlbRecentPitchers[i].HLD) - saveholdRecentAvg) / (saveholdRecentStDev * 2)).toFixed(2);
                 var k9Rating = Number((mlbRecentPitchers[i]["K/9"] - k9RecentAvg) / k9RecentStDev).toFixed(2);
-                // console.log(gamesRating + " gamesRating")
-                // console.log(winRating + " winRating")
-                // console.log(eraRating + " eraRating")
-                // console.log(whipRating + " whipRating")
-                // console.log(ipRating + " ipRating")
-                // console.log(svRating + " svRating")
-                // console.log(kRating + " kRating")
-                // console.log(holdRating + " holdRating")
-                // console.log(saveholdRating + " saveholdRating")
-
 
                 var overallRating = ((+winRating + +eraRating + +whipRating + +ipRating + +svRating + +kRating + +holdRating + +saveholdRating + +k9Rating + +svRating) / 9).toFixed(2);
 
-                // console.log(overallRating)
                 mlbRecentPitchers[i].gamesRating = gamesRating;
                 mlbRecentPitchers[i].winRating = winRating;
                 mlbRecentPitchers[i].eraRating = eraRating;
@@ -834,13 +811,8 @@ exports.getRankings = function (req, res) {
 
                 mlbRecentPitchers.sort((a, b) => Number(b.overallRating) - Number(a.overallRating));
 
-                console.log(mlbRecentPitchers.length)
-                console.log('pitcher')
-
                 for (var i = 0; i < mlbRecentPitchers.length; i++) {
                     if (mlbRecentPitchers[i].IP > 0) {
-                        // console.log(mlbRecentPitchers[i].svRating)
-                        console.log(overallRating)
                         PlayerRecentData.create({
                             playerId: mlbRecentPitchers[i].index,
                             playerName: mlbRecentPitchers[i].Name,

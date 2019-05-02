@@ -459,8 +459,8 @@ export class BuildPlayers extends Component {
         this.setState({
             teamStatsSeason: teamStatsSeason,
             teamStatsRecent: teamStatsRecent,
-            playerPickupsSeason: playerPickupsSeason,
-            playerPickupsRecent: playerPickupsRecent
+            playerPickupsSeason: teamPickupsSeason,
+            playerPickupsRecent: teamPickupsRecent
         }, function () {
             localStorage.setItem('teamStatsSeason', JSON.stringify(teamStatsSeason));
             localStorage.setItem('teamStatsRecent', JSON.stringify(teamStatsRecent));
@@ -680,8 +680,6 @@ export class BuildPlayers extends Component {
             } else {
                 playerObject['overallRating'] = Number(Number(playerValue / pitchingCats).toFixed(2))
             }
-
-             //figure out some way to get batting or pitching categories?
 
             newSeasonRankings.push(playerObject)
         }
