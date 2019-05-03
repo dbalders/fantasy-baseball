@@ -4,8 +4,6 @@ import Select from 'react-select';
 import { EspnInput } from './EspnInput';
 import { EspnModal } from './EspnModal';
 import ReactGA from 'react-ga';
-ReactGA.initialize('UA-135378238-2');
-ReactGA.pageview("/");
 
 export class HomePage extends Component {
     constructor(props) {
@@ -21,7 +19,10 @@ export class HomePage extends Component {
         this.espnIdError = this.espnIdError.bind(this);
     }
 
-    componentDidMount() { }
+    componentDidMount() {
+        ReactGA.initialize('UA-135378238-2');
+        ReactGA.pageview("/");
+    }
 
     showEspnTeamInput = (teamsArray, espnId) => {
 

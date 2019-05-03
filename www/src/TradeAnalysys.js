@@ -7,8 +7,6 @@ import stringSimilarity from 'string-similarity';
 import { callApi } from './CallApi';
 import { TradeModal } from './TradeModal'
 import ReactGA from 'react-ga';
-ReactGA.initialize('UA-135378238-2');
-ReactGA.pageview("/trade");
 
 export class TradeAnalysis extends Component {
     constructor(props) {
@@ -50,6 +48,8 @@ export class TradeAnalysis extends Component {
     }
 
     componentDidMount() {
+        ReactGA.initialize('UA-135378238-2');
+        ReactGA.pageview("/trade");
         var leagueId = Cookies.get('leagueId');
         var teamId = Cookies.get('teamId');
         var seasonStats = JSON.parse(localStorage.getItem('teamStatsSeason'));
@@ -96,8 +96,8 @@ export class TradeAnalysis extends Component {
             var kRating = 0;
             var holdRating = 0;
             var saveholdRating = 0;
-            var k9Rating = 0;       
-            
+            var k9Rating = 0;
+
             if (selected === null) {
                 selected = []
             }

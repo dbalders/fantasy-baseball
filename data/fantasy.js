@@ -250,6 +250,40 @@ exports.getYahooData = function (req, res, options) {
                         }
                     )
                     callback(null, 2);
+                },
+                function (callback) {
+                    //Use the league ID to get a list of all the teams and their players
+                    yf.league.settings(leagueId,
+                        function cb(err, data) {
+                            if (err) {
+                                console.log(err);
+                            }
+                            else {
+                                scoringData = data.settings.stat_categories;
+                                var scoringArray = [];
+                                for (var i = 0; i < scoringData.length; i++) {
+                                    if (scoringData[i].display_name !== "H/AB") {
+                                        scoringArray.push(scoringData[i].display_name)
+                                    }
+                                    
+                                }
+                                Scoring.findOneAndUpdate({
+                                    leagueId: leagueId
+                                }, {
+                                        leagueId: leagueId,
+                                        scoring: scoringArray
+                                    }, {
+                                        upsert: true
+                                    },
+                                    function (err, doc) {
+                                        // if (err) return 
+                                        if (doc !== null) {
+                                            doc.scoringArray = scoringArray;
+                                        }
+                                    });
+                            }
+                        })
+                    callback(null, 2);
                 }
             ]);
         }
