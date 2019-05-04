@@ -202,6 +202,14 @@ code {
     padding: 5px;
 }
 
+.position-select {
+    width: 250px;
+    margin: auto auto auto 50px;
+    color: black;
+    font-size: 1.25rem;
+    padding: 5px;
+}
+
 .espn-dropdown-items__menu {
     font-size: 1rem;
 }
@@ -604,6 +612,20 @@ code {
 }
 
 .react-select__dropdown-indicator {
+    color: black !important;
+}
+
+.react-select-pos__control {
+    border-color: black !important;
+    box-shadow: none !important;
+    cursor: pointer;
+}
+
+.react-select-pos__indicator-separator {
+    background-color: black !important;
+}
+
+.react-select-pos__dropdown-indicator {
     color: black !important;
 }
 

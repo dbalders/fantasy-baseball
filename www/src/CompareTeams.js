@@ -283,7 +283,7 @@ export class CompareTeams extends Component {
         return (
             <div className={`table-group ${this.state.showCompareTable ? 'compare-table-group' : ''}`}>
 
-                <h3 className="team-table-header compare-header">{this.props.title}</h3>
+                <h2 className="team-table-header compare-header">{this.props.title}</h2>
                 <div className="flex">
                     <div className="team-select">
                         <Select

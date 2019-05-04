@@ -28,11 +28,22 @@ exports.getRankings = function (req, res) {
         let playerRankings = JSON.parse(data);
 
         for (var i = 0; i < playerRankings.length; i++) {
+
+            var injStatus = playerRankings[i].Inj;
+            if (injStatus === 0) {
+                injStatus = '';
+            }
+            if (injStatus === 'X') {
+                injStatus = 'DL';
+            }
+
             if (playerRankings[i].playerType === "Batter") {
                 if (playerRankings[i].g > 0) {
                     PlayerSeasonData.create({
                         playerName: playerRankings[i].Name,
                         playerType: playerRankings[i].playerType,
+                        pos: playerRankings[i].Pos,
+                        inj: injStatus,
                         team: playerRankings[i].Team,
                         games: playerRankings[i].g,
                         hit: playerRankings[i].H,
@@ -60,7 +71,7 @@ exports.getRankings = function (req, res) {
                         obpRating: playerRankings[i].OBPV,
                         slgRating: playerRankings[i].SLGV,
                         opsRating: playerRankings[i].OPSV,
-    
+
                         win: 0,
                         era: 0,
                         whip: 0,
@@ -82,7 +93,7 @@ exports.getRankings = function (req, res) {
                         saveholdRating: 0,
                         k9Rating: 0,
                         qsRating: 0,
-    
+
                         overallRating: playerRankings[i].Value,
                         overallRank: playerRankings[i].Rank
                     });
@@ -94,6 +105,8 @@ exports.getRankings = function (req, res) {
                         playerType: playerRankings[i].playerType,
                         team: playerRankings[i].Team,
                         games: playerRankings[i].g,
+                        pos: playerRankings[i].Pos,
+                        inj: injStatus,
                         hit: 0,
                         double: 0,
                         triple: 0,
@@ -119,7 +132,7 @@ exports.getRankings = function (req, res) {
                         obpRating: 0,
                         slgRating: 0,
                         opsRating: 0,
-    
+
                         win: playerRankings[i].W,
                         era: playerRankings[i].ERA,
                         whip: playerRankings[i].WHIP,
@@ -141,21 +154,30 @@ exports.getRankings = function (req, res) {
                         saveholdRating: playerRankings[i].SnHV,
                         k9Rating: playerRankings[i]["K/9V"],
                         qsRating: playerRankings[i].QSV,
-    
+
                         overallRating: playerRankings[i].Value,
                         overallRank: playerRankings[i].Rank
                     });
                 }
-            }       
+            }
         }
     });
 
     fs.readFile('./public/json/rankings_recent.json', (err, data) => {
         if (err) throw err;
-        
+
         let playerRankingsRecent = JSON.parse(data);
 
         for (var j = 0; j < playerRankingsRecent.length; j++) {
+
+            var injStatus = playerRankingsRecent[j].Inj;
+            if (injStatus === 0) {
+                injStatus = '';
+            }
+            if (injStatus === 'X') {
+                injStatus = 'DL';
+            }
+
             if (playerRankingsRecent[j].playerType === "Batter") {
                 if (playerRankingsRecent[j].g > 0) {
                     PlayerRecentData.create({
@@ -163,6 +185,8 @@ exports.getRankings = function (req, res) {
                         playerType: playerRankingsRecent[j].playerType,
                         team: playerRankingsRecent[j].Team,
                         games: playerRankingsRecent[j].g,
+                        pos: playerRankingsRecent[j].Pos,
+                        inj: injStatus,
                         hit: playerRankingsRecent[j].H,
                         double: playerRankingsRecent[j]['2B'],
                         triple: playerRankingsRecent[j]['3B'],
@@ -188,7 +212,7 @@ exports.getRankings = function (req, res) {
                         obpRating: playerRankingsRecent[j].OBPV,
                         slgRating: playerRankingsRecent[j].SLGV,
                         opsRating: playerRankingsRecent[j].OPSV,
-    
+
                         win: 0,
                         era: 0,
                         whip: 0,
@@ -210,7 +234,7 @@ exports.getRankings = function (req, res) {
                         saveholdRating: 0,
                         k9Rating: 0,
                         qsRating: 0,
-    
+
                         overallRating: playerRankingsRecent[j].Value,
                         overallRank: playerRankingsRecent[j].Rank
                     });
@@ -222,6 +246,8 @@ exports.getRankings = function (req, res) {
                         playerType: playerRankingsRecent[j].playerType,
                         team: playerRankingsRecent[j].Team,
                         games: playerRankingsRecent[j].g,
+                        pos: playerRankingsRecent[j].Pos,
+                        inj: injStatus,
                         hit: 0,
                         double: 0,
                         triple: 0,
@@ -247,7 +273,7 @@ exports.getRankings = function (req, res) {
                         obpRating: 0,
                         slgRating: 0,
                         opsRating: 0,
-    
+
                         win: playerRankingsRecent[j].W,
                         era: playerRankingsRecent[j].ERA,
                         whip: playerRankingsRecent[j].WHIP,
@@ -269,12 +295,12 @@ exports.getRankings = function (req, res) {
                         saveholdRating: playerRankingsRecent[j].SnHV,
                         k9Rating: playerRankingsRecent[j]["K/9V"],
                         qsRating: playerRankingsRecent[j].QSV,
-    
+
                         overallRating: playerRankingsRecent[j].Value,
                         overallRank: playerRankingsRecent[j].Rank
                     });
                 }
-            }       
+            }
         }
     });
 }

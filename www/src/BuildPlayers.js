@@ -6,9 +6,7 @@ import stringSimilarity from 'string-similarity';
 import { CompareTeams } from './CompareTeams';
 import { callApi } from './CallApi';
 import ReactGA from 'react-ga';
-import { stat } from 'fs';
-ReactGA.initialize('UA-135378238-2');
-ReactGA.pageview("/?logged-in=true");
+import Select from 'react-select';
 
 export class BuildPlayers extends Component {
     constructor(props) {
@@ -41,7 +39,8 @@ export class BuildPlayers extends Component {
             statsHeaders: [],
             updateCompareTable: false,
             drafted: true,
-            leagueScoring: []
+            leagueScoring: [],
+            posSelected: "All"
         }
         this.changeStats = this.changeStats.bind(this);
         this.changeRankings = this.changeRankings.bind(this);
@@ -49,6 +48,8 @@ export class BuildPlayers extends Component {
     }
 
     componentDidMount() {
+        ReactGA.initialize('UA-135378238-2');
+        ReactGA.pageview("/?logged-in=true");
         //Grab team and league ID from cookies
         var leagueId = Cookies.get('leagueId');
         var teamId = Cookies.get('teamId');
@@ -460,7 +461,9 @@ export class BuildPlayers extends Component {
             teamStatsSeason: teamStatsSeason,
             teamStatsRecent: teamStatsRecent,
             playerPickupsSeason: teamPickupsSeason,
-            playerPickupsRecent: teamPickupsRecent
+            playerPickupsRecent: teamPickupsRecent,
+            playerPickupsSeasonFiltered: teamPickupsSeason,
+            playerPickupsRecentFiltered: teamPickupsRecent
         }, function () {
             localStorage.setItem('teamStatsSeason', JSON.stringify(teamStatsSeason));
             localStorage.setItem('teamStatsRecent', JSON.stringify(teamStatsRecent));
@@ -663,7 +666,9 @@ export class BuildPlayers extends Component {
         for (i = 0; i < seasonRankings.length; i++) {
             var playerObject = {
                 'playerName': seasonRankings[i].playerName,
-                'playerType': seasonRankings[i].playerType
+                'playerType': seasonRankings[i].playerType,
+                'inj': seasonRankings[i].inj,
+                'pos': seasonRankings[i].pos
             };
             var playerValue = 0;
 
@@ -687,7 +692,9 @@ export class BuildPlayers extends Component {
         for (i = 0; i < recentRankings.length; i++) {
             var playerObject = {
                 'playerName': recentRankings[i].playerName,
-                'playerType': recentRankings[i].playerType
+                'playerType': recentRankings[i].playerType,
+                'inj': recentRankings[i].inj,
+                'pos': recentRankings[i].pos
             };
             var playerValue = 0;
 
@@ -729,6 +736,34 @@ export class BuildPlayers extends Component {
             playerRankingsRecent: newRecentRankings
         }, function () {
             this.buildTeam()
+        })
+    }
+
+    filterByPos = (posSelected) => {
+        var filterPosArraySeason = [];
+        var filterPosArrayRecent = []
+
+        if (posSelected.value === "All") {
+            var filterPosArraySeason = this.state.playerPickupsSeason;
+            var filterPosArrayRecent = this.state.playerPickupsRecent;
+        } else {
+            var allPosArraySeason = this.state.playerPickupsSeason;
+            var allPosArrayRecent = this.state.playerPickupsRecent;
+            for (var i = 0; i < allPosArraySeason.length; i++) {
+                if (allPosArraySeason[i].pos === posSelected.value) {
+                    filterPosArraySeason.push(allPosArraySeason[i])
+                }
+            }
+            for (i = 0; i < allPosArrayRecent.length; i++) {
+                if (allPosArrayRecent[i].pos === posSelected.value) {
+                    filterPosArrayRecent.push(allPosArrayRecent[i])
+                }
+            }
+        }
+        this.setState({
+            posSelected, posSelected,
+            playerPickupsSeasonFiltered: filterPosArraySeason,
+            playerPickupsRecentFiltered: filterPosArrayRecent
         })
     }
 
@@ -781,6 +816,16 @@ export class BuildPlayers extends Component {
             Header: 'Name',
             accessor: nameHeader,
             width: 150,
+            className: "center"
+        }, {
+            Header: 'Inj',
+            accessor: 'inj',
+            width: 75,
+            className: "center"
+        }, {
+            Header: 'Pos',
+            accessor: 'pos',
+            width: 50,
             className: "center"
         }, {
             Header: 'Avg',
@@ -1684,7 +1729,7 @@ export class BuildPlayers extends Component {
             if (this.state.drafted === true) {
                 loading =
                     <div className="site-loading flex">
-                        <div className="site-loading-text">Loading...</div>
+                        <div className="site-loading-text">Loading in your data...</div>
                     </div>;
             } else {
                 loading =
@@ -1694,6 +1739,20 @@ export class BuildPlayers extends Component {
             }
 
         }
+
+        var positionOptions = [
+            { value: 'All', label: 'All' },
+            { value: 'C', label: 'C' },
+            { value: '1B', label: '1B' },
+            { value: '2B', label: '2B' },
+            { value: 'SS', label: 'SS' },
+            { value: '3B', label: '3B' },
+            { value: 'OF', label: 'OF' },
+            { value: 'SP', label: 'SP' },
+            { value: 'RP', label: 'RP' }
+        ];
+
+        const { posSelected } = this.state;
 
         return (
             <div className="table-container flex-vertical">
@@ -1706,7 +1765,7 @@ export class BuildPlayers extends Component {
                     <div className="table-info-tables">
                         <div className="table-group">
                             <div className={`team-table-container ${this.state.showRecentRankings ? 'hide' : ''}`}>
-                                <h3 className="team-table-header">Team Rankings</h3>
+                                <h2 className="team-table-header">Team Rankings</h2>
                                 <div className="team-avg-table">
                                     <ReactTable
                                         data={this.state.teamStatsSeasonAvg}
@@ -1722,7 +1781,7 @@ export class BuildPlayers extends Component {
                                         showPagination={false}
                                         minRows={0}
                                         defaultSortDesc={true}
-                                        defaultPageSize={-1}
+                                        defaultPageSize={100}
                                         defaultSorted={[{
                                             id: 'overallRank',
                                             desc: false
@@ -1745,7 +1804,7 @@ export class BuildPlayers extends Component {
                         </div>
 
                         <div className={`team-table-container ${this.state.showRecentRankings ? '' : 'hide'}`}>
-                            <h3 className="team-table-header">Team Rankings</h3>
+                            <h2 className="team-table-header">Team Rankings</h2>
                             <div className="team-avg-table">
                                 <ReactTable
                                     data={this.state.teamStatsRecentAvg}
@@ -1761,11 +1820,11 @@ export class BuildPlayers extends Component {
                                     showPagination={false}
                                     minRows={0}
                                     defaultSortDesc={true}
+                                    defaultPageSize={100}
                                     defaultSorted={[{
                                         id: 'overallRank',
                                         desc: false
                                     }]}
-                                    defaultPageSize={-1}
                                     SubComponent={row => {
                                         return (
                                             <ReactTable
@@ -1784,10 +1843,23 @@ export class BuildPlayers extends Component {
                         {compareTeamsHTML}
 
                         <div className={`team-table-container ${this.state.showRecentRankings ? 'hide' : ''}`}>
-                            <h3 className="team-table-header">Potential Pickup Targets</h3>
+                            <h2 className="team-table-header">Potential Pickup Targets</h2>
+                            <div className="flex">
+                                <div className="position-select">
+                                    <Select
+                                        value={posSelected}
+                                        onChange={this.filterByPos}
+                                        options={positionOptions}
+                                        className='react-select-container-pos'
+                                        classNamePrefix='react-select-pos'
+                                        placeholder='Filter By Position...'
+                                    />
+                                </div>
+                            </div>
+
                             <div className="team-table">
                                 <ReactTable
-                                    data={this.state.playerPickupsSeason}
+                                    data={this.state.playerPickupsSeasonFiltered}
                                     columns={columnNames}
                                     showPagination={false}
                                     minRows={0}
@@ -1814,9 +1886,21 @@ export class BuildPlayers extends Component {
 
                         <div className={`team-table-container ${this.state.showRecentRankings ? '' : 'hide'}`}>
                             <h3 className="team-table-header">Potential Pickup Targets</h3>
+                            <div className="flex">
+                                <div className="position-select">
+                                    <Select
+                                        value={posSelected}
+                                        onChange={this.filterByPos}
+                                        options={positionOptions}
+                                        className='react-select-container-pos'
+                                        classNamePrefix='react-select-pos'
+                                        placeholder='Filter By Position...'
+                                    />
+                                </div>
+                            </div>
                             <div className="team-table">
                                 <ReactTable
-                                    data={this.state.playerPickupsRecent}
+                                    data={this.state.playerPickupsRecentFiltered}
                                     columns={columnNames}
                                     showPagination={false}
                                     minRows={0}
