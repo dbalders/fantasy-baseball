@@ -1575,6 +1575,14 @@ export class BuildPlayers extends Component {
             )
         }, {
             headerClassName: 'hide',
+            width: 75,
+            className: "center"
+        }, {
+            headerClassName: 'hide',
+            width: 50,
+            className: "center"
+        }, {
+            headerClassName: 'hide',
             minWidth: 50,
             accessor: 'avg',
             show: (this.statExist('AVG')) ? true : false,
