@@ -198,11 +198,11 @@ def getTableJson(tableHTML, outputName):
             for k in range(len(rankings_table_td)):
                 pitcher = False
     
-                if rankings_table_td[8].string.strip() == 'SP':
+                if rankings_table_td[7].string.strip() == 'SP':
                     pitcher = True
                     rankings_table_object["playerType"] = "Pitcher"
 
-                elif rankings_table_td[8].string.strip() == 'RP':
+                elif rankings_table_td[7].string.strip() == 'RP':
                     pitcher = True
                     rankings_table_object["playerType"] = "Pitcher"
 
