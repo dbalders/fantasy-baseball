@@ -82,8 +82,10 @@ exports.list_teams_players = function (req, res) {
         if (err)
             res.send(err);
 
-        players = players[0].players;
-
+        if (players.length !== 0) {
+            players = players[0].players;
+        }
+        
         var teamPlayers = [];
         for (var i = 0; i < players.length; i++) {
             if (players[i].team_key === teamKey) {
@@ -320,7 +322,6 @@ exports.create_espn_user = function (req, res) {
         if (error) {
             console.log(error)
         } else {
-            console.log(result)
             if (!result) {
                 Payment.create({
                     leagues: {

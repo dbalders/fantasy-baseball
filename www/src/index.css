@@ -202,6 +202,13 @@ code {
     padding: 5px;
 }
 
+.team-select-yahoo {
+    width: 350px;
+    margin: 0 auto 0 0;
+    color: black;
+    font-size: 1.25rem;
+}
+
 .position-select {
     width: 250px;
     margin: auto auto auto 50px;
@@ -607,6 +614,13 @@ code {
     cursor: pointer;
 }
 
+.react-select__placeholder {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 95%;
+}
+
 .react-select__indicator-separator {
     background-color: black !important;
 }
@@ -626,6 +640,42 @@ code {
 }
 
 .react-select-pos__dropdown-indicator {
+    color: black !important;
+}
+
+.react-select-team__control {
+    border-color: black !important;
+    box-shadow: none !important;
+    cursor: pointer;
+    height: 51px;
+}
+
+.react-select-team__placeholder {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 95%;
+}
+
+.react-select-team__indicator-separator {
+    background-color: black !important;
+}
+
+.react-select-team__dropdown-indicator {
+    color: black !important;
+}
+
+.react-select-team-pos__control {
+    border-color: black !important;
+    box-shadow: none !important;
+    cursor: pointer;
+}
+
+.react-select-team-pos__indicator-separator {
+    background-color: black !important;
+}
+
+.react-select-team-pos__dropdown-indicator {
     color: black !important;
 }
 

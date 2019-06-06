@@ -19,6 +19,7 @@
     "mongoose": "^4.13.7",
     "nba": "^4.5.0",
     "npm": "^6.4.1",
+    "puppeteer": "^1.17.0",
     "request": "^2.75.0",
     "stats-lite": "^2.2.0",
     "string-similarity": "^2.0.0",

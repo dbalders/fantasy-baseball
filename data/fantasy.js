@@ -36,7 +36,11 @@ exports.getYahooData = function (req, res, options) {
             var accessToken = body.access_token;
             var leagueIdShort;
             var leagueId;
+            var leagueIds = [];
+            var leaguesArray = [];
+            var leagues;
             var email;
+            var redirectUrl = 0;
 
             //Get either current year or last year for when season rolls into the new year
             var currentYear = (new Date());
@@ -65,11 +69,13 @@ exports.getYahooData = function (req, res, options) {
 
                             //Now that we have overall ID, get user specific league ID
                             yf.user.game_leagues(leagueIdShort, function cb(err, data) {
-                                leagueId = data.games[0].leagues[0][0].league_key;
-                                res.cookie('leagueId', leagueId);
-                                res.cookie('fantasyPlatform', 'yahoo');
-                                res.cookie('yahooAccessToken', accessToken);
-                                callback(null, 1);
+                                if (data !== undefined) {
+                                    leagues = data.games[0].leagues
+                                    leagueId = data.games[0].leagues[0][0].league_key;
+                                    res.cookie('fantasyPlatform', 'yahoo');
+                                    res.cookie('yahooAccessToken', accessToken);
+                                    callback(null, 1);
+                                }
                             })
                         })
                 },
@@ -80,209 +86,250 @@ exports.getYahooData = function (req, res, options) {
                         function cb(err, data) {
                             if (err)
                                 console.log(err);
-                            email = data.teams[0].teams[0].managers[0].email;
-                            var teamId = data.teams[0].teams[0].team_id
-                            res.cookie('yahooEmail', email);
 
-                            if (email) {
-                                Payment.findOne({
-                                    yahooEmail: email
-                                }, function (error, result) {
-                                    if (error) {
-                                        console.log(error)
-                                    } else {
-                                        if (result) {
-                                            if (result.paid) {
-                                                res.cookie('paid', true);
+                            for (var i = 0; i < leagues.length; i++) {
+                                leagueId = leagues[i][0].league_key;
+                                
+                                email = data.teams[0].teams[0].managers[0].email;
+
+                                var teamId = data.teams[0].teams[i].team_id;
+                                var teamName = data.teams[0].teams[i].name;
+
+                                leagueIds.push({
+                                    leagueId: leagueId,
+                                    teamName: teamName,
+                                    teamId: teamId
+                                });
+
+                                leaguesArray.push({
+                                    leagueId: leagueId,
+                                    teamId: teamId
+                                })
+
+                                res.cookie('yahooEmail', email);
+
+                                if (email) {
+                                    Payment.findOneAndUpdate({
+                                        yahooEmail: email
+                                    }, {
+                                            yahooEmail: email,
+                                            leagues: leaguesArray,
+                                        }, {
+                                            upsert: true
+                                        },
+                                        function (error, result) {
+                                            if (error) {
+                                                console.log(error)
                                             } else {
+                                                if (result) {
+                                                    if (result.paid) {
+                                                        res.cookie('paid', true);
+                                                    } else {
+                                                        res.cookie('paid', false);
+                                                    }
+                                                } else {
+                                                    Payment.create({
+                                                        'paymentAmount': 0,
+                                                        'yahooEmail': email,
+                                                        'leagues': leaguesArray,
+                                                        'paid': false,
+                                                        'seasonId': leagueIdShort,
+                                                        'email': ''
+                                                    })
+                                                    res.cookie('paid', false);
+                                                }
+                                            }
+                                        });
+
+                                } else {
+                                    //Have yahoo email hidden
+                                    Payment.findOne({
+                                        leagues: {
+                                            $elemMatch: {
+                                                leagueId: leagueId,
+                                                teamId: teamId
+                                            }
+                                        }
+                                    }, function (error, result) {
+                                        if (error) {
+                                            console.log(error)
+                                        } else {
+                                            if (result) {
+                                                if (result.paid) {
+                                                    res.cookie('paid', true);
+                                                } else {
+                                                    res.cookie('paid', false);
+                                                }
+                                            } else {
+                                                Payment.create({
+                                                    'paymentAmount': 0,
+                                                    'yahooEmail': email,
+                                                    'leagues': {
+                                                        leagueId: leagueId,
+                                                        teamId: teamId
+                                                    },
+                                                    'paid': false,
+                                                    'seasonId': leagueIdShort,
+                                                    'email': ''
+                                                })
                                                 res.cookie('paid', false);
                                             }
-                                        } else {
-                                            Payment.create({
-                                                'paymentAmount': 0,
-                                                'yahooEmail': email,
-                                                'leagues': [{
-                                                    leagueId: leagueId,
-                                                    teamId: teamId
-                                                }],
-                                                'paid': false,
-                                                'seasonId': leagueIdShort,
-                                                'email': ''
-                                            })
-                                            res.cookie('paid', false);
                                         }
-                                    }
-                                })
-                            } else {
-                                //Have yahoo email hidden
-                                Payment.findOne({
-                                    leagues: {
-                                        $elemMatch: {
-                                            leagueId: leagueId,
-                                            teamId: teamId
-                                        }
-                                    }
-                                }, function (error, result) {
-                                    if (error) {
-                                        console.log(error)
-                                    } else {
-                                        if (result) {
-                                            if (result.paid) {
-                                                res.cookie('paid', true);
-                                            } else {
-                                                res.cookie('paid', false);
-                                            }
-                                        } else {
-                                            Payment.create({
-                                                'paymentAmount': 0,
-                                                'yahooEmail': email,
-                                                'leagues': {
-                                                    leagueId: leagueId,
-                                                    teamId: teamId
-                                                },
-                                                'paid': false,
-                                                'seasonId': leagueIdShort,
-                                                'email': ''
-                                            })
-                                            res.cookie('paid', false);
-                                        }
-                                    }
-                                })
+                                    })
+                                }
+
                             }
                             callback();
                         }
                     );
                 },
                 function (callback) {
+                    leagueId = leaguesArray[0].leagueId;
+                    //If multiple leagues, add it to a cookie
+                    res.cookie('leagueIds', JSON.stringify(leagueIds))
+                    res.cookie('leagueId', leagueId);
+                    res.cookie('teamName', leagueIds[0].teamName);
+                    res.cookie('teamId', leaguesArray[0].teamId);
                     //Use the league ID to get a list of all the teams and their players
-                    yf.league.teams(leagueId,
-                        function cb(err, data) {
-                            if (err)
-                                console.log(err);
-                            else
-                                //For each team, grab their team key, id, and name and store it
-                                async.forEachOf(data.teams, function (value, teamKey, callback) {
-                                    var currentTeam = {
-                                        'team_key': data.teams[teamKey].team_key,
-                                        'team_id': Number(data.teams[teamKey].team_id),
-                                        'name': data.teams[teamKey].name
-                                    }
-                                    teams.push(currentTeam);
+                    for (var i = 0; i < leagues.length; i++) {
+                        playerNames = [];
+                        leagueId = leagues[i][0].league_key;
+                        yf.league.teams(leagueId,
+                            function cb(err, data) {
+                                if (err)
+                                    console.log(err);
+                                else
+                                    //For each team, grab their team key, id, and name and store it
+                                    async.forEachOf(data.teams, function (value, teamKey, callback) {
+                                        var currentTeam = {
+                                            'team_key': data.teams[teamKey].team_key,
+                                            'team_id': Number(data.teams[teamKey].team_id),
+                                            'name': data.teams[teamKey].name
+                                        }
+                                        teams.push(currentTeam);
 
-                                    if (data.teams[teamKey].is_owned_by_current_login !== undefined) {
-                                        res.cookie('teamId', data.teams[teamKey].team_id)
-                                    }
+                                        // if (data.teams[teamKey].is_owned_by_current_login !== undefined) {
+                                        //     res.cookie('teamId', data.teams[teamKey].team_id)
+                                        // }
 
 
-                                    callback();
-                                }, function (err) {
-                                    if (err) console.error(err.message);
-
-                                    Teams.findOneAndUpdate({
-                                        leagueId: leagueId
-                                    }, {
-                                            leagueId: leagueId,
-                                            teams: teams
-                                        }, {
-                                            upsert: true
-                                        },
-                                        function (err, doc) {
-                                            // if (err) return 
-                                            if (doc !== null) {
-                                                doc.teams = teams;
-                                            }
-                                        });
-
-                                    //With now having each team key, go through each to get their full roster
-                                    async.forEachOf(teams, function (value, key, callback) {
-                                        yf.team.roster(teams[key].team_key,
-                                            function cb(err, playersData) {
-                                                var teamKey = teams[key].team_key;
-                                                if (err)
-                                                    console.log(err);
-                                                else
-                                                    var teamPlayers = [];
-
-                                                //After having their roster, store each player into a single player array
-                                                async.forEachOf(playersData.roster, function (value, playerKey, callback) {
-                                                    playerObject = {
-                                                        'team_key': teamKey,
-                                                        'player_key': playersData.roster[playerKey].player_key,
-                                                        'player_id': playersData.roster[playerKey].player_id,
-                                                        'first': playersData.roster[playerKey].name.first,
-                                                        'last': playersData.roster[playerKey].name.last,
-                                                        'full': playersData.roster[playerKey].name.full
-                                                    };
-                                                    players.push(playerObject);
-                                                    teamPlayers.push(playerObject);
-                                                    //push also to specific player name for string similarity later
-                                                    playerNames.push(playersData.roster[playerKey].name.full);
-                                                    callback();
-                                                }, function (err) {
-                                                    if (err) console.error(err.message);
-                                                    callback();
-                                                })
-                                            }
-                                        )
+                                        callback();
                                     }, function (err) {
                                         if (err) console.error(err.message);
-                                        //Put all the players into the database
-                                        Players.findOneAndUpdate({
+
+                                        Teams.findOneAndUpdate({
                                             leagueId: leagueId
                                         }, {
                                                 leagueId: leagueId,
-                                                players: players
+                                                teams: teams
                                             }, {
                                                 upsert: true
                                             },
                                             function (err, doc) {
                                                 // if (err) return 
                                                 if (doc !== null) {
-                                                    doc.players = players;
+                                                    doc.teams = teams;
                                                 }
                                             });
 
-                                        getPickups(leagueId, playerNames);
-                                        res.redirect('/');
-                                        return
+                                        //With now having each team key, go through each to get their full roster
+                                        async.forEachOf(teams, function (value, key, callback) {
+                                            yf.team.roster(teams[key].team_key,
+                                                function cb(err, playersData) {
+                                                    var teamKey = teams[key].team_key;
+                                                    if (err)
+                                                        console.log(err);
+                                                    else
+                                                        var teamPlayers = [];
+
+                                                    //After having their roster, store each player into a single player array
+                                                    async.forEachOf(playersData.roster, function (value, playerKey, callback) {
+                                                        playerObject = {
+                                                            'team_key': teamKey,
+                                                            'player_key': playersData.roster[playerKey].player_key,
+                                                            'player_id': playersData.roster[playerKey].player_id,
+                                                            'first': playersData.roster[playerKey].name.first,
+                                                            'last': playersData.roster[playerKey].name.last,
+                                                            'full': playersData.roster[playerKey].name.full
+                                                        };
+                                                        players.push(playerObject);
+                                                        teamPlayers.push(playerObject);
+                                                        //push also to specific player name for string similarity later
+                                                        playerNames.push(playersData.roster[playerKey].name.full);
+                                                        callback();
+                                                    }, function (err) {
+                                                        if (err) console.error(err.message);
+                                                        callback();
+                                                    })
+                                                }
+                                            )
+                                        }, function (err) {
+                                            redirectUrl += 1;
+
+                                            if (err) console.error(err.message);
+                                            //Put all the players into the database
+                                            Players.findOneAndUpdate({
+                                                leagueId: leagueId
+                                            }, {
+                                                    leagueId: leagueId,
+                                                    players: players
+                                                }, {
+                                                    upsert: true
+                                                },
+                                                function (err, doc) {
+                                                    // if (err) return 
+                                                    if (doc !== null) {
+                                                        doc.players = players;
+                                                    }
+                                                });
+
+                                            getPickups(leagueId, playerNames);
+                                            if (redirectUrl === leagues.length) {
+                                                res.redirect('/');
+                                            }
+                                            return
+                                        });
                                     });
-                                });
-                        }
-                    )
+                            }
+                        )
+                    }
                     callback(null, 2);
                 },
                 function (callback) {
                     //Use the league ID to get a list of all the teams and their players
-                    yf.league.settings(leagueId,
-                        function cb(err, data) {
-                            if (err) {
-                                console.log(err);
-                            }
-                            else {
-                                scoringData = data.settings.stat_categories;
-                                var scoringArray = [];
-                                for (var i = 0; i < scoringData.length; i++) {
-                                    if (scoringData[i].display_name !== "H/AB") {
-                                        scoringArray.push(scoringData[i].display_name)
-                                    }
-                                    
+                    for (var i = 0; i < leagues.length; i++) {
+                        leagueId = leagues[i][0].league_key;
+                        yf.league.settings(leagueId,
+                            function cb(err, data) {
+                                if (err) {
+                                    console.log(err);
                                 }
-                                Scoring.findOneAndUpdate({
-                                    leagueId: leagueId
-                                }, {
-                                        leagueId: leagueId,
-                                        scoring: scoringArray
-                                    }, {
-                                        upsert: true
-                                    },
-                                    function (err, doc) {
-                                        // if (err) return 
-                                        if (doc !== null) {
-                                            doc.scoringArray = scoringArray;
+                                else {
+                                    scoringData = data.settings.stat_categories;
+                                    var scoringArray = [];
+                                    for (var i = 0; i < scoringData.length; i++) {
+                                        if (scoringData[i].display_name !== "H/AB") {
+                                            scoringArray.push(scoringData[i].display_name)
                                         }
-                                    });
-                            }
-                        })
+
+                                    }
+                                    Scoring.findOneAndUpdate({
+                                        leagueId: leagueId
+                                    }, {
+                                            leagueId: leagueId,
+                                            scoring: scoringArray
+                                        }, {
+                                            upsert: true
+                                        },
+                                        function (err, doc) {
+                                            // if (err) return 
+                                            if (doc !== null) {
+                                                doc.scoringArray = scoringArray;
+                                            }
+                                        });
+                                }
+                            })
+                    }
                     callback(null, 2);
                 }
             ]);
@@ -292,161 +339,163 @@ exports.getYahooData = function (req, res, options) {
 }
 
 function getPickups(leagueId, playerNames) {
-    var rankingsSeason = [];
-    var rankingsRecent = [];
+    if (playerNames.length > 0) {
+        var rankingsSeason = [];
+        var rankingsRecent = [];
 
-    PlayerSeasonData.find({}, function (err, players) {
-        if (err)
-            res.send(err);
-        var pickupTargets = [];
-        async.forEachOf(players, function (value, i, callback) {
-
-            var similarPlayer = stringSimilarity.findBestMatch(players[i].playerName, playerNames);
-            var similarPlayerRating = similarPlayer.bestMatch.rating;
-
-            if (similarPlayerRating < 0.65) {
-                pickupTargets.push(players[i]);
-            }
-
-            callback();
-        }, function (err) {
+        PlayerSeasonData.find({}, function (err, players) {
             if (err)
                 res.send(err);
+            var pickupTargets = [];
+            async.forEachOf(players, function (value, i, callback) {
 
-            PickupTargetsSeason.findOneAndUpdate({
-                leagueId: leagueId
-            }, {
-                    leagueId: leagueId,
-                    players: pickupTargets
+                var similarPlayer = stringSimilarity.findBestMatch(players[i].playerName, playerNames);
+                var similarPlayerRating = similarPlayer.bestMatch.rating;
+
+                if (similarPlayerRating < 0.65) {
+                    pickupTargets.push(players[i]);
+                }
+
+                callback();
+            }, function (err) {
+                if (err)
+                    res.send(err);
+
+                PickupTargetsSeason.findOneAndUpdate({
+                    leagueId: leagueId
                 }, {
-                    upsert: true
-                },
-                function (err, doc) {
-                    if (err)
-                        res.send(err);
+                        leagueId: leagueId,
+                        players: pickupTargets
+                    }, {
+                        upsert: true
+                    },
+                    function (err, doc) {
+                        if (err)
+                            res.send(err);
 
-                    if (doc !== null) {
-                        doc.players = pickupTargets;
-                    }
-                });
-            return
-        })
-    });
+                        if (doc !== null) {
+                            doc.players = pickupTargets;
+                        }
+                    });
+                return
+            })
+        });
 
-    PlayerRecentData.find({}, function (err, players) {
-        if (err)
-            res.send(err);
-        var pickupTargets = [];
-        async.forEachOf(players, function (value, i, callback) {
-
-            var similarPlayer = stringSimilarity.findBestMatch(players[i].playerName, playerNames);
-            var similarPlayerRating = similarPlayer.bestMatch.rating;
-
-            if (similarPlayerRating < 0.7) {
-                pickupTargets.push(players[i]);
-            }
-
-            callback();
-        }, function (err) {
+        PlayerRecentData.find({}, function (err, players) {
             if (err)
                 res.send(err);
+            var pickupTargets = [];
+            async.forEachOf(players, function (value, i, callback) {
 
-            PickupTargetsRecent.findOneAndUpdate({
-                leagueId: leagueId
-            }, {
-                    leagueId: leagueId,
-                    players: pickupTargets
+                var similarPlayer = stringSimilarity.findBestMatch(players[i].playerName, playerNames);
+                var similarPlayerRating = similarPlayer.bestMatch.rating;
+
+                if (similarPlayerRating < 0.7) {
+                    pickupTargets.push(players[i]);
+                }
+
+                callback();
+            }, function (err) {
+                if (err)
+                    res.send(err);
+
+                PickupTargetsRecent.findOneAndUpdate({
+                    leagueId: leagueId
                 }, {
-                    upsert: true
-                },
-                function (err, doc) {
-                    if (err)
-                        res.send(err);
+                        leagueId: leagueId,
+                        players: pickupTargets
+                    }, {
+                        upsert: true
+                    },
+                    function (err, doc) {
+                        if (err)
+                            res.send(err);
 
-                    if (doc !== null) {
-                        doc.players = pickupTargets;
-                    }
-                });
-            return
-        })
-    });
+                        if (doc !== null) {
+                            doc.players = pickupTargets;
+                        }
+                    });
+                return
+            })
+        });
 
-    BBMRankingsSeason.find({}, function (err, players) {
-        if (err)
-            res.send(err);
-        var pickupTargets = [];
-        async.forEachOf(players, function (value, i, callback) {
-
-            var similarPlayer = stringSimilarity.findBestMatch(players[i].playerName, playerNames);
-            var similarPlayerRating = similarPlayer.bestMatch.rating;
-
-            if (similarPlayerRating < 0.7) {
-                pickupTargets.push(players[i]);
-            }
-
-            callback();
-        }, function (err) {
+        BBMRankingsSeason.find({}, function (err, players) {
             if (err)
                 res.send(err);
+            var pickupTargets = [];
+            async.forEachOf(players, function (value, i, callback) {
 
-            BBMPickupTargetsSeason.findOneAndUpdate({
-                leagueId: leagueId
-            }, {
-                    leagueId: leagueId,
-                    players: pickupTargets
+                var similarPlayer = stringSimilarity.findBestMatch(players[i].playerName, playerNames);
+                var similarPlayerRating = similarPlayer.bestMatch.rating;
+
+                if (similarPlayerRating < 0.7) {
+                    pickupTargets.push(players[i]);
+                }
+
+                callback();
+            }, function (err) {
+                if (err)
+                    res.send(err);
+
+                BBMPickupTargetsSeason.findOneAndUpdate({
+                    leagueId: leagueId
                 }, {
-                    upsert: true
-                },
-                function (err, doc) {
-                    if (err)
-                        res.send(err);
+                        leagueId: leagueId,
+                        players: pickupTargets
+                    }, {
+                        upsert: true
+                    },
+                    function (err, doc) {
+                        if (err)
+                            res.send(err);
 
-                    if (doc !== null) {
-                        doc.players = pickupTargets;
-                    }
-                });
-            return
-        })
-    });
+                        if (doc !== null) {
+                            doc.players = pickupTargets;
+                        }
+                    });
+                return
+            })
+        });
 
-    BBMRankingsRecent.find({}, function (err, players) {
-        if (err)
-            res.send(err);
-        var pickupTargets = [];
-
-        async.forEachOf(players, function (value, i, callback) {
-
-            var similarPlayer = stringSimilarity.findBestMatch(players[i].playerName, playerNames);
-            var similarPlayerRating = similarPlayer.bestMatch.rating;
-
-            if (similarPlayerRating < 0.7) {
-                pickupTargets.push(players[i]);
-            }
-
-            callback();
-        }, function (err) {
+        BBMRankingsRecent.find({}, function (err, players) {
             if (err)
                 res.send(err);
+            var pickupTargets = [];
 
-            BBMPickupTargetsRecent.findOneAndUpdate({
-                leagueId: leagueId
-            }, {
-                    leagueId: leagueId,
-                    players: pickupTargets
+            async.forEachOf(players, function (value, i, callback) {
+
+                var similarPlayer = stringSimilarity.findBestMatch(players[i].playerName, playerNames);
+                var similarPlayerRating = similarPlayer.bestMatch.rating;
+
+                if (similarPlayerRating < 0.7) {
+                    pickupTargets.push(players[i]);
+                }
+
+                callback();
+            }, function (err) {
+                if (err)
+                    res.send(err);
+
+                BBMPickupTargetsRecent.findOneAndUpdate({
+                    leagueId: leagueId
                 }, {
-                    upsert: true
-                },
-                function (err, doc) {
-                    if (err)
-                        res.send(err);
+                        leagueId: leagueId,
+                        players: pickupTargets
+                    }, {
+                        upsert: true
+                    },
+                    function (err, doc) {
+                        if (err)
+                            res.send(err);
 
-                    if (doc !== null) {
-                        doc.players = pickupTargets;
-                    }
-                });
-            return
-        })
-    });
+                        if (doc !== null) {
+                            doc.players = pickupTargets;
+                        }
+                    });
+                return
+            })
+        });
+    }
 }
 
 exports.getEspnData = function (espnId, res) {
@@ -454,6 +503,8 @@ exports.getEspnData = function (espnId, res) {
     var teams = [];
     var players = [];
     var playerNames = [];
+
+    console.log(url)
 
     var scoringCats = {
         AB: 0,
@@ -645,6 +696,21 @@ exports.getEspnData = function (espnId, res) {
         //Send the data back
         res.json(teams);
     });
+}
+
+exports.getPrivateESPNData = function() {
+    console.log('here')
+    const puppeteer = require('puppeteer');
+
+    (async () => {
+      const browser = await puppeteer.launch();
+      const page = await browser.newPage();
+      await page.goto('https://espn.com');
+      await page.click('#global-user-trigger');
+      await page.screenshot({path: './screenshot.png'});
+    
+      await browser.close();
+    })();
 }
 
 exports.refreshYahooData = function (leagueId, res, accessToken) {

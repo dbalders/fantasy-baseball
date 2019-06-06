@@ -5,6 +5,7 @@ import 'react-table/react-table.css';
 import stringSimilarity from 'string-similarity';
 import { CompareTeams } from './CompareTeams';
 import { callApi } from './CallApi';
+import { SelectTeam } from './SelectTeam';
 import ReactGA from 'react-ga';
 import Select from 'react-select';
 
@@ -919,42 +920,6 @@ export class BuildPlayers extends Component {
                 };
             },
         }, {
-            Header: 'OBP',
-            accessor: obpHeader,
-            className: "center",
-            minWidth: 50,
-            show: (this.statExist('OBP')) ? true : false,
-            getProps: (state, rowInfo, column) => {
-                return {
-                    style: {
-                        backgroundColor: rowInfo && rowInfo.row[obpHeader] > 2 ? brightGreen :
-                            rowInfo.row[obpHeader] > 1 ? mediumGreen :
-                                rowInfo.row[obpHeader] >= .5 ? lightGreen :
-                                    rowInfo.row[obpHeader] < 0 && rowInfo.row[obpHeader] > -1 ? lightRed :
-                                        rowInfo.row[obpHeader] <= -1 && rowInfo.row[obpHeader] > -2 ? mediumRed :
-                                            rowInfo.row[obpHeader] <= -2 ? brightRed : null,
-                    },
-                };
-            },
-        }, {
-            Header: 'SLG',
-            accessor: slgHeader,
-            className: "center",
-            minWidth: 50,
-            show: (this.statExist('SLG')) ? true : false,
-            getProps: (state, rowInfo, column) => {
-                return {
-                    style: {
-                        backgroundColor: rowInfo && rowInfo.row[slgHeader] > 2 ? brightGreen :
-                            rowInfo.row[slgHeader] > 1 ? mediumGreen :
-                                rowInfo.row[slgHeader] >= .5 ? lightGreen :
-                                    rowInfo.row[slgHeader] < 0 && rowInfo.row[slgHeader] > -1 ? lightRed :
-                                        rowInfo.row[slgHeader] <= -1 && rowInfo.row[slgHeader] > -2 ? mediumRed :
-                                            rowInfo.row[slgHeader] <= -2 ? brightRed : null,
-                    },
-                };
-            },
-        }, {
             Header: '2B',
             accessor: doubleHeader,
             className: "center",
@@ -987,6 +952,42 @@ export class BuildPlayers extends Component {
                                     rowInfo.row[walkHeader] < 0 && rowInfo.row[walkHeader] > -1 ? lightRed :
                                         rowInfo.row[walkHeader] <= -1 && rowInfo.row[walkHeader] > -2 ? mediumRed :
                                             rowInfo.row[walkHeader] <= -2 ? brightRed : null,
+                    },
+                };
+            },
+        }, {
+            Header: 'OBP',
+            accessor: obpHeader,
+            className: "center",
+            minWidth: 50,
+            show: (this.statExist('OBP')) ? true : false,
+            getProps: (state, rowInfo, column) => {
+                return {
+                    style: {
+                        backgroundColor: rowInfo && rowInfo.row[obpHeader] > 2 ? brightGreen :
+                            rowInfo.row[obpHeader] > 1 ? mediumGreen :
+                                rowInfo.row[obpHeader] >= .5 ? lightGreen :
+                                    rowInfo.row[obpHeader] < 0 && rowInfo.row[obpHeader] > -1 ? lightRed :
+                                        rowInfo.row[obpHeader] <= -1 && rowInfo.row[obpHeader] > -2 ? mediumRed :
+                                            rowInfo.row[obpHeader] <= -2 ? brightRed : null,
+                    },
+                };
+            },
+        }, {
+            Header: 'SLG',
+            accessor: slgHeader,
+            className: "center",
+            minWidth: 50,
+            show: (this.statExist('SLG')) ? true : false,
+            getProps: (state, rowInfo, column) => {
+                return {
+                    style: {
+                        backgroundColor: rowInfo && rowInfo.row[slgHeader] > 2 ? brightGreen :
+                            rowInfo.row[slgHeader] > 1 ? mediumGreen :
+                                rowInfo.row[slgHeader] >= .5 ? lightGreen :
+                                    rowInfo.row[slgHeader] < 0 && rowInfo.row[slgHeader] > -1 ? lightRed :
+                                        rowInfo.row[slgHeader] <= -1 && rowInfo.row[slgHeader] > -2 ? mediumRed :
+                                            rowInfo.row[slgHeader] <= -2 ? brightRed : null,
                     },
                 };
             },
@@ -1283,42 +1284,6 @@ export class BuildPlayers extends Component {
                 };
             },
         }, {
-            Header: 'OBP',
-            accessor: obpHeader,
-            className: "center",
-            minWidth: 50,
-            show: (this.statExist('OBP')) ? true : false,
-            getProps: (state, rowInfo, column) => {
-                return {
-                    style: {
-                        backgroundColor: rowInfo && rowInfo.row[obpHeader] > 2 ? brightGreen :
-                            rowInfo.row[obpHeader] > 1 ? mediumGreen :
-                                rowInfo.row[obpHeader] >= .5 ? lightGreen :
-                                    rowInfo.row[obpHeader] < 0 && rowInfo.row[obpHeader] > -1 ? lightRed :
-                                        rowInfo.row[obpHeader] <= -1 && rowInfo.row[obpHeader] > -2 ? mediumRed :
-                                            rowInfo.row[obpHeader] <= -2 ? brightRed : null,
-                    },
-                };
-            },
-        }, {
-            Header: 'SLG',
-            accessor: slgHeader,
-            className: "center",
-            minWidth: 50,
-            show: (this.statExist('SLG')) ? true : false,
-            getProps: (state, rowInfo, column) => {
-                return {
-                    style: {
-                        backgroundColor: rowInfo && rowInfo.row[slgHeader] > 2 ? brightGreen :
-                            rowInfo.row[slgHeader] > 1 ? mediumGreen :
-                                rowInfo.row[slgHeader] >= .5 ? lightGreen :
-                                    rowInfo.row[slgHeader] < 0 && rowInfo.row[slgHeader] > -1 ? lightRed :
-                                        rowInfo.row[slgHeader] <= -1 && rowInfo.row[slgHeader] > -2 ? mediumRed :
-                                            rowInfo.row[slgHeader] <= -2 ? brightRed : null,
-                    },
-                };
-            },
-        }, {
             Header: '2B',
             accessor: doubleHeader,
             className: "center",
@@ -1351,6 +1316,42 @@ export class BuildPlayers extends Component {
                                     rowInfo.row[walkHeader] < 0 && rowInfo.row[walkHeader] > -1 ? lightRed :
                                         rowInfo.row[walkHeader] <= -1 && rowInfo.row[walkHeader] > -2 ? mediumRed :
                                             rowInfo.row[walkHeader] <= -2 ? brightRed : null,
+                    },
+                };
+            },
+        }, {
+            Header: 'OBP',
+            accessor: obpHeader,
+            className: "center",
+            minWidth: 50,
+            show: (this.statExist('OBP')) ? true : false,
+            getProps: (state, rowInfo, column) => {
+                return {
+                    style: {
+                        backgroundColor: rowInfo && rowInfo.row[obpHeader] > 2 ? brightGreen :
+                            rowInfo.row[obpHeader] > 1 ? mediumGreen :
+                                rowInfo.row[obpHeader] >= .5 ? lightGreen :
+                                    rowInfo.row[obpHeader] < 0 && rowInfo.row[obpHeader] > -1 ? lightRed :
+                                        rowInfo.row[obpHeader] <= -1 && rowInfo.row[obpHeader] > -2 ? mediumRed :
+                                            rowInfo.row[obpHeader] <= -2 ? brightRed : null,
+                    },
+                };
+            },
+        }, {
+            Header: 'SLG',
+            accessor: slgHeader,
+            className: "center",
+            minWidth: 50,
+            show: (this.statExist('SLG')) ? true : false,
+            getProps: (state, rowInfo, column) => {
+                return {
+                    style: {
+                        backgroundColor: rowInfo && rowInfo.row[slgHeader] > 2 ? brightGreen :
+                            rowInfo.row[slgHeader] > 1 ? mediumGreen :
+                                rowInfo.row[slgHeader] >= .5 ? lightGreen :
+                                    rowInfo.row[slgHeader] < 0 && rowInfo.row[slgHeader] > -1 ? lightRed :
+                                        rowInfo.row[slgHeader] <= -1 && rowInfo.row[slgHeader] > -2 ? mediumRed :
+                                            rowInfo.row[slgHeader] <= -2 ? brightRed : null,
                     },
                 };
             },
@@ -1613,18 +1614,6 @@ export class BuildPlayers extends Component {
             className: "center"
         }, {
             headerClassName: 'hide',
-            accessor: 'obp',
-            minWidth: 50,
-            show: (this.statExist('OBP')) ? true : false,
-            className: "center"
-        }, {
-            headerClassName: 'hide',
-            accessor: 'slg',
-            minWidth: 50,
-            show: (this.statExist('SLG')) ? true : false,
-            className: "center"
-        }, {
-            headerClassName: 'hide',
             accessor: 'double',
             minWidth: 50,
             show: (this.statExist('2B')) ? true : false,
@@ -1634,6 +1623,18 @@ export class BuildPlayers extends Component {
             accessor: 'walk',
             minWidth: 50,
             show: (this.statExist('BB')) ? true : false,
+            className: "center"
+        }, {
+            headerClassName: 'hide',
+            accessor: 'obp',
+            minWidth: 50,
+            show: (this.statExist('OBP')) ? true : false,
+            className: "center"
+        }, {
+            headerClassName: 'hide',
+            accessor: 'slg',
+            minWidth: 50,
+            show: (this.statExist('SLG')) ? true : false,
             className: "center"
         }, {
             headerClassName: 'hide',
@@ -1768,6 +1769,7 @@ export class BuildPlayers extends Component {
                 <div className="table-info-container flex-vertical">
                     <div className="table-info-headers flex">
                         <div className="table-info-header" onClick={this.changeRankings}>{showRankingsText}</div>
+                        <SelectTeam />
                         {/* <div className="table-info-header" onClick={this.changeStats}>{showStatsText}</div> */}
                     </div>
                     <div className="table-info-tables">
