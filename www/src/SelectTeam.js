@@ -15,7 +15,7 @@ export class SelectTeam extends Component {
     componentDidMount() {
         var leagueIds = Cookies.get('leagueIds');
         leagueIds = JSON.parse(leagueIds)
-        this.setState({multipleTeams: leagueIds})
+        this.setState({ multipleTeams: leagueIds })
     }
 
     //On select change, get the new team's info from api and push it into the state and rebuild
@@ -24,24 +24,24 @@ export class SelectTeam extends Component {
         Cookies.set('leagueId', teamSelected.value)
         Cookies.set('teamId', teamSelected.teamId)
         Cookies.set('teamName', teamSelected.label)
-        // this.refreshYahooData();
-        localStorage.clear();
-        window.location.reload();
+        this.refreshYahooData();
     }
 
-    // refreshYahooData() {
-    //     callApi('/api/refresh_yahoo_data/')
-    //         .then(results => {
-    //             //Change the key to re-render the components
-    //             localStorage.removeItem('teamPlayers');
-    //             this.setState({ key: this.state.key + 1 })
-    //             this.forceUpdate();
-    //         })
-    //         .catch(err => {
-    //             console.log(err);
-    //             window.location.href = '/auth/yahoo';
-    //         });
-    // }
+    refreshYahooData() {
+        callApi('/api/refresh_yahoo_data/')
+            .then(results => {
+                //Change the key to re-render the components
+                localStorage.removeItem('teamPlayers');
+                this.setState({ key: this.state.key + 1 })
+                this.forceUpdate();
+                localStorage.clear();
+                window.location.reload();
+            })
+            .catch(err => {
+                console.log(err);
+                window.location.href = '/auth/yahoo';
+            });
+    }
 
     render() {
         const { teamSelected } = this.state;

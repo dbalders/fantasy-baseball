@@ -139,35 +139,35 @@ exports.erase_current_data = function (req, res) {
     //         res.send(err);
     //     // res.json({ message: 'All teams successfully deleted' });
     // });
+    Teams.remove({}, function (err, task) {
+        if (err)
+            res.send(err);
+        // res.json({ message: 'All teams successfully deleted' });
+    });
+    PickupTargetsSeason.remove({}, function (err, task) {
+        if (err)
+            res.send(err);
+    });
+
+    PickupTargetsRecent.remove({}, function (err, task) {
+        if (err)
+            res.send(err);
+    });
     // Teams.remove({}, function (err, task) {
     //     if (err)
     //         res.send(err);
-    //     // res.json({ message: 'All teams successfully deleted' });
     // });
-    // PickupTargetsSeason.remove({}, function (err, task) {
-    //     if (err)
-    //         res.send(err);
-    // });
-
-    // PickupTargetsTwoWeeks.remove({}, function (err, task) {
-    //     if (err)
-    //         res.send(err);
-    // });
-    // Teams.remove({}, function (err, task) {
-    //     if (err)
-    //         res.send(err);
-    // });
-    // Players.remove({}, function (err, task) {
-    //     if (err)
-    //         res.send(err);
-    //     res.json({ message: 'All players successfully deleted' });
-    // });
-
-    Payment.remove({}, function (err, task) {
+    Players.remove({}, function (err, task) {
         if (err)
             res.send(err);
         res.json({ message: 'All players successfully deleted' });
     });
+
+    // Payment.remove({}, function (err, task) {
+    //     if (err)
+    //         res.send(err);
+    //     res.json({ message: 'All players successfully deleted' });
+    // });
 };
 
 exports.get_rankings = function (req, res) {
