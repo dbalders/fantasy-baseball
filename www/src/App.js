@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import { callApi } from './CallApi';
 import { StripeBtn } from "./StripeBtn";
 import { StripeModal } from "./StripeModal";
+import { SelectYahooTeam } from './SelectYahooTeam';
 import CookieConsent from "react-cookie-consent";
 
 class App extends Component {
@@ -60,11 +61,22 @@ class App extends Component {
         var homePage;
         var navBar;
         var footer;
-        var paid = Cookies.get('paid')
+        var paid = Cookies.get('paid');
         var lockSymbol;
+        var leagueIds = Cookies.get('leagueIds');
+
+        if (leagueIds !== undefined) {
+            leagueIds = JSON.parse(Cookies.get('leagueIds'));
+        } else {
+            leagueIds = [];
+        }
 
         if (!isLoggedIn) {
-            homePage = <HomePage key={this.state.key} />;
+            if (leagueIds.length > 1) {
+                homePage = <SelectYahooTeam key={this.state.key} />;
+            } else {
+                homePage = <HomePage key={this.state.key} />;
+            }
         } else {
             homePage = <BuildPlayers key={this.state.key} />;
         }

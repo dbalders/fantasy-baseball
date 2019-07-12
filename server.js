@@ -62,6 +62,8 @@ app.get('/logout', function(req, res) {
     res.clearCookie("paid");
     res.clearCookie("dataExpireDate");
     res.clearCookie("teamTradeStatsSeason");
+    res.clearCookie("leagueIds");
+    res.clearCookie("teamName");
     res.redirect('/');
 });
 

@@ -56,6 +56,7 @@ export class BuildPlayers extends Component {
         var teamId = Cookies.get('teamId');
         var today = new Date();
         var expireDate = Cookies.get('dataExpireDate');
+        expireDate = new Date(expireDate);
         var allData = true;
 
         //Go through each local storage needed and if they dont exist, just refresh all data
@@ -79,10 +80,14 @@ export class BuildPlayers extends Component {
             this.setState({ leagueId: leagueId });
 
             //If it is greater or equal to the day after the last time they got data, expire doesn't exist, or dont have all data, update all
-            if ((today >= expireDate) || (expireDate === undefined) || allData === false) {
+            if (expireDate === undefined) {
+                window.location.replace(window.location.protocol + '//' + window.location.hostname + '/logout')
+            }
+            if ((today.toDateString() > expireDate.toDateString()) || allData === false) {
 
                 var expireDate = new Date();
                 expireDate.setDate(today.getDate());
+                Cookies.set('dataExpireDate', expireDate)
 
                 //Get all the league info from each api endpoint
                 callApi('/api/rankings/season/')
@@ -219,7 +224,6 @@ export class BuildPlayers extends Component {
                                         if (this.state.playerRankingsSeason.length === 0 || this.state.playerRankingsRecent.length === 0) {
                                             setTimeout(function () {
                                                 localStorage.setItem('teamPlayers', JSON.stringify(playerData));
-                                                Cookies.set('dataExpireDate', expireDate)
                                                 this.setState({ teamPlayers: playerData }, this.orderRankings);
                                             }.bind(this), 2000)
                                         } else {

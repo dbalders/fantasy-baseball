@@ -74,6 +74,12 @@ exports.getYahooData = function (req, res, options) {
                                     leagueId = data.games[0].leagues[0][0].league_key;
                                     res.cookie('fantasyPlatform', 'yahoo');
                                     res.cookie('yahooAccessToken', accessToken);
+                                    
+                                    var today = new Date();
+                                    var expireDate = new Date();
+                                    expireDate.setDate(today.getDate());
+                                    res.cookie('dataExpireDate', expireDate)
+
                                     callback(null, 1);
                                 }
                             })
@@ -89,7 +95,7 @@ exports.getYahooData = function (req, res, options) {
 
                             for (var i = 0; i < leagues.length; i++) {
                                 leagueId = leagues[i][0].league_key;
-                                
+
                                 email = data.teams[0].teams[0].managers[0].email;
 
                                 var teamId = data.teams[0].teams[i].team_id;
@@ -108,6 +114,9 @@ exports.getYahooData = function (req, res, options) {
 
                                 res.cookie('yahooEmail', email);
 
+                            }
+
+                            if (leagues.length === 1) {
                                 if (email) {
                                     Payment.findOneAndUpdate({
                                         yahooEmail: email
@@ -177,23 +186,20 @@ exports.getYahooData = function (req, res, options) {
                                         }
                                     })
                                 }
-
                             }
                             callback();
                         }
                     );
                 },
                 function (callback) {
-                    leagueId = leaguesArray[0].leagueId;
-                    //If multiple leagues, add it to a cookie
-                    res.cookie('leagueIds', JSON.stringify(leagueIds))
-                    res.cookie('leagueId', leagueId);
-                    res.cookie('teamName', leagueIds[0].teamName);
-                    res.cookie('teamId', leaguesArray[0].teamId);
-                    //Use the league ID to get a list of all the teams and their players
-                    for (var i = 0; i < leagues.length; i++) {
+                    //If only one league ID, get a list of all the teams and their players
+                    if (leaguesArray.length === 1) {
+                        leagueId = leaguesArray[0].leagueId;
+                        res.cookie('leagueId', leagueId);
+                        res.cookie('teamName', leagueIds[0].teamName);
+                        res.cookie('teamId', leaguesArray[0].teamId);
                         playerNames = [];
-                        leagueId = leagues[i][0].league_key;
+                        leagueId = leagues[0][0].league_key;
                         yf.league.teams(leagueId,
                             function cb(err, data) {
                                 if (err)
@@ -207,11 +213,6 @@ exports.getYahooData = function (req, res, options) {
                                             'name': data.teams[teamKey].name
                                         }
                                         teams.push(currentTeam);
-
-                                        // if (data.teams[teamKey].is_owned_by_current_login !== undefined) {
-                                        //     res.cookie('teamId', data.teams[teamKey].team_id)
-                                        // }
-
 
                                         callback();
                                     }, function (err) {
@@ -292,13 +293,16 @@ exports.getYahooData = function (req, res, options) {
                                     });
                             }
                         )
+                    } else {
+                        res.cookie('leagueIds', JSON.stringify(leagueIds))
+                        res.redirect('/');
                     }
                     callback(null, 2);
                 },
                 function (callback) {
                     //Use the league ID to get a list of all the teams and their players
-                    for (var i = 0; i < leagues.length; i++) {
-                        leagueId = leagues[i][0].league_key;
+                    if (leaguesArray.length === 1) {
+                        leagueId = leagues[0][0].league_key;
                         yf.league.settings(leagueId,
                             function cb(err, data) {
                                 if (err) {
@@ -698,18 +702,18 @@ exports.getEspnData = function (espnId, res) {
     });
 }
 
-exports.getPrivateESPNData = function() {
+exports.getPrivateESPNData = function () {
     console.log('here')
     const puppeteer = require('puppeteer');
 
     (async () => {
-      const browser = await puppeteer.launch();
-      const page = await browser.newPage();
-      await page.goto('https://espn.com');
-      await page.click('#global-user-trigger');
-      await page.screenshot({path: './screenshot.png'});
-    
-      await browser.close();
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        await page.goto('https://espn.com');
+        await page.click('#global-user-trigger');
+        await page.screenshot({ path: './screenshot.png' });
+
+        await browser.close();
     })();
 }
 

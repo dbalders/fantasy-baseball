@@ -47,7 +47,11 @@ export class SelectTeam extends Component {
         const { teamSelected } = this.state;
         const teamSelect = [];
 
-        var placeHolder = 'Switch Leagues (' + Cookies.get('teamName') + ')'
+        if (this.props.placeHolder !== undefined) {
+            var placeHolder = this.props.placeHolder;
+        } else {
+            var placeHolder = 'Switch Leagues (' + Cookies.get('teamName') + ')'
+        }
 
         //Get the league Ids
         for (var i = 0; i < this.state.multipleTeams.length; i++) {
