@@ -14,8 +14,10 @@ export class SelectTeam extends Component {
 
     componentDidMount() {
         var leagueIds = Cookies.get('leagueIds');
-        leagueIds = JSON.parse(leagueIds)
-        this.setState({ multipleTeams: leagueIds })
+        if (leagueIds !== undefined) {
+            leagueIds = JSON.parse(leagueIds)
+            this.setState({ multipleTeams: leagueIds })
+        }
     }
 
     //On select change, get the new team's info from api and push it into the state and rebuild
@@ -53,11 +55,12 @@ export class SelectTeam extends Component {
             var placeHolder = 'Switch Leagues (' + Cookies.get('teamName') + ')'
         }
 
-        //Get the league Ids
-        for (var i = 0; i < this.state.multipleTeams.length; i++) {
-            teamSelect.push({ value: this.state.multipleTeams[i].leagueId, label: this.state.multipleTeams[i].teamName, teamId: this.state.multipleTeams[i].teamId })
+        //Get the league Ids if there is multiple
+        if (this.state.multipleTeams.length > 0) {
+            for (var i = 0; i < this.state.multipleTeams.length; i++) {
+                teamSelect.push({ value: this.state.multipleTeams[i].leagueId, label: this.state.multipleTeams[i].teamName, teamId: this.state.multipleTeams[i].teamId })
+            }
         }
-
 
         if ((this.state.multipleTeams.length > 1) && (Cookies.get('fantasyPlatform') === 'yahoo')) {
             var returnHTML = <div className="team-select-yahoo">

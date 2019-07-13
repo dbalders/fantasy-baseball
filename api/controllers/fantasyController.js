@@ -3,6 +3,7 @@
 var fantasy = require('../../data/fantasy');
 var rankings = require('../../data/rankings');
 var bbmRankings = require('../../data/bbmrankings');
+var refresh_yahoo_data = require('../../data/refresh_yahoo_data');
 
 var mongoose = require('mongoose'),
     Players = mongoose.model('Players'),
@@ -139,29 +140,29 @@ exports.erase_current_data = function (req, res) {
     //         res.send(err);
     //     // res.json({ message: 'All teams successfully deleted' });
     // });
-    // Teams.remove({}, function (err, task) {
-    //     if (err)
-    //         res.send(err);
-    //     // res.json({ message: 'All teams successfully deleted' });
-    // });
-    // PickupTargetsSeason.remove({}, function (err, task) {
-    //     if (err)
-    //         res.send(err);
-    // });
+    Teams.remove({}, function (err, task) {
+        if (err)
+            res.send(err);
+        // res.json({ message: 'All teams successfully deleted' });
+    });
+    PickupTargetsSeason.remove({}, function (err, task) {
+        if (err)
+            res.send(err);
+    });
 
-    // PickupTargetsRecent.remove({}, function (err, task) {
-    //     if (err)
-    //         res.send(err);
-    // });
-    // Teams.remove({}, function (err, task) {
-    //     if (err)
-    //         res.send(err);
-    // });
-    // Players.remove({}, function (err, task) {
-    //     if (err)
-    //         res.send(err);
-    //     res.json({ message: 'All players successfully deleted' });
-    // });
+    PickupTargetsRecent.remove({}, function (err, task) {
+        if (err)
+            res.send(err);
+    });
+    Scoring.remove({}, function (err, task) {
+        if (err)
+            res.send(err);
+    });
+    Players.remove({}, function (err, task) {
+        if (err)
+            res.send(err);
+        res.json({ message: 'All players successfully deleted' });
+    });
 
     // Payment.remove({}, function (err, task) {
     //     if (err)
@@ -213,7 +214,7 @@ exports.refresh_yahoo_data = function (req, res) {
         }
     }
 
-    fantasy.refreshYahooData(leagueId, res, yahooAccessToken)
+    refresh_yahoo_data.refreshYahooData(leagueId, res, yahooAccessToken)
 }
 
 exports.payment_get = function (req, res) {
