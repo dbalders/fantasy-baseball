@@ -16,7 +16,7 @@
     "express-session": "^1.14.1",
     "fs-then": "^0.2.0",
     "jade": "^1.11.0",
-    "mongoose": "^4.13.7",
+    "mongoose": "^4.13.21",
     "nba": "^4.5.0",
     "npm": "^6.4.1",
     "puppeteer": "^1.17.0",
