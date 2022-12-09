@@ -12,7 +12,7 @@
   "dependencies": {
     "async": "^2.3.0",
     "body-parser": "^1.15.2",
-    "express": "^4.14.0",
+    "express": "^4.17.3",
     "express-session": "^1.14.1",
     "fs-then": "^0.2.0",
     "jade": "^1.11.0",
